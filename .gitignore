@@ -6,9 +6,6 @@
 # ignore all files in doc directory
 /doc
 
-# ignore all resources
-/resources
-
 # temporary files
 *~
 
