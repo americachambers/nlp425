@@ -1,0 +1,11 @@
+*.class
+
+# Mac specific
+.DS_Store
+
+# ignore all files in doc directory
+/doc
+
+# temporary files
+*~
+
