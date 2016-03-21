@@ -9,3 +9,8 @@
 # temporary files
 *~
 
+/bin/
+
+# Eclipse things
+.classpath
+.project
