@@ -2,9 +2,9 @@ public interface Classifier {
 	/**
 	* Classifies an Utterance.
 	**/
-	public DATag classify(Utterance u); 
+	public DialogAct classify(Utterance u); 
 	/**
 	* 	Trains claffier based on a previous
 	**/
-	public void train(List<DATag>);
+	public void train(List<DialogAct>);
 }

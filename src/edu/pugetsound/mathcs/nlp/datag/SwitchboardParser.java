@@ -4,7 +4,7 @@ public class SwitchboardParser {
 	/**
 	* Given a path name, parses through the file and returns the list of DATags associated with each entry.
 	**/
-	public static List<DATag> parse(String path){
+	public static List<DialogAct> parse(String path){
 		return null;
 	}
 }
