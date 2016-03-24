@@ -111,6 +111,7 @@ public class TextAnalyzer {
 		
 		// No more processing necessary for greetings/closings		
 		if(greetClose.containsKey(input)){
+			// TODO: NEED TO ADD THE DIALOGUE ACT TAG BEFORE RETURNING!
 			return h;
 		}		
 
@@ -179,10 +180,15 @@ public class TextAnalyzer {
 	 * 
 	 */
 	private void storeParseTrees(Utterance h, CoreMap sentence){
-		h.constituencyParse = sentence.get(TreeAnnotation.class);		
+		// Get the constituency parse tree and its root 
+		h.constituencyParse = sentence.get(TreeAnnotation.class);
+		h.rootConstituency = h.constituencyParse.firstChild().label().value();		
+		
+		// Get the dependency parse tree and its root
 		SemanticGraph tree = 
 				sentence.get(CollapsedCCProcessedDependenciesAnnotation.class);			
-		h.dependencyParse = tree;			
+		h.dependencyParse = tree;
+		h.rootDependency = tree.getFirstRoot().word();
 	}
 	
 	
@@ -192,8 +198,7 @@ public class TextAnalyzer {
 	 */
 	private void storeParseFeatures(Utterance h){
 		SemanticGraph tree = h.dependencyParse;
-		IndexedWord root = tree.getFirstRoot();
-		h.rootDependency = root.word();
+		IndexedWord root = tree.getFirstRoot();		
 		extractGrammaticalRelations(tree, root, h);
 	}
 
@@ -234,7 +239,6 @@ public class TextAnalyzer {
 					h.subjects.add(w.word());
 				}								
 			}
-
 
 			// Recurse regardless
 			for(IndexedWord w : childrenWithReltn){
