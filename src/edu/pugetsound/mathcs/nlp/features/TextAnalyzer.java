@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import edu.pugetsound.mathcs.nlp.lang.*;
+import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
@@ -55,7 +56,7 @@ public class TextAnalyzer {
 	 * Maps greetings and closing expressions to the respective
 	 * dialogue act tags 
 	 */
-	//private HashMap<String, DialogueAct> greetClose;	
+	private HashMap<String, DialogueActTag> greetClose;	
 
 
 	/**
@@ -65,8 +66,10 @@ public class TextAnalyzer {
 		Properties props = new Properties();		
 		props.setProperty("annotators", ANNOTATORS);
 		pipeline = new StanfordCoreNLP(props);			
+		
+		//TODO: Haven't actually added anything to these hashes yet!
 		standardizedForms = new HashMap<String, String>();
-		//greetClose = new HashMap<String, DialogueAct>();
+		greetClose = new HashMap<String, DialogueActTag>();
 	}
 
 
@@ -106,12 +109,10 @@ public class TextAnalyzer {
 		storeTokens(h, sentence);
 		storePunctuation(h, input);
 		
-		// No more processing necessary for greetings/closings
-		/*
+		// No more processing necessary for greetings/closings		
 		if(greetClose.containsKey(input)){
 			return h;
-		}
-		*/
+		}		
 
 		// Compute parse tree features
 		storeParseTrees(h, sentence);
