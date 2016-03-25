@@ -1,6 +1,7 @@
 package edu.pugetsound.mathcs.nlp.lang;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.stanford.nlp.semgraph.SemanticGraph;
@@ -67,6 +68,17 @@ public class Utterance {
 	 * the root is a Penn Treebank tag. 
 	 */
 	public String rootConstituency;
+	
+	/**
+	 * A mapping from a phrase in the utterance to the Prolog entity ID  
+	 * For example, if the user types "My cat's name is Fluffy" then we would store
+	 * 
+	 * "my" ---> entityHuman
+	 * "my cat" ---> cat001
+	 * 
+	 */
+	public HashMap<String, String> resolutions = new HashMap<String, String>();
+	
 	
 	/**
 	 * Indicates whether the sentence is passive (true) or active (false)
