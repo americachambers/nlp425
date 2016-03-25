@@ -36,7 +36,7 @@ public class Conversation {
 	 */
 	public void addUtterance(Utterance u){
 		conversation.add(u);
-		stringRep += "\n" + u.utterance;
+		stringRep += u.utterance + "\n";
 	}
 	
 	/**
