@@ -58,7 +58,18 @@ public class TextAnalyzer {
 	 */
 	private HashMap<String, DialogueActTag> greetClose;	
 
-
+	/**
+	 * A semantic analyzer to translate from utterances to first-order representation
+	 */
+	private SemanticAnalyzer semAnalyzer;
+		
+	/**
+	 * An anaphora analyzer
+	 */
+	private AnaphoraAnalyzer anaphoraAnalyzer;
+	
+	
+	
 	/**
 	 * Creates a new TextAnalyzer
 	 */
@@ -70,6 +81,9 @@ public class TextAnalyzer {
 		//TODO: Haven't actually added anything to these hashes yet!
 		standardizedForms = new HashMap<String, String>();
 		greetClose = new HashMap<String, DialogueActTag>();
+		
+		semAnalyzer = new SemanticAnalyzer();
+		anaphoraAnalyzer = new AnaphoraAnalyzer();
 	}
 
 
@@ -119,7 +133,9 @@ public class TextAnalyzer {
 		storeParseTrees(h, sentence);
 		storeParseFeatures(h);
 		
-
+		// semAnalyzer.analyze(h, conversation);
+		// anaphoraAnalyzer.analyze(h, conversation, pipeline);			
+		
 		/*
 		 * TODO: Features to add:
 		 * - Entities
@@ -273,7 +289,8 @@ public class TextAnalyzer {
 		while(true){			
 			System.out.print("Enter a line of text: ");
 			String line = scan.nextLine();			
-			Utterance utt = analyzer.analyze(line, convo);			
+			Utterance utt = analyzer.analyze(line, convo);	
+			convo.addUtterance(utt);
 			System.out.println(utt);			
 		}		
 	}
