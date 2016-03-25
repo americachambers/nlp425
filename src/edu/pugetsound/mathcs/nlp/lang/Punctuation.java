@@ -8,5 +8,6 @@ public enum Punctuation {
 	QUEST_MARK,		// ?
 	PERIOD,			// .
 	EXCLAMATION,	// !
+	ELLIPSIS,		// ...
 	UNKNOWN
 }
