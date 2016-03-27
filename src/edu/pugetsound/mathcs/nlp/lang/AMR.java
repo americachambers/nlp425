@@ -8,16 +8,17 @@ public class AMR {
 
 	/**
 	 * A list of most of the semantic roles in AMR
+     * Full list available at https://github.com/amrisi/amr-guidelines/blob/master/amr.md#part-ii--concepts-and-relations
 	 */
     public enum AMR.SemanticRelation {
     	// Core argX roles, following OntoNotes style
         arg0, arg1, arg2, arg3, arg4, arg5,
         
         //Non-core roles
-        accompanier, age, beneficiary, cause, compared-to, concession, condition, consist-of,
-        degree, destination, direction, domain, duration, employed-by, example, extent,
+        accompanier, age, beneficiary, cause, compared_to, concession, condition, consist_of,
+        degree, destination, direction, domain, duration, employed_by, example, extent,
         frequency, instrument, li, location, manner, medium, mod, mode, name, part, path,
-        polarity, poss, purpose, source, subevent, sub-set, time, topic, value,
+        polarity, poss, purpose, source, subevent, sub_set, time, topic, value,
         
         // Quantity roles
         quant, unit, scale,
@@ -32,21 +33,21 @@ public class AMR {
         // Note that we lack any prep-X roles for the time being, due to ambiguity
         
         // Inverse relations
-        arg0-of, arg1-of, arg2-of, arg3-of, arg4-of, arg5-of,
+        arg0_of, arg1_of, arg2_of, arg3_of, arg4_of, arg5_of,
         
-        accompanier-of, age-of, beneficiary-of, cause-of, compared-to-of, concession-of,
-        condition-of, consist-of-of, degree-of, destination-of, direction-of, domain-of,
-        duration-of, employed-by-of, example-of, extent-of,frequency-of, instrument-of,
-        li-of, location-of, manner-of, medium-of, mod-of, mode-of, name-of, part-of,
-        path-of, polarity-of, poss-of, purpose-of, source-of, subevent-of, sub-set-of, time-of,
-        topic-of, value-of,
+        accompanier_of, age_of, beneficiary_of, cause_of, compared_to_of, concession_of,
+        condition_of, consist_of_of, degree_of, destination_of, direction_of, domain_of,
+        duration_of, employed_by_of, example_of, extent_of,frequency_of, instrument_of,
+        li_of, location_of, manner_of, medium_of, mod_of, mode_of, name_of, part_of,
+        path_of, polarity_of, poss_of, purpose_of, source_of, subevent_of, sub_set_of, time_of,
+        topic_of, value_of,
         
-        quant-of, unit-of, scale-of,
+        quant_of, unit_of, scale_of,
         
-        day-of, month-of, year-of, weekday-of, time-of, timezone-of, quarter-of, dayperiod-of,
-        season-of, year2-of, decade-of, century-of, calendar-of, era-of, 
+        day_of, month_of, year_of, weekday_of, time_of, timezone_of, quarter_of, dayperiod_of,
+        season_of, year2_of, decade_of, century_of, calendar_of, era_of, 
         
-        op1-of, op2-of, op3-of, op4-of, op5-of,op6-of, op7-of, op8-of, op9-of, op10
+        op1_of, op2_of, op3_of, op4_of, op5_of,op6_of, op7_of, op8_of, op9_of, op10
     }
     
     /**
@@ -56,7 +57,7 @@ public class AMR {
     public enum AMR.Type {
     	verb, noun, adjective,
     	possibleness, obligatoriness,
-    	amr-unknown, // Used in wh-questions
+    	amr_unknown, // Used in wh-questions
     	string // Used in cases such as names
     }
 
