@@ -91,4 +91,9 @@ public enum DialogueActTag {
 	          return tag;
 	    throw new IllegalArgumentException("\"" + label + "\" is not a valid dialogue act tag label.");
 	  }
+	
+	@Override
+	public String toString() {
+		return String.format("(%s,  %s)", this.name(), this.label);
+	}
 }
