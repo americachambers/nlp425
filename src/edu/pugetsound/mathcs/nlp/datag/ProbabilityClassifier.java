@@ -1,16 +1,19 @@
 package edu.pugetsound.mathcs.nlp.datag;
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 
 class ProbabilityClassifier implements Classifier {
 	
 	List<DialogueAct> list;
 
-	public DialogueAct classify(Utterance u){
-		int index = (int)Math.random()*list.size();
+	public DialogueActTag classify(Utterance u){
+		int index = (int)(Math.random()*list.size());
 		DialogueAct da = list.get(index);
-		return new DialgueAct(da.getTag(),u.tokens);
+		return da.getTag();
 	} 
 
 
@@ -19,11 +22,19 @@ class ProbabilityClassifier implements Classifier {
 	}
 
 	public static void main(String[] args){
-		Utterance u = new Utterance(args[0]);
+		Utterance u = new Utterance("");
 		ProbabilityClassifier c = new ProbabilityClassifier();
+		File file = new File(args[0]);
+		SwitchboardParser sp;
+		try {
+			sp = new SwitchboardParser(file);
+			c.train(sp.getActs(DialogueActTag.class.getEnumConstants()));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
 
-		c.train(null);
-		DialogueAct da = c.classify(u);
-		System.out.println(da.getTag());
+		DialogueActTag dat = c.classify(u);
+		System.out.println("[DATAG] Probability Classification: " + dat);
 	}
 }
