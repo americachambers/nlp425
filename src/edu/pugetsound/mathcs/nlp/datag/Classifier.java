@@ -13,9 +13,4 @@ public interface Classifier {
 	* 	Trains claffier based on a previous
 	**/
 	public void train(List<DialogueAct> list);
-
-	/**
-	* 	Trains claffier based on a previous
-	**/
-	public void train(List<DialogueAct> dialogueActs);
 }
