@@ -29,7 +29,7 @@ class SwitchboardParser {
 	public SwitchboardParser(File dataDirectory) throws FileNotFoundException {
 		tagToActs = new HashMap<DialogueActTag,List<DialogueAct>>();
 		
-		System.out.println("Loading Switchboard data...");
+		System.out.println("[DATAG] Loading Switchboard data...");
 		
 		if(dataDirectory.isDirectory()) {
 			parseDir(dataDirectory);
@@ -39,7 +39,7 @@ class SwitchboardParser {
 		
 		double parseError = (1.0 - (double)(errorTags) / (double)(totalTags)) * 100;
 		
-		System.out.printf("%.2f%% of tags parsed.\n", parseError);
+		System.out.printf("[DATAG] %.2f%% of tags parsed.\n", parseError);
 	}
 	
 	/**
