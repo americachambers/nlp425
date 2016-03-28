@@ -1,6 +1,7 @@
 package edu.pugetsound.mathcs.nlp.lang;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.stanford.nlp.semgraph.SemanticGraph;
@@ -9,7 +10,7 @@ import edu.stanford.nlp.trees.Tree;
 
 /**
  * This class aggregates all features computed from a single utterance
- * (by the human or agent). This includes all syntactic, semantic, and
+ * (uttered by the human or agent). This includes all syntactic, semantic, and
  * pragmatic features.
  * 
  * Note: This class is a plain old data structure 
@@ -55,9 +56,29 @@ public class Utterance {
 	public List<String> directObjects = new ArrayList<String>();	
 	
 	/**
-	 * The root of the dependency parase tree (or null)
+	 * The root of the dependency parse tree (or null)
+	 * Since the nodes of a dependency parse tree are the words in the
+	 * utterance, the root is a word.
 	 */
 	public String rootDependency;
+	
+	/**
+	 * The root of the constituency parse tree (or null)
+	 * Since the nodes of a constituency parse tree are syntax tags (e.g. NP),
+	 * the root is a Penn Treebank tag. 
+	 */
+	public String rootConstituency;
+	
+	/**
+	 * A mapping from a phrase in the utterance to the Prolog entity ID  
+	 * For example, if the user types "My cat's name is Fluffy" then we would store
+	 * 
+	 * "my" ---> entityHuman
+	 * "my cat" ---> cat001
+	 * 
+	 */
+	public HashMap<String, String> resolutions = new HashMap<String, String>();
+	
 	
 	/**
 	 * Indicates whether the sentence is passive (true) or active (false)
@@ -85,7 +106,8 @@ public class Utterance {
 		str += "Parse: " 	+ dependencyParse + "\n";
 		str += "Subj: " 	+ subjects + "\n";
 		str += "Dobj: " 	+ directObjects + "\n";
-		str += "Root: " 	+ rootDependency + "\n";		
+		str += "Root Dep: " + rootDependency + "\n";
+		str += "Root Con: " + rootConstituency + "\n";
 		str += "Passive:" 	+ isPassive  + "\n";
 		return str;
 	}	
