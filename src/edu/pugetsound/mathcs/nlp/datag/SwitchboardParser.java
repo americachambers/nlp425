@@ -43,6 +43,19 @@ class SwitchboardParser {
 	}
 	
 	/**
+	 * Gets all DialogueActs which have been parsed by this parser.
+	 * @return A List of all DialogueActs
+	 */
+	public List<DialogueAct> getActs() {
+		List<DialogueAct> acts = new LinkedList<DialogueAct>();
+		
+		for(List<DialogueAct> actList : tagToActs.values())
+			acts.addAll(actList);
+		
+		return acts;
+	}
+	
+	/**
 	 * Gets a list of acts which have been labeled with a given tag
 	 * @param tags
 	 * @return A list of DialogueActs which have been labeled with a given tag
