@@ -11,19 +11,25 @@ public class AMR {
      * Current list (used below) is version 1.2.2, updated as of September 18, 2015
      * Source: https://github.com/amrisi/amr-guidelines/blob/master/amr.md#part-ii--concepts-and-relations
      */
-    public enum AMR.SemanticRelation {
+    public enum SemanticRelation {
     	// Core argX roles, following OntoNotes style
-        arg0, arg1, arg2, arg3, arg4, arg5,
+        arg0("arg0"), arg1("arg1"), arg2("arg2"), arg3("arg3"), arg4("arg4"), arg5("arg5"),
         
         //Non-core roles
-        accompanier, age, beneficiary, compared_to, concession, condition, consist_of, degree, 
-        destination, direction, domain, duration, example, extent, frequency, instrument, 
-        location, manner, medium, mod, mode, name, ord, part, path, polarity, poss, purpose, 
-        quant, scale, source, subevent, time, topic, unit, value, wiki,
+        accompanier("accompanier"), age("age"), beneficiary("beneficiary"),
+        compared_to("compared_to"), concession("concession"), condition("condition"),
+        consist_of("consist_of"), degree("degree"), destination("destination"),
+        direction("direction"), domain("domain"), duration("duration"), example("example"),
+        extent("extent"), frequency("frequency"), instrument("instrument"), location("location"),
+        manner("manner"), medium("medium"), mod("mod"), mode("mode"), name("name"), ord("ord"),
+        part("part"), path("path"), polarity("polarity"), poss("poss"), purpose("purpose"), 
+        quant("quant"), scale("scale"), source("source"), subevent("subevent"), time("time"),
+        topic("topic"), unit("unit"), value("value"), wiki("wiki"),
         
         // Date-entity roles
-        calendar, century, day, dayperiod, decade, era, month, quarter, season, timezone, 
-        weekday, year, year2,
+        calendar("calendar"), century("century"), day("day"), dayperiod("dayperiod"), decade("decade"),
+        era("era"), month("month"), quarter("quarter"), season("season"), timezone("timezone"), 
+        weekday("weekday"), year("year"), year2("year2"),
         
         // Used in conjunctions and certain date-times and locations. Might not be used
         op1, op2, op3, op4, op5,op6, op7, op8, op9, op10,
@@ -48,21 +54,42 @@ public class AMR {
 
         // Inverse relations
         // Core argX roles, following OntoNotes style
-        arg0_of, arg1_of, arg2_of, arg3_of, arg4_of, arg5_of,
+        arg0_of("rg0_of"), arg1_of("arg1_of"), arg2_of("arg2_of"), arg3_of("arg3_of"),
+        arg4_of("arg4_of"), arg5_o("arg5_o"),
         
         //Non-core roles
-        accompanier_of, age_of, beneficiary_of, compared_to_of, concession_of, condition_of, 
-        consist_of_of, degree_of, destination_of, direction_of, domain_of, duration_of, 
-        example_of, extent_of, frequency_of, instrument_of, location_of, manner_of, medium_of, 
-        mod_of, mode_of, name_of, ord_of, part_of, path_of, polarity_of, poss_of, purpose_of, 
-        quant_of, scale_of, source_of, subevent_of, time_of, topic_of, unit_of, value_of, wiki_of,
+        accompanier_of("ccompanier_of"), age_of("age_of"), beneficiary_of("beneficiary_of"),
+        compared_to_of("compared_to_of"), concession_of("concession_of"),
+        condition_of("condition_of"),consist_of_of("onsist_of_of"), degree_of("degree_of"),
+        destination_of("destination_of"), direction_of("direction_of"), domain_of("domain_of"),
+        duration_of("duration_of"),example_of("xample_of"), extent_of("extent_of"),
+        frequency_of("frequency_of"), instrument_of("instrument_of"), location_of("location_of"),
+        manner_of("manner_of"), medium_of("medium_of"),mod_of("od_of"), mode_of("mode_of"),
+        name_of("name_of"), ord_of("ord_of"), part_of("part_of"), path_of("path_of"),
+        polarity_of("polarity_of"), poss_of("poss_of"), purpose_of("purpose_of"),
+        quant_of("uant_of"), scale_of("scale_of"), source_of("source_of"), subevent_of("subevent_of"),
+        time_of("time_of"), topic_of("topic_of"), unit_of("unit_of"), value_of("value_of"),
+        wiki_of("wiki_of"),
         
         // Date-entity roles
-        calendar_of, century_of, day_of, dayperiod_of, decade_of, era_of, month_of, quarter_of, 
-        season_of, timezone_of, weekday_of, year_of, year2_of,
+        calendar_of("alendar_of"), century_of("century_of"), day_of("day_of"),
+        dayperiod_of("dayperiod_of"), decade_of("decade_of"), era_of("era_of"),
+        month_of("month_of"), quarter_of("quarter_of"),season_of("eason_of"),
+        timezone_of("timezone_of"), weekday_of("weekday_of"), year_of("year_of"), year2_of("year2_of"),
         
         // Used in conjunctions and certain date-times and locations. Might not be used
-        op1_of, op2_of, op3_of, op4_of, op5_of,op6_of, op7_of, op8_of, op9_of, op10_of,
+        op1_of("p1_of"), op2_of("op2_of"), op3_of("op3_of"), op4_of("op4_of"), op5_of("op5_of"),
+        op6_of("p6_of"), op7_of("op7_of"), op8_of("op8_of"), op9_of("op9_of"), op10_of("op10_of");
+
+        private String label;
+
+        SemanticRelation(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return ":" + label;
+        }
     }
     
     /**
@@ -91,5 +118,22 @@ public class AMR {
      * The value of each semantic relation, which maps to another AMR or NULL
      */
     public HashMap<AMR.SemanticRelation, AMR> semanticRelations;
+
+    /**
+     * Returns a human-readable representation of this AMR node in nested notation
+     * @return A String representation of this AMR
+     */
+    public String toString() {
+        String stringForm = "(" + nodeValue[0] + " / " + nodeValue[1];
+        
+        for(SemanticRelation sr : SemanticRelation.values()) {
+            if(semanticRelations.containsKey(sr) && semanticRelations.get(sr) != null) {
+                stringForm += " " + sr.toString() + " " + semanticRelations.get(sr).toString();
+            }
+        }
+
+        stringForm += ")";
+        return stringForm;
+    }
 
 }
