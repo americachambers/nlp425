@@ -66,8 +66,6 @@ public class TextAnalyzer {
 	 */
 	private AnaphoraAnalyzer anaphoraAnalyzer;
 	
-	
-	
 	/**
 	 * Creates a new TextAnalyzer
 	 */
@@ -98,7 +96,7 @@ public class TextAnalyzer {
 	 * 	<li>The input contains a single sentence.</li>
 	 * </ul>
 	 */
-	public Utterance analyze(String input, Conversation conversation) throws IllegalArgumentException{	
+	public Utterance analyze(String input, Conversation conversation) throws IllegalArgumentException {	
 		if(input == null || conversation == null){
 			throw new IllegalArgumentException();
 		}
@@ -137,6 +135,8 @@ public class TextAnalyzer {
 		storeParseTrees(h, sentence);
 		storeParseFeatures(h);
 		
+		//semAnalyzer.analyze(h, conversation);
+		
 		/*
 		 * TODO: Features to add:
 		 * - semantic analysis
@@ -158,7 +158,7 @@ public class TextAnalyzer {
 	 * @param h Utterance to store tokens
 	 * @param sentence The sentence
 	 */
-	private void storeTokens(Utterance h, CoreMap sentence){		
+	void storeTokens(Utterance h, CoreMap sentence){		
 		List<CoreLabel> tokens = sentence.get(TokensAnnotation.class);					
 		for(CoreLabel token : tokens){				
 			if(!isSymbol(token.word())){										
