@@ -3,7 +3,7 @@ package edu.pugetsound.mathcs.nlp.datag;
 import java.util.List;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 
-public interface Classifier {
+interface Classifier {
 	/**
 	* Classifies an Utterance.
 	**/
