@@ -108,6 +108,14 @@ public class PrologStructure {
 	}
 	
 	/**
+	 * Returns entire argument list
+	 * @return list of arguments for predicate or null if term
+	 */
+	public String[] getArguments() {		
+		return arguments;
+	}
+	
+	/**
 	 * Returns a string representation
 	 */
 	public String toString(){
