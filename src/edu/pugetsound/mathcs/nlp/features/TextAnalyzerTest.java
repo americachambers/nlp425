@@ -10,13 +10,12 @@ import edu.pugetsound.mathcs.nlp.lang.Punctuation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 
 public class TextAnalyzerTest {
+	
 	private TextAnalyzer analyzer;	
 	private Conversation conversation;
 	private String statement;
 	private String question;
 	private String empty;
-	// private String passive;
-	// private String statementCopula;
 
 
 	@Before
@@ -31,6 +30,8 @@ public class TextAnalyzerTest {
 	@Test
 	public void testStatement() {
 		Utterance utt = analyzer.analyze(statement, conversation);
+		
+		
 		assertEquals(statement, utt.utterance);
 		assertFalse(utt.isPassive);
 		assertEquals(5, utt.tokens.size());
@@ -53,6 +54,7 @@ public class TextAnalyzerTest {
 		assertEquals(0, utt.tokens.size());
 		assertEquals(Punctuation.UNKNOWN, utt.punct);		
 		assertNull(utt.constituencyParse);
+		assertNull(utt.dependencyParse);
 		assertEquals(0, utt.subjects.size());
 		assertEquals(0, utt.directObjects.size());
 		assertNull(utt.rootConstituency);
