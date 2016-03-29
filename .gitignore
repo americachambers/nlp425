@@ -16,3 +16,6 @@
 .classpath
 .project
 .metadata
+
+# git
+.gitconfig
