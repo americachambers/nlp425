@@ -69,7 +69,7 @@ public class AMR {
      * A list of the possible types an AMR node can be
      * Ex: verb, noun, adjectives (for copulas), possibleness, amr-unknown, etc.
      */
-    public enum AMR.Type {
+    public enum AMRType {
     	verb, noun, adjective,
     	possibleness, obligatoriness,
     	amr_unknown, // Used in wh-questions
@@ -85,7 +85,7 @@ public class AMR {
     /**
      * The type of node the AMR nodeValue as, for example: verb, noun, possibleness, amr-unknown
      */
-    public AMR.Type nodeType;
+    public AMRType nodeType;
 
     /**
      * The value of each semantic relation, which maps to another AMR or NULL
