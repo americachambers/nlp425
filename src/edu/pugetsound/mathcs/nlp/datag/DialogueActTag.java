@@ -1,5 +1,9 @@
 package edu.pugetsound.mathcs.nlp.datag;
 
+/**
+ * @author Chili Johnson
+ * The set of dialogue act tags from the Switchboard Parser with associated labels.
+ */
 public enum DialogueActTag {
 	QUESTION("q"),
 	STATEMENT("s"),
@@ -67,17 +71,29 @@ public enum DialogueActTag {
 	TALK_THIRD_PARTY("t3"),
 	NON_SPEECH("x");
 	
+	// The label which appears in the data set
 	private String label;
 	
 	DialogueActTag(String label) {
 		this.label = label;
 	}
 	
-	public static DialogueActTag fromLabel(String label) throws IllegalArgumentException {
+	/**
+	 * Finds a member of DialogueActTag by its switchboard label
+	 * @param label A switchboard label
+	 * @return The DialogueActTag member associated with the switchboard label
+	 * @throws IllegalArgumentException if label is not represented in the enum
+	 */
+	static DialogueActTag fromLabel(String label) throws IllegalArgumentException {
 	    if (label != null)
 	      for (DialogueActTag tag : DialogueActTag.values())
 	        if (tag.label.equalsIgnoreCase(label))
 	          return tag;
 	    throw new IllegalArgumentException("\"" + label + "\" is not a valid dialogue act tag label.");
 	  }
+	
+	@Override
+	public String toString() {
+		return String.format("(%s,  %s)", this.name(), this.label);
+	}
 }

@@ -7,8 +7,8 @@ class DialogueAct {
 	private DialogueActTag tag;
 	private List<String> words;
 	
-	public DialogueAct(String label, List<String> words) throws IllegalArgumentException {
-		this.tag = DialogueActTag.fromLabel(label);
+	public DialogueAct(DialogueActTag tag, List<String> words) throws IllegalArgumentException {
+		this.tag = tag;
 		this.words = words;
 	}
 	
