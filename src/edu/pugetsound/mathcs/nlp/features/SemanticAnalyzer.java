@@ -68,7 +68,7 @@ public class SemanticAnalyzer {
 	 * @param convo The entire conversation
 	 * @return A List of Prolog predicate representing the content of the utterance
 	 */
-	public List<PrologStructure> analyze(Utterance utt, Conversation convo){
+	public void analyze(Utterance utt, Conversation convo){
 		counter = 0;
 		current = utt;		
 
@@ -83,10 +83,6 @@ public class SemanticAnalyzer {
 		default:
 			break;
 		}
-
-		// This return value is just temporary so it compiles
-		List<PrologStructure> predicates = new ArrayList<PrologStructure>();
-		return predicates;
 	}
 
 
