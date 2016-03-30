@@ -7,10 +7,12 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
-public class AcceptTemplate implements SemanticResponseTemplate {
+public class AgreementTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "Question?"
+        "Yeah.",
+        "I agree.",
+        "I agree with that."
     };
 
     @Override

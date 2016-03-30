@@ -10,7 +10,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 public class AcceptTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "Question?"
+        "Ok."
     };
 
     @Override

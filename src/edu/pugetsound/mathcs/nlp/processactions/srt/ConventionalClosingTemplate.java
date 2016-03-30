@@ -7,10 +7,12 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
-public class AcceptTemplate implements SemanticResponseTemplate {
+public class ConventionalClosingTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "Question?"
+        "It was nice talking to you.",
+        "Goodbye.",
+        "Have a nice day!"
     };
 
     @Override

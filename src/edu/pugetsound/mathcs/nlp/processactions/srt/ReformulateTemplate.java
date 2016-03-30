@@ -7,16 +7,15 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
-public class AcceptTemplate implements SemanticResponseTemplate {
-
-    private static final String[] outputs = {
-        "Question?"
-    };
+public class ReformulateTemplate implements SemanticResponseTemplate {
 
     @Override
     public static String constructResponseFromTemplate(Utterance utterance) {
-        Random rand = new Random();
-        return outputs[rand.nextInt(outputs.length)];
+        if(utterance.utterance != null) {
+            return utterance.utterance;
+        } else {
+            return "Yeah, what you said.";
+        }
     }
 
 }

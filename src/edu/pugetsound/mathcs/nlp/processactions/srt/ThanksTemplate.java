@@ -7,10 +7,13 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
-public class AcceptTemplate implements SemanticResponseTemplate {
+public class ThanksTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "Question?"
+        "Thanks.",
+        "Thanks!",
+        "Thanks for that.",
+        "Thanks for that!"
     };
 
     @Override

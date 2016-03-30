@@ -6,17 +6,13 @@ import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
+import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
 
-public class AcceptTemplate implements SemanticResponseTemplate {
-
-    private static final String[] outputs = {
-        "Question?"
-    };
+public class DeclarativeQuestionTemplate implements SemanticResponseTemplate {
 
     @Override
     public static String constructResponseFromTemplate(Utterance utterance) {
-        Random rand = new Random();
-        return outputs[rand.nextInt(outputs.length)];
+        return QuestionTemplate.constructResponseFromTemplate(utterance);
     }
 
 }
