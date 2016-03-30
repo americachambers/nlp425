@@ -12,6 +12,7 @@ import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.CollinsHeadFinder;
 import edu.stanford.nlp.trees.GrammaticalRelation;
+import edu.stanford.nlp.trees.LabeledScoredTreeFactory;
 import edu.stanford.nlp.trees.Tree;
 
 /**
@@ -49,6 +50,12 @@ public class SemanticAnalyzer {
 	 */
 	private CollinsHeadFinder headFinder;
 
+	/**
+	 * Dear lord...this is getting more complicated by the second...now I need a factory
+	 * for making trees...
+	 */
+	LabeledScoredTreeFactory factory;
+
 
 	/**
 	 * Constructs a new semantic analyzer
@@ -58,6 +65,7 @@ public class SemanticAnalyzer {
 		current = null;		
 		headFinder = new CollinsHeadFinder();
 		analyzer = new ParseTreeAnalyzer();
+		factory = new LabeledScoredTreeFactory();
 	}
 
 	/**
@@ -73,7 +81,7 @@ public class SemanticAnalyzer {
 		current = utt;		
 
 		if(utt.rootConstituency.equals("SQ")){
-			// TODO: Fill in
+			utt.firstOrderRep = processYesNoQuestion();
 		}
 		else if(utt.rootConstituency.equals("SBARQ")){
 			// TODO: Fill in
@@ -82,7 +90,7 @@ public class SemanticAnalyzer {
 			// TODO: Fill in
 		}
 		else if(utt.rootConstituency.equals("S")){
-			utt.firstOrderRep = processStatement(utt);			
+			utt.firstOrderRep = processStatement();			
 		}	
 	}
 
@@ -93,12 +101,45 @@ public class SemanticAnalyzer {
 	 *----------------------------------------------------------*/
 
 	/**
-	 * Converts a statement into a first-order logic expression
-	 * @param utt The utterance
-	 * @param fol The first-order logical representation
+	 * Converts a yes-no question into a first-order logic expression
+	 * TODO: This is REALLY BRITTLE, UGLY CODE! REFACTOR!
+	 * @return The first-order logical representation
 	 */
-	private List<PrologStructure> processStatement(Utterance utt){	
-		return depthFirstSearch(utt.constituencyParse.getChild(0));
+	private List<PrologStructure> processYesNoQuestion(){
+		String utt = current.utterance;
+		if(utt.startsWith("Does") ||  utt.startsWith("Do") || utt.startsWith("Did")){
+			current.constituencyParse.getChild(0).removeChild(0);
+			current.constituencyParse.getChild(0).setValue("S");
+			return processStatement();
+		}
+		else if(utt.startsWith("Am") || utt.startsWith("Is") || utt.startsWith("Are") ||
+				utt.startsWith("Was") || utt.startsWith("Were")){
+			
+			if(label(current.constituencyParse.getChild(0).getChild(1)).equals("NP") &&
+					label(current.constituencyParse.getChild(0).getChild(2)).equals("NP")){
+
+				Tree copula = current.constituencyParse.getChild(0).removeChild(0);				
+				Tree nounPhrase = current.constituencyParse.getChild(0).removeChild(1);
+				List<Tree> children = new ArrayList<Tree>();
+				children.add(copula);
+				children.add(nounPhrase);
+				
+				Tree verbPhrase = factory.newTreeNode(current.constituencyParse.label(), children);
+				verbPhrase.setValue("VP");
+				current.constituencyParse.getChild(0).addChild(1, verbPhrase);				
+				current.constituencyParse.getChild(0).setValue("S");
+				return processStatement();
+			}
+		}
+		return new ArrayList<PrologStructure>();
+	}
+
+	/**
+	 * Converts a statement into a first-order logic expression
+	 * @return The first-order logical representation
+	 */
+	private List<PrologStructure> processStatement(){	
+		return depthFirstSearch(current.constituencyParse.getChild(0));
 	}
 
 	/**
@@ -162,7 +203,7 @@ public class SemanticAnalyzer {
 			String leaf = label(node.getChild(0));
 			return makeTerm(leaf);			
 		}
-		
+
 		// Has a single non-leaf child -- e.g. NP --> NN				
 		if(node.numChildren() == 1){
 			return depthFirstSearch(node.getChild(0));
@@ -284,7 +325,7 @@ public class SemanticAnalyzer {
 	 * @return The label of the node
 	 */
 	private String label(Tree node){
-		return node.label().value();
+		return node.value();
 	}
 
 	/**
@@ -368,8 +409,8 @@ public class SemanticAnalyzer {
 	private boolean hasSingleLeafChild(Tree node){
 		return node.numChildren()==1 && node.getChild(0).isLeaf();
 	}
-	
-	
+
+
 	/*----------------------------------------------------------------------------------------
 	 * 		THE "PATTERN" METHODS IDENTIFY DIFFERENT PRODUCTION RULES IN THE GRAMMAR
 	 *----------------------------------------------------------------------------------------*/
@@ -387,7 +428,7 @@ public class SemanticAnalyzer {
 		return analyzer.isDeterminer(childLabel0) && analyzer.isNoun(childLabel1);
 	}
 
-	
+
 	/*
 	 * VP --> Verb DirectObject
 	 */
@@ -405,7 +446,7 @@ public class SemanticAnalyzer {
 		return current.directObjects.size() == 1 && headNoun.equals(current.directObjects.get(0));
 	}	
 
-	
+
 	/*
 	 * S --> Subject VP
 	 */
@@ -423,7 +464,7 @@ public class SemanticAnalyzer {
 		return current.subjects.size() == 1 && headNoun.equals(current.subjects.get(0));		
 	}
 
-	
+
 	/*
 	 * VP --> Copula NP
 	 */
