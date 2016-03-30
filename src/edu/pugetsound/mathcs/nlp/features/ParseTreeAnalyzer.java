@@ -38,6 +38,16 @@ public class ParseTreeAnalyzer {
 	}	
 
 	/**
+	 * Determines if the string is a form of the verb "to be"
+	 * @param str
+	 * @return
+	 */
+	public boolean isCopula(String str){
+		return str.equals("am") || str.equals("are") || str.equals("is") || str.equals("was") ||
+				str.equals("were");
+	}
+	
+	/**
 	 * Determines if the label is a word-level preposition tag
 	 * @param label The label of the node in the parse tree
 	 * @return true if the label is a word-level preposition tag, false otherwise
