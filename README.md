@@ -4,7 +4,6 @@ Currently, the database can only handle property queries and cat existence quest
 1. "Is Fluffy X?"<br>
 (internally) property(Fluffy, X).<br>
 Returns true/false<br>
-
 2. "Is Fluffy a cat?"<br>
 (internally) isA(Fluffy, cat).<br>
 Returns true/false<br>
