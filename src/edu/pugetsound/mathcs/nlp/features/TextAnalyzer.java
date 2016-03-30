@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import edu.pugetsound.mathcs.nlp.lang.*;
+import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
@@ -31,8 +32,7 @@ import edu.stanford.nlp.util.CoreMap;
  * This is the main class responsible for constructing Utterance objects.
  * @author alchambers
  */
-public class TextAnalyzer {
-
+public class TextAnalyzer {		
 	/**
 	 * Certain annotators require other annotators to be loaded first. 
 	 * So the order of the annotators in this list is actually important.
@@ -67,6 +67,12 @@ public class TextAnalyzer {
 	private AnaphoraAnalyzer anaphoraAnalyzer;
 	
 	/**
+	 * Classifiers utterance by dialogue act
+	 */
+	private DAClassifier dialogueClassifier;
+	
+	
+	/**
 	 * Creates a new TextAnalyzer
 	 */
 	public TextAnalyzer(){
@@ -80,6 +86,7 @@ public class TextAnalyzer {
 
 		semAnalyzer = new SemanticAnalyzer();
 		anaphoraAnalyzer = new AnaphoraAnalyzer();
+		dialogueClassifier = new DAClassifier();
 	}
 
 
@@ -101,8 +108,7 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException();
 		}
 		
-		// Checks for a standardized form
-		// TODO: Refactor this into its own class
+		// Checks for a standardized form TODO: Refactor this into its own class
 		if(standardizedForms.containsKey(input)){
 			input = standardizedForms.get(input);
 		}
@@ -124,26 +130,23 @@ public class TextAnalyzer {
 		// Compute basic syntactic features
 		storeTokens(h, sentence);
 
-		// TODO: Call the dialogue act classifier here. Many, many, many, many dialogue tags don't
-		// need to be processed further in addition to greetings and closings 
 		if(greetClose.containsKey(input)){
-			// TODO: NEED TO ADD THE DIALOGUE ACT TAG BEFORE RETURNING!
+			h.daTag = greetClose.get(input);
 			return h;
 		}		
+
+		// TODO: Check with DA team about state of h and conversation
+		h.daTag = dialogueClassifier.classify(h, conversation);
+		if(canShortCircuit(h)){
+			return h;
+		}
 
 		// Compute parse tree features
 		storeParseTrees(h, sentence);
 		storeParseFeatures(h);
 		
 		semAnalyzer.analyze(h, conversation);
-		//anaphoraAnalyzer.analyze(h, conversation, pipeline);
-		
-		/*
-		 * TODO: Features to add:
-		 * - Entities
-		 * - Time words
-		 */
-
+		//anaphoraAnalyzer.analyze(h, conversation, pipeline);		
 		return h;		
 	}	
 
@@ -153,11 +156,21 @@ public class TextAnalyzer {
 	 *------------------------------------------------------------------*/
 	
 	/**
+	 * Determine if dialogue act tag is simple enough that further processing (e.g. semantic
+	 * and anaphoric) is not necessary 
+	 */
+	private boolean canShortCircuit(Utterance h){
+		return h.daTag == DialogueActTag.BACKCHANNEL ||
+				h.daTag == DialogueActTag.INDETERMINATE ||
+				h.daTag == DialogueActTag.ACKNOWLEDGE_ANSWER;
+	}
+	
+	/**
 	 * Tokenizes the input. Tokens are delimited by space
 	 * @param h Utterance to store tokens
 	 * @param sentence The sentence
 	 */
-	void storeTokens(Utterance h, CoreMap sentence){		
+	private void storeTokens(Utterance h, CoreMap sentence){		
 		List<CoreLabel> tokens = sentence.get(TokensAnnotation.class);					
 		for(CoreLabel token : tokens){				
 			if(!isSymbol(token.word())){										
