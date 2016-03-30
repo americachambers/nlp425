@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.features.PrologStructure;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.Tree;
@@ -92,6 +93,12 @@ public class Utterance {
 	
 	
 	/**
+	 * The dialogue act of the utterance
+	 */
+	public DialogueActTag daTag;
+	
+	
+	/**
 	 * Constructs a new utterance 
 	 * @param utterance the typed input
 	 */
@@ -116,6 +123,7 @@ public class Utterance {
 		str += "Root Con: " + rootConstituency + "\n";
 		str += "Passive:" 	+ isPassive  + "\n";
 		str += "FOL: "      + firstOrderRep + "\n";
+		str += "DATag: "    + daTag + "\n";			
 		return str;
 	}	
 }
