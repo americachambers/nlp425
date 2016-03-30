@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import edu.pugetsound.mathcs.nlp.features.PrologStructure;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.Tree;
 
@@ -77,14 +78,19 @@ public class Utterance {
 	 * "my cat" ---> cat001
 	 * 
 	 */
-	public HashMap<String, String> resolutions = new HashMap<String, String>();
-	
+	public HashMap<String, String> resolutions = new HashMap<String, String>();	
 	
 	/**
 	 * Indicates whether the sentence is passive (true) or active (false)
 	 */
 	public boolean isPassive;
-
+	
+	/**
+	 * A first-order representation of the utterance
+	 */
+	public List<PrologStructure> firstOrderRep;
+	
+	
 	/**
 	 * Constructs a new utterance 
 	 * @param utterance the typed input
@@ -109,6 +115,7 @@ public class Utterance {
 		str += "Root Dep: " + rootDependency + "\n";
 		str += "Root Con: " + rootConstituency + "\n";
 		str += "Passive:" 	+ isPassive  + "\n";
+		str += "FOL: "      + firstOrderRep + "\n";
 		return str;
 	}	
 }
