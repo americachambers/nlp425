@@ -42,6 +42,12 @@ public class Token {
 	public int endPosition;
 	
 	/**
+	 * Named entity tag (or null)
+	 */
+	public String entityTag;
+	
+	
+	/**
 	 * Constructs a new token
 	 * @param word a string representing the token
 	 */
@@ -55,6 +61,6 @@ public class Token {
 	 */
 	public String toString(){
 		return "[token=" + token + ", pos=" + pos + ", begin=" + beginPosition 
-				+ ", end=" + endPosition + "]";
+				+ ", end=" + endPosition + ", entity=" + entityTag + "]";
 	}	
 }
