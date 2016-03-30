@@ -135,12 +135,11 @@ public class TextAnalyzer {
 		storeParseTrees(h, sentence);
 		storeParseFeatures(h);
 		
-		//semAnalyzer.analyze(h, conversation);
+		semAnalyzer.analyze(h, conversation);
+		//anaphoraAnalyzer.analyze(h, conversation, pipeline);
 		
 		/*
 		 * TODO: Features to add:
-		 * - semantic analysis
-		 * - anaphora analysis
 		 * - Entities
 		 * - Time words
 		 */
@@ -166,9 +165,8 @@ public class TextAnalyzer {
 				t.beginPosition = token.beginPosition();
 				t.endPosition = token.endPosition();					
 				t.pos = token.get(PartOfSpeechAnnotation.class);					
-				h.tokens.add(t);
-				// TODO: Do we want to put NER information in the Token class?
-				// String ne = token.get(NamedEntityTagAnnotation.class);
+				t.entityTag = token.getString(NamedEntityTagAnnotation.class);
+				h.tokens.add(t);				
 			}
 		}
 	}
@@ -259,7 +257,7 @@ public class TextAnalyzer {
 					h.subjects.add(w.word());
 				}								
 			}
-
+			
 			// Recurse regardless
 			for(IndexedWord w : childrenWithReltn){
 				extractGrammaticalRelations(tree, w, h);
