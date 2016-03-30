@@ -10,8 +10,12 @@
 *~
 
 /bin/
+/lib/
 
 # Eclipse things
 .classpath
 .project
 .metadata
+
+# git
+.gitconfig

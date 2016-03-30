@@ -29,9 +29,7 @@ import edu.stanford.nlp.util.CoreMap;
 
 /**
  * This is the main class responsible for constructing Utterance objects.
- * 
  * @author alchambers
- *
  */
 public class TextAnalyzer {
 
@@ -68,8 +66,6 @@ public class TextAnalyzer {
 	 */
 	private AnaphoraAnalyzer anaphoraAnalyzer;
 	
-	
-	
 	/**
 	 * Creates a new TextAnalyzer
 	 */
@@ -80,8 +76,8 @@ public class TextAnalyzer {
 		
 		//TODO: Haven't actually added anything to these hashes yet!
 		standardizedForms = new HashMap<String, String>();
-		greetClose = new HashMap<String, DialogueActTag>();
-		
+		greetClose = new HashMap<String, DialogueActTag>();		
+
 		semAnalyzer = new SemanticAnalyzer();
 		anaphoraAnalyzer = new AnaphoraAnalyzer();
 	}
@@ -100,8 +96,11 @@ public class TextAnalyzer {
 	 * 	<li>The input contains a single sentence.</li>
 	 * </ul>
 	 */
-	public Utterance analyze(String input, Conversation conversation){	
-
+	public Utterance analyze(String input, Conversation conversation) throws IllegalArgumentException {	
+		if(input == null || conversation == null){
+			throw new IllegalArgumentException();
+		}
+		
 		// Checks for a standardized form
 		// TODO: Refactor this into its own class
 		if(standardizedForms.containsKey(input)){
@@ -110,20 +109,23 @@ public class TextAnalyzer {
 
 		// Create the utterance
 		Utterance h = new Utterance(input);
-
+		storePunctuation(h, input);
+		
 		// Annotate document with all tools registered with the pipeline
 		Annotation document = new Annotation(input);		
 		pipeline.annotate(document);
-
+		
 		List<CoreMap> sentences = document.get(SentencesAnnotation.class);		
-		assert(sentences.size() == 1);		
+		if(sentences.size() == 0){
+			return h;
+		}
 		CoreMap sentence = sentences.get(0);
 
 		// Compute basic syntactic features
 		storeTokens(h, sentence);
-		storePunctuation(h, input);
-		
-		// No more processing necessary for greetings/closings		
+
+		// TODO: Call the dialogue act classifier here. Many, many, many, many dialogue tags don't
+		// need to be processed further in addition to greetings and closings 
 		if(greetClose.containsKey(input)){
 			// TODO: NEED TO ADD THE DIALOGUE ACT TAG BEFORE RETURNING!
 			return h;
@@ -133,14 +135,14 @@ public class TextAnalyzer {
 		storeParseTrees(h, sentence);
 		storeParseFeatures(h);
 		
-		// semAnalyzer.analyze(h, conversation);
-		// anaphoraAnalyzer.analyze(h, conversation, pipeline);			
+		//semAnalyzer.analyze(h, conversation);
 		
 		/*
 		 * TODO: Features to add:
+		 * - semantic analysis
+		 * - anaphora analysis
 		 * - Entities
-		 * - Anaphoras
-		 * - Semantic representation
+		 * - Time words
 		 */
 
 		return h;		
@@ -156,7 +158,7 @@ public class TextAnalyzer {
 	 * @param h Utterance to store tokens
 	 * @param sentence The sentence
 	 */
-	private void storeTokens(Utterance h, CoreMap sentence){		
+	void storeTokens(Utterance h, CoreMap sentence){		
 		List<CoreLabel> tokens = sentence.get(TokensAnnotation.class);					
 		for(CoreLabel token : tokens){				
 			if(!isSymbol(token.word())){										
@@ -180,6 +182,9 @@ public class TextAnalyzer {
 	private void storePunctuation(Utterance h, String sentence){
 		if(sentence.endsWith(".")){
 			h.punct = Punctuation.PERIOD;
+		}
+		else if(sentence.endsWith("...")){
+			h.punct = Punctuation.ELLIPSIS;
 		}
 		else if(sentence.endsWith("!")){
 			h.punct = Punctuation.EXCLAMATION;
@@ -230,7 +235,6 @@ public class TextAnalyzer {
 		if(!tree.hasChildren(node)){
 			return;
 		}
-
 		Set<GrammaticalRelation> reltns = tree.childRelns(node);
 		for(GrammaticalRelation rel : reltns){
 			Set<IndexedWord> childrenWithReltn = tree.getChildrenWithReln(node, rel);
