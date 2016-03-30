@@ -1,3 +1,4 @@
+package edu.pugetsound.mathcs.nlp.mdp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.HashMap;
  *
  * @author Zachary Cohan
  */
+
 public class MDP {
 
     /**

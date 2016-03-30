@@ -1,3 +1,4 @@
+package edu.pugetsound.mathcs.nlp.mdp;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -8,7 +9,7 @@
  *
  * @author Zachary Cohan
  */
-public class HV {
+ class HV {
 
     static final double GAMMA = 0.1;
     static int EXPLORE = 1000;

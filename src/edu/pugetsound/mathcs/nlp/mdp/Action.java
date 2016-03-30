@@ -1,8 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+package edu.pugetsound.mathcs.nlp.mdp;
+
+import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 
 /**
  *
@@ -12,13 +10,13 @@ public class Action {
 
     //State init;
 
-    int id;
-    String DATag;
+//    int id;
+    DialogueActTag DATag;
         //ArrayList<Action> possActs;
 
-    public Action(String DATag, int id) {
+    public Action(DialogueActTag DATag) {
         this.DATag = DATag;
-        this.id = id;
+//        this.id = id;
     }
 
 //    public Action(State b, int r) {
