@@ -10,6 +10,7 @@ import edu.pugetsound.mathcs.nlp.lang.*;
 import edu.stanford.nlp.ling.IndexedWord;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
 import edu.stanford.nlp.semgraph.SemanticGraph;
+import edu.stanford.nlp.trees.CollinsHeadFinder;
 import edu.stanford.nlp.trees.GrammaticalRelation;
 import edu.stanford.nlp.trees.Tree;
 
@@ -24,13 +25,7 @@ import edu.stanford.nlp.trees.Tree;
  * University of Pennsylvania
  * 7/1/1990
  * 
- * According to the guidelines, the following words are tagged as a determiner
- * (with some qualifications):
- * 			a, an, every, no, the, another, any, some, each, either, neither, 
- * 			that, these, this, those, all, both,
- * 
  * @author alchambers
- *
  */
 public class SemanticAnalyzer {
 
@@ -40,28 +35,28 @@ public class SemanticAnalyzer {
 	private Utterance current;
 
 	/**
-	 * Contains methods for analyzing a constituency parse tree
+	 * Contains methods for analyzing the String representation of a constituency parse tree
 	 */
 	private ParseTreeAnalyzer analyzer;
-	
+
 	/**
-	 * Quantified variables
-	 */
-	private String variables;
-	
-	/**
-	 * 
+	 * Increments with each variable made
 	 */
 	private int counter;
-	
-	
+
+	/**
+	 * Finds the head of phrase 
+	 */
+	private CollinsHeadFinder headFinder;
+
+
 	/**
 	 * Constructs a new semantic analyzer
 	 */
 	public SemanticAnalyzer(){
 		counter = 0;
 		current = null;		
-		variables = "";		
+		headFinder = new CollinsHeadFinder();
 		analyzer = new ParseTreeAnalyzer();
 	}
 
@@ -69,29 +64,32 @@ public class SemanticAnalyzer {
 	 * Converts an utterance into a (neo-Davidsonian, event reified) first order
 	 * expression
 	 * 
-	 * @param utt
-	 * @param convo
+	 * @param utt The utterance to be translated
+	 * @param convo The entire conversation
 	 * @return A List of Prolog predicate representing the content of the utterance
 	 */
 	public List<PrologStructure> analyze(Utterance utt, Conversation convo){
-		current = utt;
+		counter = 0;
+		current = utt;		
 
 		switch(utt.rootConstituency){
-			case "S":
-				//processStatement(utt);
-				break;
-			case "SQ":
-				break;
-			case "SBARQ":
-				break;
-			default:
-				break;
+		case "S":
+			utt.firstOrderRep = processStatement(utt);
+			break;
+		case "SQ":
+			break;
+		case "SBARQ":
+			break;
+		default:
+			break;
 		}
-		
+
 		// This return value is just temporary so it compiles
 		List<PrologStructure> predicates = new ArrayList<PrologStructure>();
 		return predicates;
 	}
+
+
 
 	/*----------------------------------------------------------
 	 * 				AUXILIARY METHODS
@@ -102,246 +100,246 @@ public class SemanticAnalyzer {
 	 * @param utt The utterance
 	 * @param fol The first-order logical representation
 	 */
-	private void processStatement(Utterance utt){	
-		System.out.println(depthFirstSearch(utt.constituencyParse.getChild(0)));
+	private List<PrologStructure> processStatement(Utterance utt){	
+		return depthFirstSearch(utt.constituencyParse.getChild(0));
 	}
 
-
+	/**
+	 * Performs a depth-first traversal of the parse tree. For each syntactic rule, it applies
+	 * a corresponding semantic rule to incrementally build the first-order logical representation
+	 * of the utterance
+	 * @param node A node in the parse tree
+	 * @return A list of Prolog terms and/or predicates
+	 */
 	private List<PrologStructure> depthFirstSearch(Tree node){
-		String nodeLabel = node.label().value();
-		
-		// Proper noun -- e.g., "John" or "New" (as in "New York")
-		if(analyzer.isProperNoun(nodeLabel)){
+		String nodeLabel = label(node);
+
+		// Proper noun -- e.g., "John" -- or personal pronoun -- e.g., "I", "you", "he"
+		if(analyzer.isProperNoun(nodeLabel) || analyzer.isPersonalPronoun(nodeLabel)){			
 			assert hasSingleLeafChild(node);
-			String properNoun = node.getChild(0).label().value();
-			return makeTerm(properNoun);
+			return makeTerm(label(node.getChild(0)));				
 		}
 
-		// Personal pronoun -- e.g., "I", "you", "he"
-		else if(analyzer.isPersonalPronoun(nodeLabel)){
-			assert hasSingleLeafChild(node);
-			String pronoun = node.getChild(0).label().value();
-			return makeTerm(pronoun);
+		// Determinant -- e.g., "a", "the", "some", "every", "none"
+		else if(analyzer.isDeterminer(nodeLabel)){
+			assert hasSingleLeafChild(node);			
+			return makeTerm(semanticAttachmentDeterminant(label(node.getChild(0))));			
 		}
 
 		// Possessive pronoun -- e.g., "my", "your" , "his"
 		else if(analyzer.isPossessivePronoun(nodeLabel)){
 			assert hasSingleLeafChild(node);
-			String possessor = node.getChild(0).label().value();
-
-			// PossessedBy(null, pronoun) <--- need to replace pronoun with Prolog entity!!!
-			List<PrologStructure> predicate = new ArrayList<PrologStructure>();
-			predicate.add(new PrologStructure(2));
-			predicate.get(0).setName("PossessedBy");
-			predicate.get(0).addArgument(possessor, 1);
-			return predicate;
+			String possessor = label(node.getChild(0));
+			return makeBinaryPredicateList("possessedBy", getVariable(), possessor);
 		}		
 
 		// A noun (non-proper) -- e.g., "cats", "fish", "love", "deer"
 		else if(analyzer.isNoun(nodeLabel)){
 			assert hasSingleLeafChild(node);
-			String noun = node.getChild(0).label().value();		
-
-			List<PrologStructure> predicate = new ArrayList<PrologStructure>();
-			predicate.add(new PrologStructure(2));
-			predicate.get(0).setName("IsA");
-			predicate.get(0).addArgument(noun, 1);
-			predicate.get(0).addArgument("X" + counter, 0);
-			counter++;
-			// Waiting for a quantifier for the variable X
-			return predicate;
+			String noun = label(node.getChild(0));		
+			return makeBinaryPredicateList("isA", getVariable(), noun);
 		}
 
 		// A preposition -- e.g., "with", "on", "in", "by", "between"
 		else if(analyzer.isPreposition(nodeLabel)){
 			assert hasSingleLeafChild(node);
-			String prep = node.getChild(0).label().value();
-
-			List<PrologStructure> predicate = new ArrayList<PrologStructure>();
-			predicate.add(new PrologStructure(2));
-			predicate.get(0).setName(prep);
-			// Argument 0: the object being modified (the verb event or a noun) 
-			// Argument 1: object of the preposition			
-			return predicate;										
+			String prep = label(node.getChild(0));
+			return makeBinaryPredicateList(prep, getVariable(), getVariable());
 		}
 
-		// A verb
+		// A verb -- "hit", "love", "eat"
 		else if(analyzer.isVerb(nodeLabel)){
 			assert hasSingleLeafChild(node);
-			String verb = node.getChild(0).label().value();
-
-			List<PrologStructure> predicate = new ArrayList<PrologStructure>();
-			predicate.add(new PrologStructure(2));
-			predicate.get(0).setName("IsA");
-			String var = "X" + counter;
-			counter++;
-			predicate.get(0).addArgument(var, 0);
-			predicate.get(0).addArgument(verb+"Event", 1);
-			
-			variables += "var ";
-			return predicate;
-		}
-
-		// Determinant -- e.g., "a", "the", "some", "every", "none"
-		else if(analyzer.isDeterminer(nodeLabel)){
-			assert hasSingleLeafChild(node);
-			String det = node.getChild(0).label().value();			
-			return makeTerm(semanticAttachmentDeterminant(det));			
-		}
-
-
-		Tree[] children = node.children();		
-		if(children.length == 1){
-			return depthFirstSearch(children[0]);
-		}
-
-		// NP ---> Det NN
-		if(pattern1(node)){
-
-			// QUANTIFIER
-			PrologStructure child0 = depthFirstSearch(node.getChild(0)).get(0);
-
-			// IsA(null, noun)
-			PrologStructure child1 = depthFirstSearch(node.getChild(1)).get(0);
-
-			// QUANTIFIER X IsA(X, noun)
-			String var = "X" + counter;
-			counter++;
-			
-			variables += " " + child1.getArgument(1) + " " + var;
-			PrologStructure nounPhrase = new PrologStructure(2);
-			nounPhrase.setName("IsA");
-			nounPhrase.addArgument(child1.getArgument(1), 1);
-			nounPhrase.addArgument(var, 0);
-			List<PrologStructure> temp = new ArrayList<PrologStructure>();
-			temp.add(nounPhrase);			
-			return temp;
-		}
-
-		// VP --> Verb DirectObject
-		else if(pattern2(node)){
-			
-			//IsA(E, verbEvent)
-			PrologStructure child0 = depthFirstSearch(node.getChild(0)).get(0);
-
-			// IsA(X,noun) -- OR -- ProperNoun -- OR -- Pronoun 
-			PrologStructure child1 = depthFirstSearch(node.getChild(1)).get(0);
-
-			PrologStructure theme = new PrologStructure(2);
-			theme.setName("Theme");
-			theme.addArgument(child0.getArgument(0), 0);
-			
-			ArrayList<PrologStructure> verbPhrase = new ArrayList<PrologStructure>();
-			verbPhrase.add(child0);
-
-
-			// A term: either a ProperNoun or a Pronoun
-			if(child1.getArity() == 0){
-				theme.addArgument(child1.getName(), 1);
+			String verb = label(node.getChild(0));						
+			if(analyzer.isCopula(verb)){
+				return makeTerm(verb);	// currently this return value is never used
 			}
-			else if(child1.getArity() == 2){
-				theme.addArgument(child1.getArgument(0), 1);
-				verbPhrase.add(child1);
+			else{
+				String var = getVariable();			
+				return makeBinaryPredicateList("isA", var, verb+"Event"); 			
 			}
-			verbPhrase.add(theme);
-			
-			return verbPhrase;
 		}
 
-		// S --> Subject VP
-		else if(pattern3(node)){
-			
-			//IsA(X,noun) -- OR -- Term
-			PrologStructure child0 = depthFirstSearch(node.getChild(0)).get(0);
-
-			//  IsA(E, verbEvent)...
-			List<PrologStructure> child1 = depthFirstSearch(node.getChild(1));
-
-			// Agent(E, X)
-			PrologStructure agent = new PrologStructure(2);
-			agent.setName("Agent");
-			
-			assert child1.size() > 0;
-			agent.addArgument(child1.get(0).getArgument(0), 0);
-			
-
-			// A term: either a ProperNoun or a Pronoun
-			if(child0.getArity() == 0){
-				agent.addArgument(child0.getName(), 1);
-			}
-			else if(child0.getArity() == 2){
-				agent.addArgument(child1.get(0).getArgument(0), 1);
-				child1.add(child0);
-			}
-			
-			child1.add(agent);
-			return child1;
+		else if(hasSingleLeafChild(node)){
+			System.out.println("Catch all case for node with single leaf child: " + node);
+			String leaf = label(node.getChild(0));
+			return makeTerm(leaf);			
 		}
 		
+		// Has a single non-leaf child -- e.g. NP --> NN				
+		if(node.numChildren() == 1){
+			return depthFirstSearch(node.getChild(0));
+		}
+
+
+		/*
+		 * NP --> Det NN
+		 * 
+		 * TODO: Does this work if NN is a proper noun?
+		 * TODO: Right now, I'm ignoring the quantifier. By default, all variables are existentially
+		 * quantified. How do we want to deal with the universal quantifier? 
+		 */
+		if(pattern1(node)){
+			//PrologStructure quantifier = depthFirstSearch(node.getChild(0)).get(0);
+			List<PrologStructure> child1 = depthFirstSearch(node.getChild(1)); // IsA(X, noun)								
+			return child1;
+		}
+
+		/*
+		 * VP --> Verb NP(directObject)
+		 */
+		else if(pattern2(node)){		
+			List<PrologStructure> child0 = depthFirstSearch(node.getChild(0)); //IsA(E, verbEvent)
+			PrologStructure child1 = depthFirstSearch(node.getChild(1)).get(0); // IsA(X,noun) or Term
+
+			String recipient = child1.getArity() == 0 ? child1.getName() : child1.getArgument(0);			
+			PrologStructure vp = makeBinaryPredicate("theme", child0.get(0).getArgument(0), recipient);			
+
+			child0.add(vp);			
+			if(child1.getArity() != 0){ 
+				child0.add(child1);
+			}
+			return child0;
+		}
+
+
+		/*
+		 * S --> NP(subject) VP(non-copula)
+		 */
+		else if(pattern3(node) && !analyzer.isCopula(label(node.getChild(1).headTerminal(headFinder)))){
+			PrologStructure child0 = depthFirstSearch(node.getChild(0)).get(0); // IsA(X,noun) or Term
+			List<PrologStructure> child1 = depthFirstSearch(node.getChild(1)); // IsA(E, verbEvent)
+			assert child1.size() > 0;
+
+			// Agent(E, X)
+			// TODO: Can't guarantee that the first predicate in the VP clause has E as the first term
+			String actor = child0.getArity() == 0 ? child0.getName() : child0.getArgument(0);			
+			PrologStructure agent = makeBinaryPredicate("agent", child1.get(0).getArgument(0), actor);
+
+			child1.add(agent);
+			if(child0.getArity() != 0){
+				child1.add(child0);
+			}			
+			return child1;
+		}
+
+
+		/*
+		 * S --> NP(subject) VP(copula)
+		 */
+		else if(pattern3(node) && analyzer.isCopula(label(node.getChild(1).headTerminal(headFinder)))){								
+			PrologStructure child0 = depthFirstSearch(node.getChild(0)).get(0); // IsA(X,noun1) or Term
+			List<PrologStructure> child1 = depthFirstSearch(node.getChild(1)); // IsA(Y,noun2)
+
+			if(child0.getArity() == 0){
+				child1.get(0).addArgument(child0.getName(), 0);
+			}
+			else{
+				String newVar = getVariable();
+				child0.addArgument(newVar, 0);
+				child1.get(0).addArgument(newVar, 0);
+				child1.add(child0);				
+			}
+			return child1;
+		}
+
+
+		/*
+		 * VP --> Copula NP
+		 * TODO: Right now, the copula is being ignored. Later, if we add tense (e.g. past, present)
+		 * we'll need to examine the copula
+		 */
+		else if(pattern4(node)){
+			// PrologStructure child0 = depthFirstSearch(node.getChild(0)).get(0); // copula
+			List<PrologStructure> child1 = depthFirstSearch(node.getChild(1)); // IsA(X,noun) or Term
+
+			if(child1.get(0).getArity()==0){
+				return makeBinaryPredicateList("isa", getVariable(), child1.get(0).getName());
+			}
+			else{
+				return child1;
+			}
+		}
+
+		/*
+		 * VP --> Copula ADJP/ADVP
+		 */
+		else if(pattern5(node)){
+			PrologStructure child1 = depthFirstSearch(node.getChild(1)).get(0); // Property
+			assert(child1.getArity() == 0);			
+			return makeBinaryPredicateList("property", getVariable(), child1.getName());
+		}
+
+		/*
+		 * This will return back and cause a runtime exception... 
+		 */
 		System.out.println("No rule found: " + node.toString());
+		Tree[] children = node.children();
 		for(Tree child : children){
 			depthFirstSearch(child);
 		}
-		
-
 		return new ArrayList<PrologStructure>();
-
 	}
 
-	// S --> Subject VP
-	private boolean pattern3(Tree node){
-		String nodeLabel = node.label().value();
-		if(!nodeLabel.equals("S") || node.numChildren() < 2){
-			return false;
-		}				
-		String childLabel0 = node.getChild(0).label().value();
-		String childLabel1 = node.getChild(1).label().value();				
-		if(!childLabel0.equals("NP") || !childLabel1.equals("VP")){
-			return false;
-		}		
-		String noun = analyzer.stripParserTags(node.getChild(0).toString());
-		return current.subjects.size() == 1 && noun.equals(current.subjects.get(0));		
-	}
-	
-	// VP --> Verb DirectObject
-	private boolean pattern2(Tree node){
-		
-		String nodeLabel = node.label().value();		
-
-		if(!nodeLabel.equals("VP") || node.numChildren() != 2){
-			return false;
-		}
-
-		String childLabel0 = node.getChild(0).label().value();
-		String childLabel1 = node.getChild(1).label().value();		
-		if(!analyzer.isVerb(childLabel0) || !childLabel1.equals("NP")){
-			return false;
-		}
-
-		String noun = analyzer.stripParserTags(node.getChild(1).toString());
-		return current.directObjects.size() == 1 && noun.equals(current.directObjects.get(0));
+	/**
+	 * Return the label of a node in the parse tree
+	 * @param node A node in the parse tree
+	 * @return The label of the node
+	 */
+	private String label(Tree node){
+		return node.label().value();
 	}
 
-	
-	// 	NP --> Det NN
-	private boolean pattern1(Tree node){
-		String nodeLabel = node.label().value();
-		if(!nodeLabel.equals("NP") || node.numChildren() == 2){
-			return false;
-		}
-		String childLabel0 = node.getChild(0).label().value();
-		String childLabel1 = node.getChild(1).label().value();
-		return analyzer.isDeterminer(childLabel0) && analyzer.isNoun(childLabel1);
+	/**
+	 * Creates a new variable
+	 * @return the name of an unused variable
+	 */
+	private String getVariable(){
+		String var = "X" + counter;
+		counter++;
+		return var;
 	}
 
-	
-	
-	
+	/**
+	 * Makes a binary Prolog predicate name(arg0, arg1)
+	 * @param name The name of the predicate
+	 * @param arg0 The first argument of the predicate
+	 * @param arg1 The second argument of the predicate
+	 * @return A binary Prolog predicate
+	 */
+	private PrologStructure makeBinaryPredicate(String name, String arg0, String arg1){
+		PrologStructure predicate = new PrologStructure(2);
+		predicate.setName(name);
+		predicate.addArgument(arg0, 0);
+		predicate.addArgument(arg1, 1);
+		return predicate;
+	}
+
+
+	/**
+	 * Constructs a list with a single (binary) Prolog predicate
+	 * @param name The name of the predicate
+	 * @param arg0 The first argument of the predicate
+	 * @param arg1 The second argumetn of the predicate
+	 * @return A list with one Prolog predicate
+	 */
+	private List<PrologStructure> makeBinaryPredicateList(String name, String arg0, String arg1){
+		ArrayList<PrologStructure> struct = new ArrayList<PrologStructure>();
+		struct.add(makeBinaryPredicate(name, arg0, arg1));
+		return struct;
+	}
+
+	/**
+	 * Makes a Prolog term
+	 * @param name The name of the term
+	 * @return A Prolog term
+	 */
 	private List<PrologStructure> makeTerm(String name){
-		List<PrologStructure> term = new ArrayList<PrologStructure>();
-		term.add(new PrologStructure(0));
-		term.get(0).setName(name);
-		return term;
+		ArrayList<PrologStructure> struct = new ArrayList<PrologStructure>();
+		PrologStructure term = new PrologStructure(0);
+		term.setName(name);
+		struct.add(term);
+		return struct;
 	}
 
 	/**
@@ -372,5 +370,92 @@ public class SemanticAnalyzer {
 	 */
 	private boolean hasSingleLeafChild(Tree node){
 		return node.numChildren()==1 && node.getChild(0).isLeaf();
+	}
+	
+	
+	/*----------------------------------------------------------------------------------------
+	 * 		THE "PATTERN" METHODS IDENTIFY DIFFERENT PRODUCTION RULES IN THE GRAMMAR
+	 *----------------------------------------------------------------------------------------*/
+
+	/*
+	 * NP --> Det NN
+	 */
+	private boolean pattern1(Tree node){
+		String nodeLabel = label(node);
+		if(!nodeLabel.equals("NP") || node.numChildren() != 2){
+			return false;
+		}		
+		String childLabel0 = label(node.getChild(0));
+		String childLabel1 = label(node.getChild(1));
+		return analyzer.isDeterminer(childLabel0) && analyzer.isNoun(childLabel1);
+	}
+
+	
+	/*
+	 * VP --> Verb DirectObject
+	 */
+	private boolean pattern2(Tree node){
+		String nodeLabel = label(node);		
+		if(!nodeLabel.equals("VP") || node.numChildren() != 2){
+			return false;
+		}
+		String childLabel0 = label(node.getChild(0));
+		String childLabel1 = label(node.getChild(1));		
+		if(!analyzer.isVerb(childLabel0) || !childLabel1.equals("NP")){
+			return false;
+		}		
+		String headNoun = label(node.getChild(1).headTerminal(headFinder));
+		return current.directObjects.size() == 1 && headNoun.equals(current.directObjects.get(0));
+	}	
+
+	
+	/*
+	 * S --> Subject VP
+	 */
+	private boolean pattern3(Tree node){
+		String nodeLabel = label(node);
+		if(!nodeLabel.equals("S") || node.numChildren() < 2){
+			return false;
+		}				
+		String childLabel0 = label(node.getChild(0));
+		String childLabel1 = label(node.getChild(1));				
+		if(!childLabel0.equals("NP") || !childLabel1.equals("VP")){
+			return false;
+		}		
+		String headNoun = label(node.getChild(0).headTerminal(headFinder));
+		return current.subjects.size() == 1 && headNoun.equals(current.subjects.get(0));		
+	}
+
+	
+	/*
+	 * VP --> Copula NP
+	 */
+	private boolean pattern4(Tree node){
+		String nodeLabel = label(node);		
+		if(!nodeLabel.equals("VP") || node.numChildren() != 2){
+			return false;
+		}
+		if(!label(node.getChild(1)).equals("NP")){
+			return false;
+		}
+		String headVerb = label(node.getChild(0).headTerminal(headFinder));
+		return analyzer.isCopula(headVerb);
+	}
+
+
+	/*
+	 * VP --> Copula ADJP/ADVP 
+	 */
+	public boolean pattern5(Tree node){
+		String nodeLabel = label(node);		
+		if(!nodeLabel.equals("VP") || node.numChildren() != 2){
+			return false;
+		}
+		String childLabel = label(node.getChild(1));
+		if(!childLabel.equals("ADJP") && !childLabel.equals("ADVP")){
+			return false;
+		}		
+		String headVerb = label(node.getChild(0).headTerminal(headFinder));
+		return analyzer.isCopula(headVerb);
 	}
 }
