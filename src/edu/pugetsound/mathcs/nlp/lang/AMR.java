@@ -1,5 +1,7 @@
 package edu.pugetsound.mathcs.nlp.lang;
 
+import java.util.HashMap;
+
 /**
  * Represents a filled-in AMR node
  * @author tgagne
@@ -32,7 +34,8 @@ public class AMR {
         weekday("weekday"), year("year"), year2("year2"),
         
         // Used in conjunctions and certain date-times and locations. Might not be used
-        op1, op2, op3, op4, op5,op6, op7, op8, op9, op10,
+        op1("op1"), op2("op2"), op3("op3"), op4("op4"), op5("op5"),
+        op6("op6"), op7("op7"), op8("op8"), op9("op9"), op10("op10"),
         
         // Note that we lack any prep-X roles for the time being, due to ambiguity
         // For an example, a partial list is given as following:
@@ -54,17 +57,17 @@ public class AMR {
 
         // Inverse relations
         // Core argX roles, following OntoNotes style
-        arg0_of("rg0_of"), arg1_of("arg1_of"), arg2_of("arg2_of"), arg3_of("arg3_of"),
-        arg4_of("arg4_of"), arg5_o("arg5_o"),
+        arg0_of("arg0_of"), arg1_of("arg1_of"), arg2_of("arg2_of"), arg3_of("arg3_of"),
+        arg4_of("arg4_of"), arg5_o("arg5_of"),
         
         //Non-core roles
-        accompanier_of("ccompanier_of"), age_of("age_of"), beneficiary_of("beneficiary_of"),
+        accompanier_of("accompanier_of"), age_of("age_of"), beneficiary_of("beneficiary_of"),
         compared_to_of("compared_to_of"), concession_of("concession_of"),
-        condition_of("condition_of"),consist_of_of("onsist_of_of"), degree_of("degree_of"),
+        condition_of("condition_of"),consist_of_of("consist_of_of"), degree_of("degree_of"),
         destination_of("destination_of"), direction_of("direction_of"), domain_of("domain_of"),
-        duration_of("duration_of"),example_of("xample_of"), extent_of("extent_of"),
+        duration_of("duration_of"),example_of("example_of"), extent_of("extent_of"),
         frequency_of("frequency_of"), instrument_of("instrument_of"), location_of("location_of"),
-        manner_of("manner_of"), medium_of("medium_of"),mod_of("od_of"), mode_of("mode_of"),
+        manner_of("manner_of"), medium_of("medium_of"),mod_of("mod_of"), mode_of("mode_of"),
         name_of("name_of"), ord_of("ord_of"), part_of("part_of"), path_of("path_of"),
         polarity_of("polarity_of"), poss_of("poss_of"), purpose_of("purpose_of"),
         quant_of("uant_of"), scale_of("scale_of"), source_of("source_of"), subevent_of("subevent_of"),
@@ -72,14 +75,14 @@ public class AMR {
         wiki_of("wiki_of"),
         
         // Date-entity roles
-        calendar_of("alendar_of"), century_of("century_of"), day_of("day_of"),
+        calendar_of("calendar_of"), century_of("century_of"), day_of("day_of"),
         dayperiod_of("dayperiod_of"), decade_of("decade_of"), era_of("era_of"),
-        month_of("month_of"), quarter_of("quarter_of"),season_of("eason_of"),
+        month_of("month_of"), quarter_of("quarter_of"),season_of("season_of"),
         timezone_of("timezone_of"), weekday_of("weekday_of"), year_of("year_of"), year2_of("year2_of"),
         
         // Used in conjunctions and certain date-times and locations. Might not be used
-        op1_of("p1_of"), op2_of("op2_of"), op3_of("op3_of"), op4_of("op4_of"), op5_of("op5_of"),
-        op6_of("p6_of"), op7_of("op7_of"), op8_of("op8_of"), op9_of("op9_of"), op10_of("op10_of");
+        op1_of("op1_of"), op2_of("op2_of"), op3_of("op3_of"), op4_of("op4_of"), op5_of("op5_of"),
+        op6_of("op6_of"), op7_of("op7_of"), op8_of("op8_of"), op9_of("op9_of"), op10_of("op10_of");
 
         private String label;
 
@@ -107,7 +110,7 @@ public class AMR {
      * The root value of this AMR node
      * Format should be like: ["g", "go-01"], which corresponds to "g / go-01"
      */
-    public String[2] nodeValue;
+    public String[] nodeValue = new String[2];
     
     /**
      * The type of node the AMR nodeValue as, for example: verb, noun, possibleness, amr-unknown

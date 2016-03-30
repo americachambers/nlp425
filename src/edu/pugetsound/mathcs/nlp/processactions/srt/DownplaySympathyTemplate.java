@@ -14,9 +14,10 @@ public class DownplaySympathyTemplate implements SemanticResponseTemplate {
     };
 
     @Override
-    public static String constructResponseFromTemplate(Utterance utterance) {
+    public String constructResponseFromTemplate(Utterance utterance) {
         Random rand = new Random();
         return outputs[rand.nextInt(outputs.length)];
     }
 
 }
+

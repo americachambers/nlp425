@@ -10,7 +10,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 public class ReformulateTemplate implements SemanticResponseTemplate {
 
     @Override
-    public static String constructResponseFromTemplate(Utterance utterance) {
+    public String constructResponseFromTemplate(Utterance utterance) {
         if(utterance.utterance != null) {
             return utterance.utterance;
         } else {
@@ -19,3 +19,4 @@ public class ReformulateTemplate implements SemanticResponseTemplate {
     }
 
 }
+

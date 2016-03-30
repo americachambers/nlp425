@@ -11,8 +11,9 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
 public class WhQuestionTemplate implements SemanticResponseTemplate {
 
     @Override
-    public static String constructResponseFromTemplate(Utterance utterance) {
-        return QuestionTemplate.constructResponseFromTemplate(utterance);
+    public String constructResponseFromTemplate(Utterance utterance) {
+        return new QuestionTemplate().constructResponseFromTemplate(utterance);
     }
 
 }
+

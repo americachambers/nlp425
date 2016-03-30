@@ -6,6 +6,7 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 
 public interface SemanticResponseTemplate {
 
-    public static String constructResponseFromTemplate(Utterance utterance);
+    public String constructResponseFromTemplate(Utterance utterance);
         
 }
+

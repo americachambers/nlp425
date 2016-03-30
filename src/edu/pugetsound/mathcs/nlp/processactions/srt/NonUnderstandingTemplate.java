@@ -13,14 +13,15 @@ public class NonUnderstandingTemplate implements SemanticResponseTemplate {
         "I'm not sure I really understand what you're saying.",
         "I'm not sure I understand what you're saying.",
         "I don't think I'm understanding what you're saying.",
-        "I don't understand."
+        "I don't understand.",
         "I don't really understand."
     };
 
     @Override
-    public static String constructResponseFromTemplate(Utterance utterance) {
+    public String constructResponseFromTemplate(Utterance utterance) {
         Random rand = new Random();
         return outputs[rand.nextInt(outputs.length)];
     }
 
 }
+

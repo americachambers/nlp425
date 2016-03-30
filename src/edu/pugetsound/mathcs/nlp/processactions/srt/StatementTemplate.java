@@ -7,16 +7,17 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
-public class AcceptTemplate implements SemanticResponseTemplate {
+public class StatementTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
         "Statement. Statement Statement."
     };
 
     @Override
-    public static String constructResponseFromTemplate(Utterance utterance) {
+    public String constructResponseFromTemplate(Utterance utterance) {
         Random rand = new Random();
         return outputs[rand.nextInt(outputs.length)];
     }
 
 }
+

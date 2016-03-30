@@ -11,8 +11,9 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.StatementTemplate;
 public class CommentTemplate implements SemanticResponseTemplate {
 
     @Override
-    public static String constructResponseFromTemplate(Utterance utterance) {
-        return StatementTemplate.constructResponseFromTemplate(utterance);
+    public String constructResponseFromTemplate(Utterance utterance) {
+        return new StatementTemplate().constructResponseFromTemplate(utterance);
     }
 
 }
+
