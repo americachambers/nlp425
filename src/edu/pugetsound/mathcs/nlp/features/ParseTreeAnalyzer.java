@@ -43,8 +43,9 @@ public class ParseTreeAnalyzer {
 	 * @return
 	 */
 	public boolean isCopula(String str){
-		return str.equals("am") || str.equals("are") || str.equals("is") || str.equals("was") ||
-				str.equals("were");
+		return str.equalsIgnoreCase("am") || str.equalsIgnoreCase("are") ||
+				str.equalsIgnoreCase("is") || str.equalsIgnoreCase("was") ||
+				str.equalsIgnoreCase("were");
 	}
 	
 	/**
