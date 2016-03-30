@@ -72,17 +72,18 @@ public class SemanticAnalyzer {
 		counter = 0;
 		current = utt;		
 
-		switch(utt.rootConstituency){
-		case "S":
-			utt.firstOrderRep = processStatement(utt);
-			break;
-		case "SQ":
-			break;
-		case "SBARQ":
-			break;
-		default:
-			break;
+		if(utt.rootConstituency.equals("SQ")){
+			// TODO: Fill in
 		}
+		else if(utt.rootConstituency.equals("SBARQ")){
+			// TODO: Fill in
+		}
+		else if(utt.punct == Punctuation.QUEST_MARK){
+			// TODO: Fill in
+		}
+		else if(utt.rootConstituency.equals("S")){
+			utt.firstOrderRep = processStatement(utt);			
+		}	
 	}
 
 
