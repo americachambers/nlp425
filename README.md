@@ -1,13 +1,13 @@
 # nlp425
 
 Currently, the database can only handle property queries and cat existence questions (using Proper Nouns as entity names):
-1. "Is Fluffy X?"
-(internally) property(Fluffy, X).
-Returns true/false
+1. "Is Fluffy X?"<br>
+(internally) property(Fluffy, X).<br>
+Returns true/false<br>
 
-2. "Is Fluffy a cat?"
-(internally) isA(Fluffy, cat).
-Returns true/false
+2. "Is Fluffy a cat?"<br>
+(internally) isA(Fluffy, cat).<br>
+Returns true/false<br>
 
 Currently, the conversational agent can only handle the following types of sentences:
 
