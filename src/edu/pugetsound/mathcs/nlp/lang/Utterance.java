@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
-import edu.pugetsound.mathcs.nlp.features.PrologStructure;
+import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.Tree;
 
