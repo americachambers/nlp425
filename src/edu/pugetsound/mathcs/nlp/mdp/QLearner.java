@@ -23,14 +23,15 @@ public class QLearner {
 
     public QLearner() {
         //create states and actions
+        states = new ArrayList<State>();
+        actions = new ArrayList<Action>();
+
         for(DialogueActTag dialogueActTag : DialogueActTag.values()){
             this.states.add(new State(dialogueActTag));
             this.actions.add(new Action(dialogueActTag));
         }
 
-        if (states.size() < 1 || actions.size() < 1) {
-            throw new IllegalArgumentException();
-        }
+        if (states.size() < 1 || actions.size() < 1) throw new IllegalArgumentException();
 
         GAMMA = HV.GAMMA;
         EXPLORE = HV.EXPLORE;
