@@ -20,14 +20,13 @@ public class DAClassifier {
 		File switchboardData = new File(SWITCHBOARD_DIR);
 		SwitchboardParser parser = null;
 		
-		try {
-			parser = new SwitchboardParser(switchboardData);
-		} catch (FileNotFoundException e) {
-			System.err.println("[DATAG] Could not load Switchboard data from " + switchboardData.getAbsolutePath() + " : File not found.");
-		}
+//		try {
+//			parser = new SwitchboardParser(switchboardData);
+//		} catch (FileNotFoundException e) {
+//			System.err.println("[DATAG] Could not load Switchboard data from " + switchboardData.getAbsolutePath() + " : File not found.");
+//		}
 		
-		dumbClassifier = new ProbabilityClassifier();
-		dumbClassifier.train(parser.getActs());
+		dumbClassifier = new DumbClassifier();
 		
 	}
 	

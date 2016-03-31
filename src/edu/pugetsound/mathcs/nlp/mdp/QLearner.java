@@ -22,6 +22,8 @@ public class QLearner {
     int ANNEAL;
 
     public QLearner() {
+        states = new ArrayList<>();
+        actions = new ArrayList<>();
         //create states and actions
         states = new ArrayList<State>();
         actions = new ArrayList<Action>();
@@ -43,7 +45,7 @@ public class QLearner {
     public Action train(Conversation conversation) {
 
         List<Utterance> utterances = conversation.getConversation();
-        DialogueActTag mostRecentDAtag = utterances.get(utterances.size()).daTag;
+        DialogueActTag mostRecentDAtag = utterances.get(utterances.size()-1).daTag;
         int stateIndex = 1;
 
         for(int i = 0; i<states.size()-1; i++){
