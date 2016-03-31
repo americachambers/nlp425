@@ -19,14 +19,7 @@ public class Action {
 //        this.id = id;
     }
 
-//    public Action(State b, int r) {
-//        //a = init;
-//        b = end;
-//        reward = r;
-//    }
-//
-//    public void setReward(int r) {
-//        reward = r;
-//    }
-
+    public DialogueActTag getDATag() {
+        return DATag;
+    }
 }
