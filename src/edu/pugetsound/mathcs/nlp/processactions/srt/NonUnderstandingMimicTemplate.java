@@ -7,11 +7,12 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
-public class ExclamationTemplate implements SemanticResponseTemplate {
+public class NonUnderstandingMimicTemplate implements SemanticResponseTemplate {
 
+    // This template is like the RepeatPhraseTemplate, but adds a question mark to the end, to signal confusion
+    
     private static final String[] outputs = {
-        "Wow!",
-        "Jeez."
+        "Okay?"
     };
 
     @Override

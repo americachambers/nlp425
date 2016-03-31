@@ -7,11 +7,12 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
-public class ExclamationTemplate implements SemanticResponseTemplate {
+public class RejectPartTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "Wow!",
-        "Jeez."
+        "Nah.",
+        "Not exactly.",
+        "I don't really think that's it."
     };
 
     @Override

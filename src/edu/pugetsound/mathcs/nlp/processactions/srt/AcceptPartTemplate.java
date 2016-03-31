@@ -7,11 +7,14 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
-public class ExclamationTemplate implements SemanticResponseTemplate {
+public class AcceptPartTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "Wow!",
-        "Jeez."
+        "I guess so.",
+        "I probably can agree with that.",
+        "That's probably right.",
+        "Something like that.",
+        "I guess, yeah."
     };
 
     @Override

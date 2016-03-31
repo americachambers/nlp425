@@ -10,7 +10,9 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 public class RejectTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "No thanks."
+        "No.",
+        "Not really.",
+        "Not quite."
     };
 
     @Override
