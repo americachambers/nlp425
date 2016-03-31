@@ -60,8 +60,6 @@ class DumbClassifier extends Classifier {
 		for(DialogueActTag tag : tags)
 			tagList.remove(tag);
 		
-		System.out.println(tagList.size());
-		
 		return randomTag(tagList.toArray(new DialogueActTag[tagList.size()]));
 
 	}
