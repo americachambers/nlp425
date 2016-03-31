@@ -26,7 +26,7 @@ public class ActionProcessor {
             put(DialogueActTag.FORWARD_LOOKING, new ArbitraryTemplate());
             put(DialogueActTag.AGREEMENTS, new AgreementTemplate());
             put(DialogueActTag.INDETERMINATE, new ArbitraryTemplate());
-            put(DialogueActTag.COMMENT, new ArbitraryTemplate());
+            put(DialogueActTag.COMMENT, new StatementOpinionTemplate());
             put(DialogueActTag.CONTINUED_FROM_PREVIOUS, new ArbitraryTemplate());
             put(DialogueActTag.COLLABORATIVE_COMPLETION, new ArbitraryTemplate());
             put(DialogueActTag.ABOUT_COMMUNICATION, new ArbitraryTemplate());
