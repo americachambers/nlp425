@@ -14,12 +14,10 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.ling.IndexedWord;
 import edu.stanford.nlp.pipeline.Annotation;
-import edu.stanford.nlp.pipeline.TokenizerAnnotator;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation;
@@ -135,18 +133,16 @@ public class TextAnalyzer {
 			return h;
 		}		
 
-		// TODO: Check with DA team about state of h and conversation
+		// TODO: Go back and check for DA Tags that don't need further processing.
 		h.daTag = dialogueClassifier.classify(h, conversation);
-		if(canShortCircuit(h)){
-			return h;
-		}
 
 		// Compute parse tree features
 		storeParseTrees(h, sentence);
 		storeParseFeatures(h);
 		
+		anaphoraAnalyzer.analyze(h, conversation, pipeline);
 		semAnalyzer.analyze(h, conversation);
-		//anaphoraAnalyzer.analyze(h, conversation, pipeline);		
+				
 		return h;		
 	}	
 
