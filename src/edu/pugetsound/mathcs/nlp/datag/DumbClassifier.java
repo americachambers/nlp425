@@ -7,6 +7,8 @@ import java.util.*;
 
 class DumbClassifier extends Classifier {
 
+//	public static void main(String)
+	
 	public DialogueActTag classify(Utterance u) {
 		
 		String utterance = u.utterance;
@@ -53,11 +55,12 @@ class DumbClassifier extends Classifier {
 	
 	private DialogueActTag randomTagExcluding(DialogueActTag... tags) {
 		
-		List<DialogueActTag> tagList = Arrays.asList(tags);
+		List<DialogueActTag> tagList = new LinkedList<DialogueActTag>(Arrays.asList(DialogueActTag.values()));
+		
 		for(DialogueActTag tag : tags)
 			tagList.remove(tag);
 		
-		return randomTag((DialogueActTag[])tagList.toArray());
+		return randomTag(tagList.toArray(new DialogueActTag[tagList.size()]));
 
 	}
 	
