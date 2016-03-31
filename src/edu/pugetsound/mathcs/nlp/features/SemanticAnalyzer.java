@@ -3,6 +3,7 @@ package edu.pugetsound.mathcs.nlp.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
 import edu.pugetsound.mathcs.nlp.lang.*;
 import edu.stanford.nlp.trees.CollinsHeadFinder;
 import edu.stanford.nlp.trees.LabeledScoredTreeFactory;
@@ -120,7 +121,7 @@ public class SemanticAnalyzer {
 				Tree verbPhrase = factory.newTreeNode(current.constituencyParse.label(), children);
 				verbPhrase.setValue("VP");
 				current.constituencyParse.getChild(0).addChild(1, verbPhrase);				
-				current.constituencyParse.getChild(0).setValue("S");
+				current.constituencyParse.getChild(0).setValue("S");				
 				return processStatement();
 			}
 		}
@@ -149,7 +150,6 @@ public class SemanticAnalyzer {
 		if(analyzer.isProperNoun(nodeLabel) ){				
 			assert hasSingleLeafChild(node);
 			String childLabel = label(node.getChild(0));
-			System.out.println(childLabel);			
 			assert current.resolutions.containsKey(childLabel);			
 			return makeTerm(current.resolutions.get(childLabel));				
 		}
