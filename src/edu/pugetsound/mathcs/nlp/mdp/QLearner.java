@@ -20,9 +20,14 @@ public class QLearner {
     double GAMMA;
     int EXPLORE;
     int ANNEAL;
-    Conversation conversation;
 
     public QLearner() {
+        //create states and actions
+        for(DialogueActTag dialogueActTag : DialogueActTag.values()){
+            this.states.add(new State(dialogueActTag));
+            this.actions.add(new Action(dialogueActTag));
+        }
+
         if (states.size() < 1 || actions.size() < 1) {
             throw new IllegalArgumentException();
         }
@@ -30,12 +35,6 @@ public class QLearner {
         GAMMA = HV.GAMMA;
         EXPLORE = HV.EXPLORE;
         ANNEAL = HV.ANNEAL;
-
-        //create states and actions
-        for(DialogueActTag dialogueActTag : DialogueActTag.values()){
-            this.states.add(new State(dialogueActTag));
-            this.actions.add(new Action(dialogueActTag));
-        }
 
         q_table = new double[states.size()][actions.size()];
     }
@@ -46,7 +45,7 @@ public class QLearner {
         DialogueActTag mostRecentDAtag = utterances.get(utterances.size()).daTag;
         int stateIndex = 1;
 
-        for(int i = 0; i<states.size(); i++){
+        for(int i = 0; i<states.size()-1; i++){
             if(states.get(i).DATag.equals(mostRecentDAtag)){
                 stateIndex = i;
             }
