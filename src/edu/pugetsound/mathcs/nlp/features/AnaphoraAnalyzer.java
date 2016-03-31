@@ -22,18 +22,18 @@ public class AnaphoraAnalyzer {
 	 * Cleared every time the analyze method is called
 	 */
 	private List<String> anaphoras;
-	
+
 	/**
 	 * The parse tree corresponding to the utterance being analyzed
 	 */
 	private Tree parseTree;
-	
+
 	/**
 	 * Contains various convenience methods for analyzing the String
 	 * structure of the parse tree
 	 */
 	private ParseTreeAnalyzer analyzer;
-	
+
 	/**
 	 * Constructs a new anaphora analyzer to analyze the anaphoric structure
 	 * of utterances made
@@ -43,7 +43,7 @@ public class AnaphoraAnalyzer {
 		analyzer = new ParseTreeAnalyzer();
 		anaphoras = new ArrayList<String>();
 	}
-	
+
 	/**
 	 * Resolves anaphoras in a given utterance within the context of a conversation
 	 * @param utt The utterance
@@ -55,10 +55,22 @@ public class AnaphoraAnalyzer {
 			return;
 		}		
 		anaphoras.clear();
-		parseTree = utt.constituencyParse;		
-		findCandidateAnaphoras(parseTree);					
+		parseTree = utt.constituencyParse;	
+		
+		/*
+		 * At this stage, only proper nouns are identified. The lower case of each proper noun
+		 * becomes the Prolog entity tag
+		 */
+		for(Token tok : utt.tokens){
+			if(analyzer.isProperNoun(tok.pos)){
+				if(!utt.resolutions.containsKey(tok.token)){
+					utt.resolutions.put(tok.token, tok.token.toLowerCase());
+				}
+			}
+		}
+		//findCandidateAnaphoras(parseTree);					
 	}
-	
+
 	/**
 	 * Traverses the parse tree looking for candidate anaphoras
 	 * @param node A node in the parse tree

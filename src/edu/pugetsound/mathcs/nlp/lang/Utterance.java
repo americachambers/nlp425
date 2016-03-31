@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
-import edu.pugetsound.mathcs.nlp.features.PrologStructure;
+import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.Tree;
 
@@ -123,7 +123,9 @@ public class Utterance {
 		str += "Root Con: " + rootConstituency + "\n";
 		str += "Passive:" 	+ isPassive  + "\n";
 		str += "FOL: "      + firstOrderRep + "\n";
-		str += "DATag: "    + daTag + "\n";			
+		str += "DATag: "    + daTag + "\n";	
+		str += "Anaphras: " + resolutions + "\n";
+		
 		return str;
 	}	
 }

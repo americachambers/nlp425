@@ -1,17 +1,11 @@
 package edu.pugetsound.mathcs.nlp.features;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
 
+import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
 import edu.pugetsound.mathcs.nlp.lang.*;
-import edu.stanford.nlp.ling.IndexedWord;
-import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
-import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.CollinsHeadFinder;
-import edu.stanford.nlp.trees.GrammaticalRelation;
 import edu.stanford.nlp.trees.LabeledScoredTreeFactory;
 import edu.stanford.nlp.trees.Tree;
 
@@ -127,7 +121,7 @@ public class SemanticAnalyzer {
 				Tree verbPhrase = factory.newTreeNode(current.constituencyParse.label(), children);
 				verbPhrase.setValue("VP");
 				current.constituencyParse.getChild(0).addChild(1, verbPhrase);				
-				current.constituencyParse.getChild(0).setValue("S");
+				current.constituencyParse.getChild(0).setValue("S");				
 				return processStatement();
 			}
 		}
@@ -152,10 +146,18 @@ public class SemanticAnalyzer {
 	private List<PrologStructure> depthFirstSearch(Tree node){
 		String nodeLabel = label(node);
 
-		// Proper noun -- e.g., "John" -- or personal pronoun -- e.g., "I", "you", "he"
-		if(analyzer.isProperNoun(nodeLabel) || analyzer.isPersonalPronoun(nodeLabel)){			
+		// Proper noun -- e.g., "John" or "London" 
+		if(analyzer.isProperNoun(nodeLabel) ){				
 			assert hasSingleLeafChild(node);
-			return makeTerm(label(node.getChild(0)));				
+			String childLabel = label(node.getChild(0));
+			assert current.resolutions.containsKey(childLabel);			
+			return makeTerm(current.resolutions.get(childLabel));				
+		}
+		
+		// Personal pronoun -- e.g., "I", "you", "he"
+		if(analyzer.isPersonalPronoun(nodeLabel)){
+			assert hasSingleLeafChild(node);
+			return makeTerm(label(node.getChild(0)));							
 		}
 
 		// Determinant -- e.g., "a", "the", "some", "every", "none"
