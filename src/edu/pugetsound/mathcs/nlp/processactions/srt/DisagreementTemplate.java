@@ -7,12 +7,12 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
-public class RejectPartTemplate implements SemanticResponseTemplate {
+public class DisagreementTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "No.",
-        "Not really.",
-        "Not quite."
+        "I don't agree with that.",
+        "I don't really agree with that.",
+        "I disagree."
     };
 
     @Override
@@ -22,4 +22,3 @@ public class RejectPartTemplate implements SemanticResponseTemplate {
     }
 
 }
-

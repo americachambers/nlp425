@@ -10,9 +10,8 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 public class AgreementTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "Yeah.",
-        "I agree.",
-        "I agree with that."
+        "I agree with that.",
+        "I think I can agree with that."
     };
 
     @Override
@@ -22,4 +21,3 @@ public class AgreementTemplate implements SemanticResponseTemplate {
     }
 
 }
-
