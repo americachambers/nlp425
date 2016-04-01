@@ -12,7 +12,9 @@ public class ConventionalClosingTemplate implements SemanticResponseTemplate {
     private static final String[] outputs = {
         "It was nice talking to you.",
         "Goodbye.",
-        "Have a nice day!"
+        "Have a nice day!",
+        "Bye.",
+        "Talk to you later."
     };
 
     @Override

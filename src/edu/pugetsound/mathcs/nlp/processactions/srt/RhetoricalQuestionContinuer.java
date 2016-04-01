@@ -7,11 +7,14 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
-public class ExclamationTemplate implements SemanticResponseTemplate {
+public class RhetoricalQuestionContinuer implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "Wow!",
-        "Jeez."
+        "Is that right?",
+        "Really?",
+        "Oh, really?",
+        "Is that right?",
+        "You're kidding me."
     };
 
     @Override

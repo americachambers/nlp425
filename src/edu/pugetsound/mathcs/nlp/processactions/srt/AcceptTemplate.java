@@ -10,7 +10,9 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 public class AcceptTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "Ok."
+        "Yeah.",
+        "Ok, yeah.",
+        "Yeah, ok."
     };
 
     @Override
