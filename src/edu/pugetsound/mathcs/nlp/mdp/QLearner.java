@@ -22,11 +22,11 @@ public class QLearner {
     int ANNEAL;
 
     public QLearner() {
+         //create states and actions
         states = new ArrayList<>();
         actions = new ArrayList<>();
-        //create states and actions
-        states = new ArrayList<State>();
-        actions = new ArrayList<Action>();
+       
+        
 
         for(DialogueActTag dialogueActTag : DialogueActTag.values()){
             this.states.add(new State(dialogueActTag));
@@ -144,7 +144,7 @@ public class QLearner {
     private int rateActionChoice(int state, int choice) {
         Scanner in = new Scanner(System.in);
         System.out.println("I am in state" + states.get(state).DATag + " and would like to use a " + actions.get(choice).DATag);
-        System.out.println("On a scale of 1-5, how accurate is this move?");
+        System.out.println("On a scale of 1-5, how accurate is this response?");
         return in.nextInt()-3;
     }
 
