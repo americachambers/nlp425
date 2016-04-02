@@ -7,6 +7,11 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
+/**
+ * @author Thomas Gagne
+ * A template for constructing a sympathetic statement towards something the user said.
+ * Example responses include "I'm sorry." or "Sorry."
+ */
 public class SympathyTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {

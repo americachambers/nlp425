@@ -7,10 +7,15 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
+/**
+ * @author Thomas Gagne
+ * A template for constructing a template which partly rejects/disagrees with the user's input.
+ * Unlike DisagreementTemplate, this is less explicit about its disagreement.
+ * Example responses include "Not really." or "Not quite."
+ */
 public class RejectPartTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "No.",
         "Not really.",
         "Not quite."
     };

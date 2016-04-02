@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 /**
  * Represents an AMR node with missing node value and missing pointers through semantic relations
- * @author tgagne
+ * @author Thomas Gagne
  */
 public class AMRTemplate {
 

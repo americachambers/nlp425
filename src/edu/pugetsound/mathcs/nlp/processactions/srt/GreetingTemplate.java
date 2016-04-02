@@ -7,10 +7,16 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
-public class ArbitraryTemplate implements SemanticResponseTemplate {
+/**
+ * @author Thomas Gagne
+ * A template for constructing a greeting to the user of the form "Hello."
+ * This class differs from ConventionalOpeningTemplate, which asks things like "What's up?"
+ */
+public class GreetingTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {
-        "ERROR: Response DA Tag not understood."
+        "Hi.",
+        "Hello."
     };
 
     @Override
