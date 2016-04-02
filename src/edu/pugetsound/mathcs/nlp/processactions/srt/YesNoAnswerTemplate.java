@@ -10,6 +10,11 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.YesTemplate;
 import edu.pugetsound.mathcs.nlp.processactions.srt.NoTemplate;
 import edu.pugetsound.mathcs.nlp.processactions.srt.IndeterminateResponseTemplate;
 
+/**
+ * @author Thomas Gagne
+ * A template for answering yes-no questions posed by the user.
+ * This class will call the knowledge base to determine the answer, then return the appropriate answer.x
+ */
 public class YesNoAnswerTemplate implements SemanticResponseTemplate {
 
     @Override

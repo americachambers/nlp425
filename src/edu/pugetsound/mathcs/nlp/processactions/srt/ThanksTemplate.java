@@ -7,6 +7,11 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
+/**
+ * @author Thomas Gagne
+ * A template for constructing a response which thanks the user.
+ * Example responses include "Thanks." or "Thanks for that."
+ */
 public class ThanksTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {

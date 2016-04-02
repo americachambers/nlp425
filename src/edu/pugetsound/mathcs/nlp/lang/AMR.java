@@ -8,8 +8,8 @@ import java.util.HashMap;
  */
 public class AMR {
 
-	/**
-	 * A list of most of the semantic roles in AMR
+    /**
+     * A list of most of the semantic roles in AMR
      * Current list (used below) is version 1.2.2, updated as of September 18, 2015
      * Source: https://github.com/amrisi/amr-guidelines/blob/master/amr.md#part-ii--concepts-and-relations
      */

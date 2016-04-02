@@ -35,7 +35,8 @@ public enum ExtendedDialogueActTag {
     YES_NO_ANSWER("YES_NO_ANSWER"),
     QUESTION("QUESTION"),
     QUESTION_YES_NO("QUESTION_YES_NO"),
-    QUESTION_WH("QUESTION_WH");
+    QUESTION_WH("QUESTION_WH"),
+    GREETING("GREETING");
 
     private String name;
 

@@ -10,7 +10,6 @@ import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
  * The main response generator of the Process Actions step
  * This class should only be used to access the method generateResponse(...);
  * @author Thomas Gagne
- *
  */
 public class ActionProcessor {
 
@@ -50,6 +49,7 @@ public class ActionProcessor {
             put(ExtendedDialogueActTag.QUESTION, new QuestionTemplate());
             put(ExtendedDialogueActTag.QUESTION_YES_NO, new YesNoQuestionTemplate());
             put(ExtendedDialogueActTag.QUESTION_WH, new WhQuestionTemplate());
+            put(ExtendedDialogueActTag.GREETING, new GreetingTemplate());
 
         }};
     
