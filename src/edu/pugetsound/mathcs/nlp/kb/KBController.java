@@ -1,22 +1,30 @@
-//package edu.pugetsound.mathcs.nlp.kb;
+package edu.pugetsound.mathcs.nlp.kb;
 
-import gnu.prolog.database.*;
-import gnu.prolog.term.*;
-import gnu.prolog.vm.*;
-import gnu.prolog.vm.buildins.database.*;
+import gnu.prolog.term.AtomTerm;
+import gnu.prolog.term.CompoundTerm;
+import gnu.prolog.term.Term;
+import gnu.prolog.vm.Environment;
+import gnu.prolog.vm.Interpreter;
+import gnu.prolog.vm.PrologCode;
+import gnu.prolog.vm.PrologException;
+import gnu.prolog.vm.buildins.database.Predicate_assert;
+import gnu.prolog.vm.buildins.database.Predicate_assertz;
 
-public class KB_Controller{
-  Environment env;
-  Interpreter interpreter;
+public class KBController{
+  private Environment env;
+  private Interpreter interpreter;
 
-  public KB_Controller(){
+  /**
+   * Constructs controller to knowledge base
+   */
+  public KBController(){
     env = new Environment();
-    env.ensureLoaded(AtomTerm.get(KB_Controller.class.getResource("knowledge/cats.pl").getFile()));
+    env.ensureLoaded(AtomTerm.get(KBController.class.getResource("knowledge/cats.pl").getFile()));
     interpreter = env.createInterpreter();
     env.runInitialization(interpreter);
   }
 
-/*
+/**
 * User called yes/no query method
 * @param pred   predicate being queried
 * @param args   any predicate fields for that predicate
