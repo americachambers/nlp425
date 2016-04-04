@@ -1,6 +1,7 @@
 package edu.pugetsound.mathcs.nlp.mdp;
 
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
+import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
 
 /**
  *
@@ -11,15 +12,15 @@ public class Action {
     //State init;
 
 //    int id;
-    DialogueActTag DATag;
+    ExtendedDialogueActTag DATag;
         //ArrayList<Action> possActs;
 
-    public Action(DialogueActTag DATag) {
+    public Action(ExtendedDialogueActTag DATag) {
         this.DATag = DATag;
 //        this.id = id;
     }
 
-    public DialogueActTag getDATag() {
+    public ExtendedDialogueActTag getDATag() {
         return DATag;
     }
 }

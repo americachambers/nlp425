@@ -5,6 +5,7 @@ import java.util.Scanner;
 import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.mdp.HyperVariables;
 import edu.pugetsound.mathcs.nlp.mdp.QLearner;
 import edu.pugetsound.mathcs.nlp.mdp.Action;
 import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
@@ -20,7 +21,12 @@ public class Controller {
 	private static Conversation conversation;		
 	private static String initialGreeting = "Hello.";  
 	private static QLearner mdp;
-	
+	private static HyperVariables hyperVariables;
+	//GAMMA is the discounted value
+	//EXPLORE has to do with the duration and liklihood of exploring vs. exploiting. (Higher value is longer exploration phase)
+	private static final double GAMMA = 0.1;
+	private static final int EXPLORE = 1000;
+
 	/**
 	 * Setups the necessary tools for the conversational agent
 	 */
@@ -28,13 +34,14 @@ public class Controller {
 		conversation = new Conversation();	
 		analyzer = new TextAnalyzer();
 		input = new Scanner(System.in);
-		mdp = new QLearner();
+		hyperVariables = new HyperVariables(GAMMA, EXPLORE);
+		mdp = new QLearner(hyperVariables);
 	}
 
 	
 	/**
 	 * TODO: Needs to be replaced by the Stage 7: Text Generation code
-	 * @param u The response to the user
+	 * @param utt The response to the user
 	 */
 	private static void respondToUser(Utterance utt){		
 		System.out.println();
