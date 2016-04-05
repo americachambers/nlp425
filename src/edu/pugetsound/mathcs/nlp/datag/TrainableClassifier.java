@@ -11,7 +11,7 @@ interface Trainable extends Serializable {
 	/**
 	* 	Trains claffier based on a previous
 	**/
-	public void train(List<DialogueAct> list);
+	public void train(List<DialogueAct> list, TokenIndexMap tokenIndexMap);
 	
 }
 
