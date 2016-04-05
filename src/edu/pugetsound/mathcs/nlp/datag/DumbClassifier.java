@@ -5,7 +5,7 @@ import java.util.List;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import java.util.*;
 
-class DumbClassifier extends Classifier {
+class DumbClassifier implements Classifier {
 
 //	public static void main(String)
 	
