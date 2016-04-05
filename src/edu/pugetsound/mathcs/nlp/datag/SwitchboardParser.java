@@ -3,10 +3,12 @@ package edu.pugetsound.mathcs.nlp.datag;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 class SwitchboardParser {
 
@@ -14,9 +16,11 @@ class SwitchboardParser {
 	private static final String START_SENTINEL = "=";
 	private static final String ACT_SPLIT = "[ ]{10}";
 	private static final String TOKEN_REGEX = "\\w+";
-	private static final String[] REMOVALS = {"\\{", "[A-Z]\\s", "\\}", "\\.", ",", "\\[", "\\]"};
+	private static final String[] REMOVALS = {"\\{", "[A-Z]\\s", "\\}", ",", "\\[", "\\]"};
 	
 	private Map<DialogueActTag,List<DialogueAct>> tagToActs;
+	private Map<String,Integer> tokenToIndex;
+	private Set<String> tokenSet;
 	
 	// DEBUG
 	private int totalTags = 0, errorTags = 0;
@@ -28,6 +32,8 @@ class SwitchboardParser {
 	 */
 	public SwitchboardParser(File dataDirectory) throws FileNotFoundException {
 		tagToActs = new HashMap<DialogueActTag,List<DialogueAct>>();
+		tokenToIndex = new HashMap<String,Integer>();
+		tokenSet = new LinkedHashSet<String>();
 		
 		System.out.println("[DATAG] Loading Switchboard data...");
 		
@@ -35,6 +41,12 @@ class SwitchboardParser {
 			parseDir(dataDirectory);
 		} else {
 			parseFile(dataDirectory);
+		}
+		
+		int index = 0;
+		for(String token : tokenSet) {
+			tokenToIndex.put(token, index);
+			index++;
 		}
 		
 		double parseError = (1.0 - (double)(errorTags) / (double)(totalTags)) * 100;
@@ -68,6 +80,14 @@ class SwitchboardParser {
 				acts.addAll(tagToActs.get(tag));
 		
 		return acts;
+	}
+	
+	/**
+	 * Gets the TokenIndexMap created while parsing the data
+	 * @return A TokenIndexMap
+	 */
+	public TokenIndexMap getTokenIndexMap() {
+		return new TokenIndexMap(this.tokenToIndex);
 	}
 	
 	// Parses a single .utt file and stuffs the recognizable dialogue acts into tagToActs
@@ -141,9 +161,12 @@ class SwitchboardParser {
 		
 		String[] split = utterance.split("[ ]+");
 		
-		for(String token : split)
-			if(token.matches(TOKEN_REGEX))
+		for(String token : split) {
+			if(token.matches(TOKEN_REGEX)) {
 				tokens.add(token.toLowerCase());
+				this.tokenSet.add(token.toLowerCase());
+			}
+		}
 		
 		return tokens;
 	}
