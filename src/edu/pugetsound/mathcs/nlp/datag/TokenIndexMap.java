@@ -19,6 +19,7 @@ class TokenIndexMap {
 	private static final String ENCODING = "UTF-8";
 
 	private final Map<String,Integer> tokenToIndex;
+	private final int numTokens;
 	
 	/**
 	 * Constructs a TokenIndexMap from an existing Map<String,Integer>
@@ -26,6 +27,7 @@ class TokenIndexMap {
 	 */
 	public TokenIndexMap(Map<String,Integer> tokenToIndex) {
 		this.tokenToIndex = tokenToIndex;
+		this.numTokens = this.tokenToIndex.size();
 	}
 	
 	/**
@@ -42,6 +44,8 @@ class TokenIndexMap {
 		while(input.hasNextLine())
 			this.tokenToIndex.put(input.nextLine(), index++);
 		
+		this.numTokens = index;
+		
 		input.close();
 		
 	}
@@ -53,6 +57,14 @@ class TokenIndexMap {
 	 */
 	public int indexForToken(String token) {
 		return this.tokenToIndex.containsKey(token) ? this.tokenToIndex.get(token) : -1;
+	}
+	
+	/**
+	 * Get the number of stored token-index pairs
+	 * @return The number of stored token-index pairs
+	 */
+	public int size() {
+		return this.numTokens;
 	}
 	
 	/**
