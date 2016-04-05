@@ -1,16 +1,17 @@
 package edu.pugetsound.mathcs.nlp.datag;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
+import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
-import java.util.*;
 
 class DumbClassifier implements Classifier {
 
 //	public static void main(String)
 	
-	public DialogueActTag classify(Utterance u) {
-		
+	public DialogueActTag classify(Utterance u, Conversation c, TokenIndexMap tokenIndexMap) {
 		String utterance = u.utterance;
 		
 		if(utterance.contains("?")) {
