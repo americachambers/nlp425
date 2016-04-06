@@ -10,7 +10,14 @@
 *~
 
 /bin/
+/lib/
 
 # Eclipse things
 .classpath
 .project
+.metadata
+
+# git
+.gitconfig
+/nbproject/private/
+/build/
