@@ -37,7 +37,7 @@ public class DAClassifier {
 	 * @return The predicted DialogueActTag for the utterance
 	 */
 	public DialogueActTag classify(Utterance utterance, Conversation conversation) {
-		return dumbClassifier.classify(utterance);
+		return dumbClassifier.classify(utterance, conversation, null);
 	}
 	
 }
