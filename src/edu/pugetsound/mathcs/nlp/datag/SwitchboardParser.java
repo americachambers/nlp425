@@ -16,7 +16,7 @@ class SwitchboardParser {
 	private static final String START_SENTINEL = "=";
 	private static final String ACT_SPLIT = "[ ]{10}";
 	private static final String TOKEN_REGEX = "\\w+";
-	private static final String[] REMOVALS = {"\\{", "[A-Z]\\s", "\\}", ",", "\\[", "\\]"};
+	private static final String[] REMOVALS = {"\\{", "[A-Z]\\s", "\\}", "!", ",", "\\[", "\\]"};
 	
 	private Map<DialogueActTag,List<DialogueAct>> tagToActs;
 	private Map<String,Integer> tokenToIndex;
@@ -113,6 +113,12 @@ class SwitchboardParser {
 				if(split != null && split.length > 0) {
 					String tagString = split[0];
 					
+					if(tagString.length() > 0 && tagString.charAt(0) != '^' && tagString.indexOf('^') != -1)
+						tagString = tagString.substring(tagString.indexOf('^'));
+					
+					if(tagString.endsWith(")"))
+						tagString = tagString.substring(0, tagString.length() - 1);
+					
 					if(split != null && split.length > 1) {
 						int colonIndex = split[1].indexOf(':');
 						if(colonIndex != -1) {
@@ -125,7 +131,7 @@ class SwitchboardParser {
 							
 							// DEBUG
 							this.totalTags++;
-							
+
 							try {
 								DialogueActTag tag = DialogueActTag.fromLabel(tagString);
 								putAct(new DialogueAct(tag, utteranceTokens));
