@@ -1,5 +1,7 @@
 package edu.pugetsound.mathcs.nlp.controller;
 
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.Scanner;
 
 import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
@@ -16,77 +18,96 @@ import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
  *
  */
 public class Controller {
-	private static Scanner input;
-	private static TextAnalyzer analyzer;
-	private static Conversation conversation;		
-	private static String initialGreeting = "Hello.";  
-	private static QLearner mdp;
-	private static HyperVariables hyperVariables;
-	//GAMMA is the discounted value
-	//EXPLORE has to do with the duration and liklihood of exploring vs. exploiting. (Higher value is longer exploration phase)
-	private static final double GAMMA = 0.1;
-	private static final int EXPLORE = 1000;
+	protected static final String INITIAL_GREETING = "Hello.";  
+	
+	protected static Conversation conversation;		
+	protected static Scanner input;
+	protected static TextAnalyzer analyzer;
+	protected static QLearner mdp;
+	protected static HyperVariables hyperVariables;
+		
+	/**
+	 * The discounted value for the Markov Decision Process
+	 */
+	protected static final double GAMMA = 0.1;
 
+	/**
+	 * Related to the duration and likelihood of exploring vs. exploiting for the MDP 
+	 * A higher value corresponds to a longer exploration phase 
+	 */
+	protected static final int EXPLORE = 1000;
+
+	/**
+	 * The stream where all output is sent. Refactored to make it easier
+	 * to test input/output functionality
+	 */
+	protected static PrintStream out;
+	
 	/**
 	 * Setups the necessary tools for the conversational agent
 	 */
-	private static void setup(){
+	protected static void setup(InputStream in, PrintStream outStream){
+		out = outStream;
 		conversation = new Conversation();	
 		analyzer = new TextAnalyzer();
-		input = new Scanner(System.in);
+		input = new Scanner(in);
 		hyperVariables = new HyperVariables(GAMMA, EXPLORE);
 		mdp = new QLearner(hyperVariables);
 	}
 
-	
 	/**
-	 * TODO: Needs to be replaced by the Stage 7: Text Generation code
 	 * @param utt The response to the user
 	 */
-	private static void respondToUser(Utterance utt){		
-		System.out.println();
-		System.out.println();
-		System.out.println("Agent: " + utt.utterance);
+	protected static void respondToUser(Utterance utt){		
+		out.println();
+		out.println();
+		out.println("Agent: " + utt.utterance);
 	}
-
 
 	/**
 	 * Prints an initial greeting to the user. This initial greeting
 	 * is the first utterance in the conversation
 	 */
-	private static void initiateGreeting(){
-		System.out.println();
-		Utterance utt = analyzer.analyze(initialGreeting, conversation);
+	protected static void initiateGreeting(){
+		out.println();
+		Utterance utt = analyzer.analyze(INITIAL_GREETING, conversation);
 		conversation.addUtterance(utt);
 		respondToUser(utt);
 	}
 
+	
 	/**
-	 * Reads a line of text from the user, computes features,
-	 * and prints the features for inspection
+	 * Runs a single interaction with the human
+	 */
+	private static void run(){
+		// Read the human's typed input
+		out.print("> ");
+		String line = input.nextLine();
+
+		// Process the typed input
+		Utterance utt = analyzer.analyze(line, conversation);			
+		conversation.addUtterance(utt);
+
+		// Get an action from the Markov Decision Process
+		Action action = mdp.train(conversation);
+
+		// Process the action and produce a response for the user
+		String response = ActionProcessor.generateResponse(utt, action.getDATag());			
+		Utterance agentUtt = analyzer.analyze(response, conversation);
+		conversation.addUtterance(agentUtt);
+		respondToUser(agentUtt);
+
+	}
+
+	/**
+	 * Main controller for the conversational agent. 
 	 * TODO: Add description of any command line arguments
 	 */
 	public static void main(String[] args){
-		setup();				
-		initiateGreeting();		
-		
+		setup(System.in, System.out);				
+		initiateGreeting();
 		while(true){
-			// Read the human's typed input
-			System.out.print("> ");
-			String line = input.nextLine();
-			
-			// Process the typed input
-			Utterance utt = analyzer.analyze(line, conversation);			
-			conversation.addUtterance(utt);
-			
-			// Get an action from the Markov Decision Process
-			Action action = mdp.train(conversation);
-			
-			// Process the action and produce a response for the user
-			String response = ActionProcessor.generateResponse(utt, action.getDATag());			
-			Utterance agentUtt = analyzer.analyze(response,  conversation);
-			conversation.addUtterance(agentUtt);
-			respondToUser(agentUtt);
+			run();
 		}
 	}	
 }
