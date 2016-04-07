@@ -2,6 +2,16 @@ package edu.pugetsound.mathcs.nlp.lang;
 
 import java.util.HashMap;
 
+import org.python.util.PythonInterpreter; 
+import org.python.core.*; 
+
+import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.ParseException;
+import org.json.simple.parser.JSONParser;
+
+
+
 /**
  * Represents a filled-in AMR node
  * @author tgagne
@@ -148,6 +158,32 @@ public class AMR {
 
         stringForm += ")";
         return stringForm;
+    }
+
+
+    public static String convertTextToAMR(String text) {
+
+    PythonInterpreter python = new PythonInterpreter();
+     
+    python.execfile("../scripts/msrsplat.py");
+    python.set("text", new PyString(text));
+    python.exec("amr=main(text)");
+    return python.get("amr").toString();
+
+    }
+    public static void main(String a[]){
+        String amrString = AMR.convertTextToAMR(a[0]);
+        JSONParser parser = new JSONParser();
+         try{
+             Object obj = parser.parse(amrString);
+             JSONArray array = (JSONArray)obj;
+             JSONObject obj2 = (JSONObject)array.get(0);
+             System.out.println(obj2.get("Value"));    
+          } catch(ParseException pe) {
+            
+             System.out.println("position: " + pe.getPosition());
+             System.out.println(pe);
+          }
     }
 
 }

@@ -4,9 +4,10 @@ MSR-SPLAT (http://msrsplat.cloudapp.net) is a service provided by the NLP
 group for performing linguistic analyses, such as parsing and POS tagging.
 """
 
-import requests
 import json
 import sys
+sys.path.append("../scripts")
+import requests
 
 class Client:
     """Client for accessing the SPLAT service."""
@@ -93,8 +94,8 @@ def main(utterance, analysers = ["AMR"]):
     
     return c.analyze(lang, analysers, utterance)
 
-if __name__ == '__main__':
-  if any([arg in ['-h','--help'] for arg in sys.argv]) or len(sys.argv) == 1:
+if __name__ == '__main__' and len(sys.argv) > 1:
+  if any([arg in ['-h','--help'] for arg in sys.argv]):
         print('''Usage: 
             \n  python projects.py args sentence
             \n\nArgs:
