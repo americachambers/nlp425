@@ -16,8 +16,6 @@ public class ActionProcessor {
     private static final HashMap<ExtendedDialogueActTag, SemanticResponseTemplate> xdaTagToSRT =
         new HashMap<ExtendedDialogueActTag, SemanticResponseTemplate>() {{
             // Instantiate HashMap's values
-            // Any DA tag which we don't know how to generate for now
-            // will simply go to the ArbitraryTemplate
             
             put(ExtendedDialogueActTag.STATEMENT, new StatementTemplate());
             put(ExtendedDialogueActTag.NARRATIVE_DESCRIPTIVE, new StatementNonOpinionTemplate());
@@ -50,7 +48,6 @@ public class ActionProcessor {
             put(ExtendedDialogueActTag.QUESTION_YES_NO, new YesNoQuestionTemplate());
             put(ExtendedDialogueActTag.QUESTION_WH, new WhQuestionTemplate());
             put(ExtendedDialogueActTag.GREETING, new GreetingTemplate());
-
         }};
     
     /**
@@ -68,7 +65,7 @@ public class ActionProcessor {
         }
 
         // Should probably throw an excetion here
-        return "Error: Response could not be generated, bad DA tag";
+        return "Error: Response could not be generated, bad extendedDA tag";
     }
 
 
