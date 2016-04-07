@@ -87,7 +87,7 @@ def getArgIndex(arg):
                 return sys.argv.index(a)
     return -1
 
-def main(analysers, utterance):
+def main(utterance, analysers = ["AMR"]):
     c = Client("D348B4FB-0B53-4E8A-8862-91E668EBCE17", protocol="http:", verify=False)
 
     lang = "en"
@@ -128,4 +128,4 @@ if __name__ == '__main__':
   else:
       analysers = ["AMR"]
 
-  print(main(analysers, sys.argv[-1]))
+  print(main(sys.argv[-1],analysers))
