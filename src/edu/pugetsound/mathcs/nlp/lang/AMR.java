@@ -174,11 +174,12 @@ public class AMR {
     public static void main(String a[]){
         String amrString = AMR.convertTextToAMR(a[0]);
         JSONParser parser = new JSONParser();
+        System.out.println(amrString);
          try{
              Object obj = parser.parse(amrString);
              JSONArray array = (JSONArray)obj;
              JSONObject obj2 = (JSONObject)array.get(0);
-             System.out.println(obj2.get("Value"));    
+             System.out.println(obj2.get("Value").get(0));    
           } catch(ParseException pe) {
             
              System.out.println("position: " + pe.getPosition());

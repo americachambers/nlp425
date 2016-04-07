@@ -92,7 +92,7 @@ def main(utterance, analysers = ["AMR"]):
 
     lang = "en"
     
-    return c.analyze(lang, analysers, utterance)
+    return json.dumps(c.analyze(lang, analysers, utterance))
 
 if __name__ == '__main__' and len(sys.argv) > 1:
   if any([arg in ['-h','--help'] for arg in sys.argv]):
