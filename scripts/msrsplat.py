@@ -87,12 +87,11 @@ def getArgIndex(arg):
                 return sys.argv.index(a)
     return -1
 
-
-if __name__ == '__main__':
+def main():
     c = Client("D348B4FB-0B53-4E8A-8862-91E668EBCE17", protocol="http:", verify=False)
 
     lang = "en"
-    if any([arg in ['-h','--help'] for arg in sys.argv]):
+    if any([arg in ['-h','--help'] for arg in sys.argv]) or len(sys.argv) == 1:
         print('''Usage: 
             \n  python projects.py args sentence
             \n\nArgs:
@@ -125,4 +124,7 @@ if __name__ == '__main__':
     else:
         analysers = ["AMR"]
 
-    print c.analyze(lang, analysers, sys.argv[-1])
+    return c.analyze(lang, analysers, sys.argv[-1])
+
+if __name__ == '__main__':
+  print(main())
