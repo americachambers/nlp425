@@ -1,12 +1,12 @@
 package edu.pugetsound.mathcs.nlp.lang;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.python.util.PythonInterpreter; 
 import org.python.core.*; 
 
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
+import org.json.simple.*;
 import org.json.simple.parser.ParseException;
 import org.json.simple.parser.JSONParser;
 
@@ -161,30 +161,36 @@ public class AMR {
     }
 
 
-    public static String convertTextToAMR(String text) {
+    public static String[] convertTextToAMR(String text) {
 
     PythonInterpreter python = new PythonInterpreter();
      
     python.execfile("../scripts/msrsplat.py");
     python.set("text", new PyString(text));
     python.exec("amr=main(text)");
-    return python.get("amr").toString();
+    JSONParser parser = new JSONParser();
+    try {
+         Object obj = parser.parse(python.get("amr").toString());
+         JSONArray arr = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
+         String[] sentences = new String[arr.size()];
+         for (int i=0; i<sentences.length; i++)
+            sentences[i] = (String) arr.get(i);
+         return sentences;
+         
+      } catch(ParseException pe) {
+        
+         System.out.println("position: " + pe.getPosition());
+         System.out.println(pe);
+      }
+      return null;
 
     }
+
+
     public static void main(String a[]){
-        String amrString = AMR.convertTextToAMR(a[0]);
-        JSONParser parser = new JSONParser();
-        System.out.println(amrString);
-         try{
-             Object obj = parser.parse(amrString);
-             JSONArray array = (JSONArray)obj;
-             JSONObject obj2 = (JSONObject)array.get(0);
-             System.out.println(obj2.get("Value").get(0));    
-          } catch(ParseException pe) {
-            
-             System.out.println("position: " + pe.getPosition());
-             System.out.println(pe);
-          }
+        String[] amrString = AMR.convertTextToAMR(a[0]);
+        for (String s: amrString)
+            System.out.println(s);
     }
 
 }
