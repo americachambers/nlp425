@@ -1,7 +1,7 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
-import edu.pugetsound.mathcs.nlp.processactions.srt.*;
 import java.util.HashMap;
+import java.lang.ProcessBuilder;
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
@@ -10,15 +10,12 @@ import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
  * The main response generator of the Process Actions step
  * This class should only be used to access the method generateResponse(...);
  * @author Thomas Gagne
- *
  */
 public class ActionProcessor {
 
     private static final HashMap<ExtendedDialogueActTag, SemanticResponseTemplate> xdaTagToSRT =
         new HashMap<ExtendedDialogueActTag, SemanticResponseTemplate>() {{
             // Instantiate HashMap's values
-            // Any DA tag which we don't know how to generate for now
-            // will simply go to the ArbitraryTemplate
             
             put(ExtendedDialogueActTag.STATEMENT, new StatementTemplate());
             put(ExtendedDialogueActTag.NARRATIVE_DESCRIPTIVE, new StatementNonOpinionTemplate());
@@ -50,7 +47,7 @@ public class ActionProcessor {
             put(ExtendedDialogueActTag.QUESTION, new QuestionTemplate());
             put(ExtendedDialogueActTag.QUESTION_YES_NO, new YesNoQuestionTemplate());
             put(ExtendedDialogueActTag.QUESTION_WH, new WhQuestionTemplate());
-
+            put(ExtendedDialogueActTag.GREETING, new GreetingTemplate());
         }};
     
     /**
@@ -63,12 +60,13 @@ public class ActionProcessor {
 
         SemanticResponseTemplate responseGenerator = xdaTagToSRT.get(xdaTag);
         
+
         if(responseGenerator != null) {
             return responseGenerator.constructResponseFromTemplate(utterance);
         }
 
         // Should probably throw an excetion here
-        return "Error: Response could not be generated, bad DA tag";
+        return "Error: Response could not be generated, bad extendedDA tag";
     }
 
 

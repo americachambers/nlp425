@@ -7,6 +7,11 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
+/**
+ * @author Thomas Gagne
+ * A template for constructing an exclamatory response to what the user said.
+ * Example responses include "Wow!"
+ */
 public class ExclamationTemplate implements SemanticResponseTemplate {
 
     private static final String[] outputs = {

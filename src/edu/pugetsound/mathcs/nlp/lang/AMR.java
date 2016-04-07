@@ -8,8 +8,8 @@ import java.util.HashMap;
  */
 public class AMR {
 
-	/**
-	 * A list of most of the semantic roles in AMR
+    /**
+     * A list of most of the semantic roles in AMR
      * Current list (used below) is version 1.2.2, updated as of September 18, 2015
      * Source: https://github.com/amrisi/amr-guidelines/blob/master/amr.md#part-ii--concepts-and-relations
      */
@@ -111,6 +111,17 @@ public class AMR {
      * Format should be like: ["g", "go-01"], which corresponds to "g / go-01"
      */
     public String[] nodeValue = new String[2];
+
+    /**
+     * The indecies of this AMR's corrosponding words in an English sentence
+     * The first index is the one corrosponding to the exact word, and the rest
+     *   corrospond to other words most closely related to this AMR.
+     * Returned through Microsoft's SPLAT tool via the :align tag, where the "*"
+     *   denotes the index of the exact word. From this tool, indecies start at 1.
+     * See http://www.isi.edu/natural-language/mt/amr_eng_align.pdf for a better 
+     *   description of alignment.
+     */
+    public Integer[] nodeAlignment;
     
     /**
      * The type of node the AMR nodeValue as, for example: verb, noun, possibleness, amr-unknown
