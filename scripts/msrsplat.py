@@ -7,7 +7,6 @@ group for performing linguistic analyses, such as parsing and POS tagging.
 import requests
 import json
 import sys
-import ast
 
 class Client:
     """Client for accessing the SPLAT service."""
