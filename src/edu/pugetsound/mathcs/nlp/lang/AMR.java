@@ -3,9 +3,13 @@ package edu.pugetsound.mathcs.nlp.lang;
 import java.util.HashMap;
 import java.util.List;
 
+//Requires Jython 2.5: http://www.jython.org/
+//http://search.maven.org/remotecontent?filepath=org/python/jython-standalone/2.7.0/jython-standalone-2.7.0.jar
 import org.python.util.PythonInterpreter; 
 import org.python.core.*; 
 
+//Requires Simple Json: https://code.google.com/archive/p/json-simple/
+//https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/json-simple/json-simple-1.1.1.jar
 import org.json.simple.*;
 import org.json.simple.parser.ParseException;
 import org.json.simple.parser.JSONParser;
@@ -161,31 +165,34 @@ public class AMR {
     }
 
 
+    /**
+     * @param text   the String to be converted into AMR
+     * @return An array of Strings, which are translations of each sentences' AMR
+     */
     public static String[] convertTextToAMR(String text) {
 
-    PythonInterpreter python = new PythonInterpreter();
-     
-    python.execfile("../scripts/msrsplat.py");
-    python.set("text", new PyString(text));
-    python.exec("amr=main(text)");
-    JSONParser parser = new JSONParser();
-    try {
-         Object obj = parser.parse(python.get("amr").toString());
-         JSONArray arr = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
-         String[] sentences = new String[arr.size()];
-         for (int i=0; i<sentences.length; i++)
-            sentences[i] = (String) arr.get(i);
-         return sentences;
+        PythonInterpreter python = new PythonInterpreter();
          
-      } catch(ParseException pe) {
-        
-         System.out.println("position: " + pe.getPosition());
-         System.out.println(pe);
-      }
-      return null;
+        python.execfile("../scripts/msrsplat.py");
+        python.set("text", new PyString(text));
+        python.exec("amr = main(text)");
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(python.get("amr").toString());
+            JSONArray arr = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
+            String[] sentences = new String[arr.size()];
+            for (int i=0; i<sentences.length; i++)
+            sentences[i] = (String) arr.get(i);
+            return sentences;
+             
+          } catch(ParseException pe) {
+
+            System.out.println("position: " + pe.getPosition());
+            System.out.println(pe);
+          }
+          return null;
 
     }
-
 
     public static void main(String a[]){
         String[] amrString = AMR.convertTextToAMR(a[0]);

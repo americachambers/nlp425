@@ -28,9 +28,9 @@ public class AssessmentAppreciationTemplate implements SemanticResponseTemplate 
     public String constructResponseFromTemplate(Utterance utterance) {
         Random rand = new Random();
         if(rand.nextBoolean()) {
-            return outputs[rand.nextInt(outputs.length)] + ".";
+            // return outputs[rand.nextInt(outputs.length)] + ".";
         } else {
-            return outputs[rand.nextInt(outputs.length)] + "!";
+            // return outputs[rand.nextInt(outputs.length)] + "!";
         }
     }
 

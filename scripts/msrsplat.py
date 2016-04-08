@@ -87,12 +87,13 @@ def getArgIndex(arg):
                 return sys.argv.index(a)
     return -1
 
-def main(utterance, analysers = ["AMR"]):
+def main(utterance, analysers = ["AMR"], strRes=True):
     c = Client("D348B4FB-0B53-4E8A-8862-91E668EBCE17", protocol="http:", verify=False)
 
     lang = "en"
-    
-    return json.dumps(c.analyze(lang, analysers, utterance))
+    if strRes:    
+      return json.dumps(c.analyze(lang, analysers, utterance))
+    return c.analyze(lang, analysers, utterance)
 
 if __name__ == '__main__' and len(sys.argv) > 1:
   if any([arg in ['-h','--help'] for arg in sys.argv]):
