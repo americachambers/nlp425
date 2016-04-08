@@ -19,7 +19,7 @@ interface Classifier {
 	/**
 	* Classifies an Utterance.
 	**/
-	abstract public DialogueActTag classify(Utterance u, Conversation c, TokenIndexMap tokenIndexMap);
+	public DialogueActTag classify(Utterance u, Conversation c, TokenIndexMap tokenIndexMap);
 }
 
 interface TrainableClassifier extends Trainable, Classifier { }
