@@ -2,7 +2,9 @@ package edu.pugetsound.mathcs.nlp.datag;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,6 +84,17 @@ class SwitchboardParser {
 		return acts;
 	}
 	
+	public List<DialogueAct> getActsExcluding(DialogueActTag... tags) {
+		Set<DialogueActTag> tagSet = new HashSet<DialogueActTag>(Arrays.asList(tags));
+		List<DialogueAct> actList = new LinkedList<DialogueAct>();
+		
+		for(DialogueAct act : this.getActs())
+			if(!tagSet.contains(act.getTag()))
+				actList.add(act);
+		
+		return actList;
+	}
+	
 	/**
 	 * Gets the TokenIndexMap created while parsing the data
 	 * @return A TokenIndexMap
@@ -99,6 +112,8 @@ class SwitchboardParser {
 		
 		while(input.hasNextLine()) {
 			line = input.nextLine();
+			
+			dataReached = true;
 			
 			// Skip past all of the metadata
 			if(!dataReached && line.startsWith(START_SENTINEL)) {
