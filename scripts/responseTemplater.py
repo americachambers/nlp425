@@ -40,25 +40,7 @@ if __name__ == '__main__' and len(sys.argv) > 2:
             \n\nArgs:
             \n  sentence: a sentence to be analyzed in English, enclosed by double-quotes
             \n  -h, --help: Display this help message.
-            \n  -a, --analyzers list: Set the analyzers to be used on the sentence, in the form of a comma-seperated list enclosed by double quotes. Defaults to [AMR]
-            \n\nPossible options for analyzers:
-              AMR
-              Base Forms
-              Chunker
-              Constituency_Tree
-              ContentWords
-              CoRef
-              Dependency_Tree
-              Katakana_Transliterator
-              Labeled_Dependency_Tree
-              Lemmas
-              Named_Entities
-              POS_Tags
-              Semantic_Roles
-              Semantic_Roles_Scores
-              Sentiment
-              Stemmer
-              Tokens''')
+            \n  -j, --json-file: ''')
         exit(0)
 
     i = getArgIndex('-j')+1
