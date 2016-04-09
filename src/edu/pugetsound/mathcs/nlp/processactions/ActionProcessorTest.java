@@ -9,10 +9,12 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.*;
 import java.util.HashMap;
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
 import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
+import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
 
 public class ActionProcessorTest {
 	
@@ -43,7 +45,7 @@ public class ActionProcessorTest {
             String response = ActionProcessor.generateResponse(utt, xdatag);
             assertNotNull("should not be null", response);
             assertFalse("failure - response should not be \"Error: Response could not be generated, bad extendedDaTag\"",
-                        response.equals("Error: Response could not be generated, bad extendedDA tag");
+                        response.equals("Error: Response could not be generated, bad extendedDA tag"));
         }
         
     }

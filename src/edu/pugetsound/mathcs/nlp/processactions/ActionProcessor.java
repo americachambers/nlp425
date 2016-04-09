@@ -7,6 +7,9 @@ import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
 import edu.pugetsound.mathcs.nlp.processactions.srt.*;
 
+import edu.pugetsound.mathcs.nlp.lang.*;
+import edu.pugetsound.mathcs.nlp.features.*;
+
 /**
  * The main response generator of the Process Actions step
  * This class should only be used to access the method generateResponse(...);
@@ -69,6 +72,5 @@ public class ActionProcessor {
         // Should probably throw an excetion here
         return "Error: Response could not be generated, bad extendedDA tag";
     }
-
 
 }
