@@ -14,33 +14,40 @@ def getArgIndex(arg):
                 return sys.argv.index(a)
     return -1
 
-def addToFile(utterance, 
-    DATag,
+
+'''
+Insert list of utterances with corresponding DATags into responses.json. 
+Reads in and overwrites whole file (hence, not very efficient when called many times).
+Call only once on a large list of items for batch use.
+'''
+def addToFile(utterances, 
+    DATags,
     fName = "../src/edu/pugetsound/mathcs/nlp/processactions/responses.json"):
     
     with open(fName, 'r') as f:
         responses = json.load(f)
 
-    if DATag+'.java' not in responses:
-        print("Error: DATag '"+DATag+"' not in responses json file")
-        return -1
-
-    responses[DATag+'.java'].append({utterance: msrsplat.main(utterance,strRes=False)[0]['Value']})
-    data = {}
-    for key, value in responses.items():
-        data[key.strip('.java')] = value
+    for DATag, utterance in zip(DATags, utterances):
+        if DATag not in responses:
+            print("Error: DATag '"+DATag+"' not in responses json file; utterance '"+utterance+"' won't be inserted")
+        else:
+            responses[DATag][utterance] = msrsplat.main(utterance,strRes=False)[0]['Value']
     with open(fName,'w') as f:
-        json.dump(data,f)
+        json.dump(responses,f)
 
 if __name__ == '__main__' and len(sys.argv) > 2:
 
     if any([arg in ['-h','--help'] for arg in sys.argv]):
         print('''Usage: 
-            \n  python projects.py args sentence
-            \n\nArgs:
-            \n  sentence: a sentence to be analyzed in English, enclosed by double-quotes
+            \n  python responseTemplater.py args DATags utterances
+            \n\nArgs:   
+            \n  DATags: DA Tags as a list to be used as keys for each respective utterance in the next arg, enclosed by double-quotes
+            \n  utterances: utterances (as a list enclsoed by quotes) to be used as resposnses to the user. AMR will be queried via msrsplat
             \n  -h, --help: Display this help message.
-            \n  -j, --json-file: ''')
+            \n  -j, --json-file fileName: Provide the file name for the json dump output. Default is responses.json in the processactions folder
+            \n\nExampes:
+            \n    python3 responseTemplater.py "[Hahaha!]" "[ExclamationTemplate]"
+            \n    python3 responseTemplater.py -j "/tmp/responses.json" "[Hahaha!,Brahhhh\, that's laaaaame AF.]" "[ExclamationTemplate,DisagreementTemplate]"''')
         exit(0)
 
     i = getArgIndex('-j')+1
@@ -48,11 +55,15 @@ if __name__ == '__main__' and len(sys.argv) > 2:
         fName = sys.argv[i].strip()
     else:
         fName = "../src/edu/pugetsound/mathcs/nlp/processactions/responses.json"
-    addToFile(sys.argv[-2], sys.argv[-1], fName)
+    addToFile([s.strip() for s in sys.argv[-2][1:-1].split(',')], [s.strip() for s in sys.argv[-1][1:-1].split(',')], fName)
 
 
-      # '-n': ['-n','--new-json-file'],
-      # '-r': ['-r','--read-java-files'],
+
+
+    
+
+    #   '-n': ['-n','--new-json-file'],
+    #   '-r': ['-r','--read-java-files'],
 
     # if i>0:
     #     fName = sys.argv[i].strip()
