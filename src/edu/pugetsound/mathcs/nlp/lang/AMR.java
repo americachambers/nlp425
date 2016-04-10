@@ -37,7 +37,7 @@ public class AMR {
     public enum SemanticRelation {
         // align role, for consistency with msrsplat
         align("align"),
-        
+
     	// Core argX roles, following OntoNotes style
         arg0("arg0"), arg1("arg1"), arg2("arg2"), arg3("arg3"), arg4("arg4"), arg5("arg5"),
 
@@ -229,7 +229,7 @@ public class AMR {
         //cute.addSemanticRelation("domain", fluffy);
         //System.out.println(cute.toString());
 
-        AMR result = parseAMRString("(ff / fluffy :arg0 \"doggo\" :arg1 (c / cat))");
+        AMR result = parseAMRString("(ff / fluffy :arg0 30 :arg1 (c / cat) :arg2 (g / goaty))");
         System.out.println(result.toString());
     }
 
@@ -381,13 +381,38 @@ public class AMR {
                 // it must be a variable, name, relation, or string
                 if(!cur_charseq.equals("")) {
 
-                    last_word = cur_charseq;
-                    cur_charseq = "";
+                    // If we're adding a relation which doesn't have a native AMR node attached to it
+                    // ex: (f / frog :quant 30)
+                    // The 30 doesn't have a node surrounding it, normally
+                    // The second half of the && is a really quick 'n dirty way of checking that we're
+                    // parsing the argument to a relation and not the relation name itself
+                    if(state == ':' && text.charAt(i - cur_charseq.length() - 1) != ':') {
+                        AMR.SemanticRelation sr = AMR.nameToRelation.get(last_word);
+                        if(sr == null) {
+                            System.out.println("Error: Unrecognized relation " + last_word  + " while parsing AMR!");
+                            return null;
+                        } else {
+                            System.out.println("Creating a new AMR for: " + cur_charseq);
+                            // Create a new AMR to hold the term
+                            AMR relation_val = new AMR("" + cur_charseq.charAt(0), cur_charseq, AMRType.string);
+                            cur_amr.semanticRelations.put(sr, relation_val);
 
-                    // If we're at the node value after a '/'
-                    if(state == '/') {
-                        cur_amr.nodeValue[1] = last_word;
+                            last_word = cur_charseq;
+                            cur_charseq = "";
+                        }
+
+                    } else {
+
+                        // In all other cases, we can set last_word
+                        last_word = cur_charseq;
+                        cur_charseq = "";
+
+                        // If we're at the node value after a '/'
+                        if(state == '/') {
+                            cur_amr.nodeValue[1] = last_word;
+                        }
                     }
+
 
                     // If we're at the node variable after '('
                     /*
