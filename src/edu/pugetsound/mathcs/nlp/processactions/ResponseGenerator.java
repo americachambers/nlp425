@@ -23,6 +23,7 @@ import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import org.python.util.PythonInterpreter;
 import org.python.core.PyList;
 import org.python.core.PyString;
+import org.python.core.PyInteger;
 
 
 /**
@@ -61,35 +62,55 @@ public class ResponseGenerator {
                     System.out.println("Reading from input file at "+inputFile.getAbsolutePath());
                     FileReader fr = new FileReader(inputFile);
                     BufferedReader bufferedReader = new BufferedReader(fr);
-                    String text = "";
+                    ArrayList<String> paragraphs = new ArrayList<String>();
+                    String paragraph = "";
                     String line;
                     while( (line = bufferedReader.readLine()) != null)
-                        text+=line.trim()+" "; 
+                        if (line.length() > 1)
+                            paragraph += line.trim()+" ";
+                        else if (paragraph.length() > 1) {
+                            paragraphs.add(new String(paragraph));
+                            paragraph = "";
+                        }
                     bufferedReader.close(); 
-                    System.out.println("Done reading from input file.\n"
-                        +"Now querying MSR SPLAT for AMR/Tokens.");
+                    System.out.println("Done reading from input file.");
 
+                    Conversation utterances;
+                    DAClassifier classifier;
+                    PyString[] daTags;
+                    PyList texts;
+                    List<Utterance> convo;
+                    int numTokens, utterancesLen;
                     PythonInterpreter python = new PythonInterpreter();
                     python.execfile("../scripts/responseTemplater.py");
-                    python.set("text", new PyString(text));
-                    python.exec("analyzeUtteranceString(text)");
-                    System.out.println("Done querying MSR SPLAT for AMR/Tokens.\n"
-                        +"Now asking the DAClassifier to classify each utterance with a DATag.");
-                    
-                    Conversation utterances = new Conversation();
-                    DAClassifier classifier = new DAClassifier();
-                    PyList texts = (PyList) python.get("utterances");
-                    for (Object utt: texts) 
-                        utterances.addUtterance(new Utterance((String) utt));
-                    PyString[] daTags = new PyString[utterances.getConversation().size()];
-                    List<Utterance> temp = utterances.getConversation();
-                    for (int i=0; i<temp.size(); i++) {
-                        temp.get(i).daTag = classifier.classify(temp.get(i), utterances);
-                        daTags[i] = new PyString(temp.get(i).daTag.toString()); }
-                    python.set("DATags", new PyList(daTags));
-                    System.out.println("Done asking the DAClassifier to classify each utterance with a DATag.\nNow writing results to output file at "
-                        +"../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + args.get(1));
-                    
+                    for (int p=0; p<paragraphs.size(); p++) {
+                        paragraph = paragraphs.get(p);
+                        System.out.println("Now querying MSR SPLAT for AMR/Tokens for paragraph "+(p+1)+" of "+paragraphs.size());
+                        
+                        python.set("text", new PyString(paragraph)); //Watch out for "Cannot create PyString with non-byte value"
+                        python.exec("numTokens = analyzeUtteranceString(text)");
+                        numTokens = ((PyInteger) python.get("numTokens")).asInt();
+                        python.exec("utterancesLen = len(utterances)");
+                        utterancesLen = ((PyInteger) python.get("utterancesLen")).asInt();
+                        System.out.println("Done querying MSR SPLAT for AMR/Tokens.\n"
+                            +"Now asking the DAClassifier to classify each utterance with a DATag for paragraph "+(p+1)+" of "+paragraphs.size());
+
+                        utterances = new Conversation();
+                        classifier = new DAClassifier();
+                        texts = (PyList) ((PyList) python.get("utterances")).subList(utterancesLen-numTokens, utterancesLen);
+                        for (Object utt: texts) 
+                            utterances.addUtterance(new Utterance((String) utt));
+                        daTags = new PyString[utterances.getConversation().size()];
+                        convo = utterances.getConversation();
+                        for (int i=0; i<convo.size(); i++) {
+                            convo.get(i).daTag = classifier.classify(convo.get(i), utterances);
+                            daTags[i] = new PyString(convo.get(i).daTag.toString()); }
+                        python.set("lst", new PyList(daTags));
+                        python.exec("DATags += lst");
+                        System.out.println("Done asking the DAClassifier to classify each utterance with a DATag.");
+                    }
+                    System.out.println("Now writing results to output file at "
+                            +"../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + args.get(1));
                     python.set("fn", new PyString("../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + args.get(1)));
                     python.exec("main(fn)");
                     System.out.println("Done writing results to output file!");

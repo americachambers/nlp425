@@ -15,13 +15,14 @@ def getArgIndex(arg):
                 return sys.argv.index(a)
     return -1
 
-utterances, AMRs, DATags = None, None, None
+utterances, AMRs, DATags = [],[],[]
 
 def analyzeUtteranceString(utteranceStr):
     global utterances, AMRs
+    oldNum = len(utterances)
     for msRes in msrsplat.main(utteranceStr,analysers = ["AMR","Tokens"],strRes=False):
         if msRes['Key'] == "Tokens":
-            utterances = [ 
+            utterances += [ 
                 (' '.join([x["RawToken"] 
                     for x in tokendict['Tokens']]))
                 .replace(' ,', ',')
@@ -32,9 +33,10 @@ def analyzeUtteranceString(utteranceStr):
                 .replace(' \'', '\'')
                 for tokendict in msRes['Value']]
         elif msRes['Key'] == "AMR":
-            AMRs = msRes['Value']
+            AMRs += msRes['Value']
         else:
             print("Error with MSResponse")
+    return len(utterances)-oldNum
  
 
 
@@ -51,7 +53,7 @@ def main(fName = "../src/edu/pugetsound/mathcs/nlp/processactions/srt/responses.
     else:
         responses = {}
 
-    if None in [utterances, AMRs, DATags]:
+    if [] in [utterances, AMRs, DATags]:
         print("Error, null pointer to either utterances, AMRs, or DATags")
         print(utterances, AMRs, DATags)
         exit(0)
