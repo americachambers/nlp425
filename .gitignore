@@ -2,6 +2,7 @@
 
 # Mac specific
 .DS_Store
+__pycache__
 
 # ignore all files in doc directory
 /doc

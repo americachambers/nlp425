@@ -9,50 +9,47 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.*;
 import java.util.HashMap;
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
+import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
+import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
+import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
 
 public class ActionProcessorTest {
 	
-	// private TextAnalyzer analyzer;	
-	// private Conversation conversation;
-	// private String statement;
-	// private String question;
-	// private String empty;
-	// private Utterance utt;
-	// private DAClassifier daClass;
-
-
-	@Before
-	public void setUp() throws Exception {
-		// analyzer = new TextAnalyzer();
-		// conversation = new Conversation();
-		// statement = "The cat ate the fish";
-		// question = "What are you doing?";
-		// empty = "";
-		// utt = analyzer.analyze(statement, conversation);
-		// daClass = new DAClassifier();
-		// daClass.classify(utt, conversation);
-	}
-
-	// @Test
-	// public void testStatement() {
-		
-		
-	// 	assertEquals(statement, utt.utterance);
-	// 	assertFalse(utt.isPassive);
-	// 	assertEquals(5, utt.tokens.size());
-	// 	assertEquals(Punctuation.UNKNOWN, utt.punct);
-	// 	assertEquals("(ROOT (S (NP (DT The) (NN cat)) (VP (VBD ate) (NP (DT the) (NN fish)))))", 
-	// 			utt.constituencyParse.toString());
-	// 	assertEquals(1, utt.subjects.size());
-	// 	assertEquals(1, utt.directObjects.size());
-	// 	assertEquals("cat", utt.subjects.get(0));
-	// 	assertEquals("fish", utt.directObjects.get(0));
-	// 	assertEquals("S", utt.rootConstituency);
-	// 	assertEquals("ate", utt.rootDependency);		
-	// }
-
+    private TextAnalyzer analyzer;	
+    private Conversation conversation;
+    private String statement;
+    private String question;
+    private String empty;
+    private Utterance utt;
+    private DAClassifier daClass;
+    
+    
+    @Before
+    public void setUp() throws Exception {
+        analyzer = new TextAnalyzer();
+        conversation = new Conversation();
+        statement = "The cat ate the fish";
+        question = "What are you doing?";
+        empty = "";
+        utt = analyzer.analyze(statement, conversation);
+        daClass = new DAClassifier();
+        daClass.classify(utt, conversation);
+    }
+    
+    @Test
+    public void testXDATagMapping() {
+        for(ExtendedDialogueActTag xdatag : ExtendedDialogueActTag.values()) {
+            String response = ActionProcessor.generateResponse(utt, xdatag);
+            assertNotNull("should not be null", response);
+            assertFalse("failure - response should not be \"Error: Response could not be generated, bad extendedDaTag\"",
+                        response.equals("Error: Response could not be generated, bad extendedDA tag"));
+        }
+        
+    }
+    
 	// @Test
 	// public void testEmpty() {
 	// 	Utterance utt = analyzer.analyze(empty, conversation);		
