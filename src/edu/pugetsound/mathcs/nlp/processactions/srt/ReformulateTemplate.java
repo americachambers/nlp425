@@ -20,7 +20,7 @@ public class ReformulateTemplate implements SemanticResponseTemplate {
         if(utterance.utterance != null) {
             return utterance.utterance;
         } else {
-            return "Yeah, what you said.";
+            // return "Yeah, what you said.";
         }
     }
 
