@@ -1,6 +1,7 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
 import java.util.Random;
+import java.util.HashMap;
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
@@ -19,15 +20,13 @@ public class RepeatPhraseTemplate implements SemanticResponseTemplate {
     // For example, user says: "We were there for three months".
     // You'd output "Three months."
     // We need to make sure to only output named entities though, so we don't say "There."
-    
-    private static final String[] outputs = {
-        "Right."
-    };
+
+    private static final HashMap<String, AMR> outputs = SemanticResponseTemplate.getResponses("RepeatPhraseTemplate");
 
     @Override
     public String constructResponseFromTemplate(Utterance utterance) {
         Random rand = new Random();
-        return outputs[rand.nextInt(outputs.length)];
+        return ((String) outputs.keySet().toArray()[rand.nextInt(outputs.size())]);
     }
 
 }

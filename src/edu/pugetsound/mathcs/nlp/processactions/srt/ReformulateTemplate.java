@@ -1,6 +1,7 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
 import java.util.Random;
+import java.util.HashMap;
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
@@ -20,7 +21,7 @@ public class ReformulateTemplate implements SemanticResponseTemplate {
         if(utterance.utterance != null) {
             return utterance.utterance;
         } else {
-            // return "Yeah, what you said.";
+            return "Yeah, what you said.";
         }
     }
 

@@ -1,6 +1,7 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
 import java.util.Random;
+import java.util.HashMap;
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
@@ -14,17 +15,12 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  */
 public class SympathyTemplate implements SemanticResponseTemplate {
 
-    private static final String[] outputs = {
-        "I'm sorry to hear that.",
-        "I'm sorry.",
-        "Sorry.",
-        "You have my sympathy."
-    };
+    private static final HashMap<String, AMR> outputs = SemanticResponseTemplate.getResponses("SympathyTemplate");
 
     @Override
     public String constructResponseFromTemplate(Utterance utterance) {
         Random rand = new Random();
-        return outputs[rand.nextInt(outputs.length)];
+        return ((String) outputs.keySet().toArray()[rand.nextInt(outputs.size())]);
     }
 
 }
