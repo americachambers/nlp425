@@ -73,4 +73,9 @@ public class ActionProcessor {
         return "Error: Response could not be generated, bad extendedDA tag";
     }
 
+    // public static void main(String a[]) {
+    //     for (String s: a)
+    //        System.out.println(ActionProcessor.generateResponse(new Utterance(s), ExtendedDialogueActTag.ACCEPT_REJECT_MAYBE));
+    // }
+
 }

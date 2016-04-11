@@ -1,6 +1,7 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
 import java.util.Random;
+import java.util.HashMap;
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
@@ -15,16 +16,14 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  */
 public class AcceptTemplate implements SemanticResponseTemplate {
 
-    private static final String[] outputs = {
-        "Yeah.",
-        "Ok, yeah.",
-        "Yeah, ok."
-    };
+
+    private static final HashMap<String, AMR> outputs = SemanticResponseTemplate.getResponses("AcceptTemplate");
+
 
     @Override
     public String constructResponseFromTemplate(Utterance utterance) {
         Random rand = new Random();
-        return outputs[rand.nextInt(outputs.length)];
+        return (String) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
     }
 
 }

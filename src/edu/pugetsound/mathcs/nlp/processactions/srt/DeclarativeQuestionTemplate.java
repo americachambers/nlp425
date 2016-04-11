@@ -1,6 +1,7 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
 import java.util.Random;
+import java.util.HashMap;
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;

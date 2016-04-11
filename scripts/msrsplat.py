@@ -98,7 +98,7 @@ def main(utterance, analysers = ["AMR"], strRes=True):
 if __name__ == '__main__' and len(sys.argv) > 1:
   if any([arg in ['-h','--help'] for arg in sys.argv]):
         print('''Usage: 
-            \n  python projects.py args sentence
+            \n  python msrsplat.py args sentence
             \n\nArgs:
             \n  sentence: a sentence to be analyzed in English, enclosed by double-quotes
             \n  -h, --help: Display this help message.
@@ -120,7 +120,11 @@ if __name__ == '__main__' and len(sys.argv) > 1:
               Semantic_Roles_Scores
               Sentiment
               Stemmer
-              Tokens''')
+              Tokens
+            \n\nExamples:
+            \n    python3 msrsplat.py "Fluffy is a cat."
+            \n    python3 msrsplat.py "Fluffy is not a cat, unlike the cat Furry."
+            \n    python3 msrsplat.py -a "[AMR,Dependency_Tree]" "I don't really agree with that."''')
         exit(0)
 
   i = getArgIndex('-a')+1

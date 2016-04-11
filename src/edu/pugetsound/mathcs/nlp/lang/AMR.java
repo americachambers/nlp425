@@ -194,7 +194,7 @@ public class AMR {
      * @param text   the String to be converted into AMR
      * @return An array of Strings, which are translations of each sentences' AMR
      */
-    public static String[] convertTextToAMR(String text) {
+    public static String convertTextToAMR(String text) {
 
         PythonInterpreter python = new PythonInterpreter();
 
@@ -204,33 +204,28 @@ public class AMR {
         JSONParser parser = new JSONParser();
         try {
             Object obj = parser.parse(python.get("amr").toString());
-            JSONArray arr = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
-            String[] sentences = new String[arr.size()];
-            for (int i=0; i<sentences.length; i++)
-            sentences[i] = (String) arr.get(i);
-            return sentences;
+            return (String) ((JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value")).get(0);
 
-          } catch(ParseException pe) {
+        } catch(ParseException pe) {
 
             System.out.println("position: " + pe.getPosition());
             System.out.println(pe);
-          }
-          return null;
+        }
+        return null;
 
     }
 
     public static void main(String a[]){
-        //String[] amrString = AMR.convertTextToAMR(a[0]);
-        //for (String s: amrString)
-        //    System.out.println(s);
+        for (String s: a)
+            System.out.println(AMR.convertTextToAMR(s));
 
         //AMR fluffy = new AMR("f", "fluffy", AMRType.noun);
         //AMR cute = new AMR("c", "cute", AMRType.adjective);
         //cute.addSemanticRelation("domain", fluffy);
         //System.out.println(cute.toString());
 
-        AMR result = parseAMRString("(ff / fluffy :arg0 30 :arg1 (c / cat) :arg2 (g / goaty))");
-        System.out.println(result.toString());
+        // AMR result = parseAMRString("(ff / fluffy :arg0 30 :arg1 (c / cat) :arg2 (g / goaty))");
+        // System.out.println(result.toString());
     }
 
     /**
