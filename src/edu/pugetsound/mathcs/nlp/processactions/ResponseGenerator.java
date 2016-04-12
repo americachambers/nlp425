@@ -80,39 +80,70 @@ public class ResponseGenerator {
                     System.out.println("Done reading from input file.");
 
                     Conversation utterances;
-                    DAClassifier classifier;
                     PyString[] daTags;
                     PyList texts;
                     List<Utterance> convo;
-                    int numTokens, utterancesLen;
+                    int numTokens, utterancesLen, amrLen, daTagsLen;
+                    DAClassifier classifier = new DAClassifier();
                     PythonInterpreter python = new PythonInterpreter();
                     python.execfile("../scripts/responseTemplater.py");
 
                     for (int p=0; p<paragraphs.size(); p++) {
-                        paragraph = paragraphs.get(p);
-                        System.out.println("Now querying MSR SPLAT for AMR/Tokens for paragraph "+(p+1)+" of "+paragraphs.size());
-                        
-                        python.set("text", new PyString(paragraph)); //Watch out for "Cannot create PyString with non-byte value"
-                        python.exec("numTokens = analyzeUtteranceString(text)");
-                        numTokens = ((PyInteger) python.get("numTokens")).asInt();
-                        python.exec("utterancesLen = len(utterances)");
-                        utterancesLen = ((PyInteger) python.get("utterancesLen")).asInt();
-                        System.out.println("Done querying MSR SPLAT for AMR/Tokens.\n"
-                            +"Now asking the DAClassifier to classify each utterance with a DATag for paragraph "+(p+1)+" of "+paragraphs.size());
+                        try {
+                            python.exec("utterancesLen = len(utterances)");
+                            utterancesLen = ((PyInteger) python.get("utterancesLen")).asInt();
+                            python.exec("amrLen = len(AMRs)");
+                            amrLen = ((PyInteger) python.get("amrLen")).asInt();
+                            python.exec("daTagsLen = len(DATags)");
+                            daTagsLen = ((PyInteger) python.get("daTagsLen")).asInt();
+                            if (utterancesLen != amrLen)
+                                if (utterancesLen > amrLen) {
+                                    python.exec("utterances = utterances[:amrLen]");
+                                    python.exec("utterancesLen = len(utterances)");
+                                    utterancesLen = ((PyInteger) python.get("utterancesLen")).asInt();
+                                }
+                                else {
+                                    python.exec("AMRs = AMRs[:utterancesLen]");
+                                    python.exec("amrLen = len(AMRs)");
+                                    amrLen = ((PyInteger) python.get("amrLen")).asInt();
+                                }
+                            if (utterancesLen > daTagsLen){
+                                python.exec("utterances = utterances[:daTagsLen]");
+                                python.exec("utterancesLen = len(utterances)");
+                                utterancesLen = ((PyInteger) python.get("utterancesLen")).asInt();
+                            }
+                            if (amrLen > daTagsLen){
+                                python.exec("AMRs = AMRs[:daTagsLen]");
+                                python.exec("amrLen = len(AMRs)");
+                                amrLen = ((PyInteger) python.get("amrLen")).asInt();
+                            }
 
-                        utterances = new Conversation();
-                        classifier = new DAClassifier();
-                        texts = (PyList) ((PyList) python.get("utterances")).subList(utterancesLen-numTokens, utterancesLen);
-                        for (Object utt: texts) 
-                            utterances.addUtterance(new Utterance((String) utt));
-                        daTags = new PyString[utterances.getConversation().size()];
-                        convo = utterances.getConversation();
-                        for (int i=0; i<convo.size(); i++) {
-                            convo.get(i).daTag = classifier.classify(convo.get(i), utterances);
-                            daTags[i] = new PyString(convo.get(i).daTag.toString()); }
-                        python.set("lst", new PyList(daTags));
-                        python.exec("DATags += lst");
-                        System.out.println("Done asking the DAClassifier to classify each utterance with a DATag.");
+
+                            paragraph = paragraphs.get(p);
+                            System.out.println("Now querying MSR SPLAT for AMR/Tokens for paragraph "+(p+1)+" of "+paragraphs.size());
+                            
+                            python.set("text", new PyString(paragraph)); //Watch out for "Cannot create PyString with non-byte value"
+                            python.exec("numTokens = analyzeUtteranceString(text)");
+                            numTokens = ((PyInteger) python.get("numTokens")).asInt();
+                            System.out.println("Done querying MSR SPLAT for AMR/Tokens - got "+numTokens+" new ones!\n"
+                                +"Now asking the DAClassifier to classify each utterance with a DATag for paragraph "+(p+1)+" of "+paragraphs.size());
+
+                            utterances = new Conversation();
+                            texts = (PyList) ((PyList) python.get("utterances")).subList(utterancesLen, utterancesLen+numTokens);
+                            for (Object utt: texts) 
+                                utterances.addUtterance(new Utterance((String) utt));
+                            daTags = new PyString[numTokens];
+                            convo = utterances.getConversation();
+                            for (int i=0; i<numTokens; i++) {
+                                convo.get(i).daTag = classifier.classify(convo.get(i), utterances);
+                                daTags[i] = new PyString(convo.get(i).daTag.toString()); }
+                            python.set("lst", new PyList(daTags));
+                            python.exec("DATags += lst");
+                            System.out.println("Done asking the DAClassifier to classify each utterance with a DATag.");
+                        } catch(Exception e) {
+                            System.out.println("Issue with paragraph "+p+"; reverting any added amrs/utterances/datags to last paragraph.");
+                            System.out.println(e);
+                        }
                     }
                     
                     System.out.println("Now writing results to output file at "
