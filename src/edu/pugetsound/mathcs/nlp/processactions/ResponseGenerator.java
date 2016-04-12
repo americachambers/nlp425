@@ -1,8 +1,11 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
+import java.lang.Thread;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
+
 
 import java.io.File;
 import java.io.BufferedReader;
@@ -32,6 +35,35 @@ import org.python.core.PyInteger;
  * @author Thomas Gagne
  */
 public class ResponseGenerator {
+
+
+    private static String[] getParagraphs(File f) throws FileNotFoundException,IOException {
+        FileReader fr = new FileReader(f);
+        BufferedReader bufferedReader = new BufferedReader(fr);
+        ArrayList<String> paragraphs = new ArrayList<String>();
+        String paragraph = "";
+        String line;
+        ArrayList<Character> endPunct = new ArrayList<Character>() {{ 
+            add('.'); 
+            add('!'); 
+            add('"'); 
+            add('\''); 
+            add('?'); 
+            add('!'); 
+        }};
+
+        while( (line = bufferedReader.readLine()) != null){
+            if (line.length() > 1)
+                paragraph += line.trim()+" ";
+            if (endPunct.contains(new Character(paragraph.charAt(paragraph.length()-2))) || (line.length() <= 1 && paragraph.length() > 1)) {
+                paragraphs.add(new String(paragraph));
+                paragraph = "";
+            }}
+        bufferedReader.close();
+        String[] prs = new String[paragraphs.size()];
+        return paragraphs.toArray(prs);
+    }
+
 
 
     public static void main(String a[]) {
@@ -64,21 +96,11 @@ public class ResponseGenerator {
                 try {
 
                     System.out.println("Reading from input file at "+inputFile.getAbsolutePath());
-                    FileReader fr = new FileReader(inputFile);
-                    BufferedReader bufferedReader = new BufferedReader(fr);
-                    ArrayList<String> paragraphs = new ArrayList<String>();
-                    String paragraph = "";
-                    String line;
-                    while( (line = bufferedReader.readLine()) != null)
-                        if (line.length() > 1)
-                            paragraph += line.trim()+" ";
-                        else if (paragraph.length() > 1) {
-                            paragraphs.add(new String(paragraph));
-                            paragraph = "";
-                        }
-                    bufferedReader.close(); 
+                    String[] paragraphs = getParagraphs(inputFile);
                     System.out.println("Done reading from input file.");
 
+                    String paragraph;
+                    long queryTime = 0;
                     Conversation utterances;
                     PyString[] daTags;
                     PyList texts;
@@ -87,8 +109,9 @@ public class ResponseGenerator {
                     DAClassifier classifier = new DAClassifier();
                     PythonInterpreter python = new PythonInterpreter();
                     python.execfile("../scripts/responseTemplater.py");
-
-                    for (int p=0; p<paragraphs.size(); p++) {
+                    python.set("fn", new PyString("../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + args.get(1)));
+                        
+                    for (int p=0; p<paragraphs.length; p++) {
                         try {
                             python.exec("utterancesLen = len(utterances)");
                             utterancesLen = ((PyInteger) python.get("utterancesLen")).asInt();
@@ -118,15 +141,23 @@ public class ResponseGenerator {
                                 amrLen = ((PyInteger) python.get("amrLen")).asInt();
                             }
 
+                            if (p > 15 && (p % 15) == 0){
+                                System.out.println("Writing current progress to file since we've analyzed "+p+" paragraphs and "+utterancesLen+" utterances.");
+                                python.exec("main(fn)");
+                            }
 
-                            paragraph = paragraphs.get(p);
-                            System.out.println("Now querying MSR SPLAT for AMR/Tokens for paragraph "+(p+1)+" of "+paragraphs.size());
+
+                            paragraph = paragraphs[p];
+                            System.out.println("Now querying MSR SPLAT for AMR/Tokens for paragraph "+(p+1)+" of "+paragraphs.length);
                             
                             python.set("text", new PyString(paragraph)); //Watch out for "Cannot create PyString with non-byte value"
+                            if (System.currentTimeMillis() - queryTime < 1500)
+                                Thread.sleep(1500 - System.currentTimeMillis() + queryTime);
                             python.exec("numTokens = analyzeUtteranceString(text)");
+                            queryTime = System.currentTimeMillis();
                             numTokens = ((PyInteger) python.get("numTokens")).asInt();
                             System.out.println("Done querying MSR SPLAT for AMR/Tokens - got "+numTokens+" new ones!\n"
-                                +"Now asking the DAClassifier to classify each utterance with a DATag for paragraph "+(p+1)+" of "+paragraphs.size());
+                                +"Now asking the DAClassifier to classify each utterance with a DATag for paragraph "+(p+1)+" of "+paragraphs.length);
 
                             utterances = new Conversation();
                             texts = (PyList) ((PyList) python.get("utterances")).subList(utterancesLen, utterancesLen+numTokens);
@@ -140,18 +171,23 @@ public class ResponseGenerator {
                             python.set("lst", new PyList(daTags));
                             python.exec("DATags += lst");
                             System.out.println("Done asking the DAClassifier to classify each utterance with a DATag.");
+                            System.out.println("Now have " + (utterancesLen+numTokens) +" utterances total." );
                         } catch(Exception e) {
                             System.out.println("Issue with paragraph "+p+"; reverting any added amrs/utterances/datags to last paragraph.");
                             System.out.println(e);
                         }
                     }
-                    
-                    System.out.println("Now writing results to output file at "
-                            +"../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + args.get(1));
-                    python.set("fn", new PyString("../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + args.get(1)));
-                    python.exec("main(fn)");
-                    System.out.println("Done writing results to output file!");
-                    
+                    python.exec("utterancesLen = len(utterances)");
+                    utterancesLen = ((PyInteger) python.get("utterancesLen")).asInt();
+                    if (utterancesLen > 0) {
+                        System.out.println("Now writing "+utterancesLen+" results to output file at "
+                                +"../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + args.get(1));
+                        python.exec("main(fn)");
+                        System.out.println("Done writing results to output file!");
+                    }
+                    else {
+                        System.out.println("Warning: no utterances/AMRs found. Not writing anything to output file.");
+                    }   
 
                 } catch(FileNotFoundException ex) {
                     System.out.println("Error: Unable to open file");    

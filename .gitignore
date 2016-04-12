@@ -12,6 +12,7 @@ __pycache__
 
 /bin/
 /lib/
+lincoln.json
 
 # Eclipse things
 .classpath

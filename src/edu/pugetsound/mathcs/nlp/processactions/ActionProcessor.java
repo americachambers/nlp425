@@ -53,15 +53,18 @@ public class ActionProcessor {
             put(ExtendedDialogueActTag.QUESTION_WH, new WhQuestionTemplate());
             put(ExtendedDialogueActTag.GREETING, new GreetingTemplate());
         }};
+
+
     
     /**
      * Takes in an Utterance and a DA tag for what type of statement to respond from the MDP
      * Returns a string corresponding to the generated response
      * @return A string representation of the response. In early versions, this might be an AMR
      */
-    public static String generateResponse(Utterance utterance, ExtendedDialogueActTag xdaTag) {
+    public static String generateResponse(Utterance utterance) {
         // Use the given daTag to determine what type of response to generate
 
+        ExtendedDialogueActTag xdaTag = ExtendedDialogueActTag.getXDATag(utterance.daTag);
         SemanticResponseTemplate responseGenerator = xdaTagToSRT.get(xdaTag);
         
 

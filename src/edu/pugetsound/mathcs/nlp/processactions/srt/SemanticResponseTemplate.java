@@ -34,6 +34,13 @@ public interface SemanticResponseTemplate {
     public String constructResponseFromTemplate(Utterance utterance);
         
 
+    /* To be filled in with actual amr-to-english conversion
+     *
+     */
+    public static String amrToString(AMR amr, String response) {
+        return amr.toString();
+    }
+
     public static HashMap<String, AMR> getResponses(String responseTemplate) {
         JSONParser parser = new JSONParser();
         HashMap<String, AMR> responses = new HashMap<String, AMR>();

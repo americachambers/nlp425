@@ -41,8 +41,9 @@ public class ActionProcessorTest {
     
     @Test
     public void testXDATagMapping() {
-        for(ExtendedDialogueActTag xdatag : ExtendedDialogueActTag.values()) {
-            String response = ActionProcessor.generateResponse(utt, xdatag);
+        for(DialogueActTag datag : DialogueActTag.values()) {
+            utt.daTag = datag;
+            String response = ActionProcessor.generateResponse(utt);
             assertNotNull("should not be null", response);
             assertFalse("failure - response should not be \"Error: Response could not be generated, bad extendedDaTag\"",
                         response.equals("Error: Response could not be generated, bad extendedDA tag"));
