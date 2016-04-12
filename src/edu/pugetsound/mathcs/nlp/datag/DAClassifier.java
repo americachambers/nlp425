@@ -10,23 +10,29 @@ public class DAClassifier {
 	
 	private static final String SWITCHBOARD_DIR = "resources/swb1_dialogact_annot";
 	
-	private final Classifier dumbClassifier;
+//	private final Classifier dumbClassifier;
+	private final TrainableClassifier nnc;
+	private final TokenIndexMap tim;
 	
 	/**
 	 * Constructs a new DAClassifier
 	 * This constructor loads and parses the Switchboard data set
 	 */
 	public DAClassifier() {
-		File switchboardData = new File(SWITCHBOARD_DIR);
+		String testDir = "resources/swb1_dialogact_annot/sw00utt";
+//		File switchboardData = new File(SWITCHBOARD_DIR);
+		File switchboardData = new File(testDir);
 		SwitchboardParser parser = null;
 		
-//		try {
-//			parser = new SwitchboardParser(switchboardData);
-//		} catch (FileNotFoundException e) {
-//			System.err.println("[DATAG] Could not load Switchboard data from " + switchboardData.getAbsolutePath() + " : File not found.");
-//		}
+		try {
+			parser = new SwitchboardParser(switchboardData);
+		} catch (FileNotFoundException e) {
+			System.err.println("[DATAG] Could not load Switchboard data from " + switchboardData.getAbsolutePath() + " : File not found.");
+		}
+		tim = parser.getTokenIndexMap();
 		
-		dumbClassifier = new DumbClassifier();
+//		dumbClassifier = new DumbClassifier();
+		nnc = new NeuralNetClassifier("nn.nnet");
 		
 	}
 	
@@ -37,7 +43,7 @@ public class DAClassifier {
 	 * @return The predicted DialogueActTag for the utterance
 	 */
 	public DialogueActTag classify(Utterance utterance, Conversation conversation) {
-		return dumbClassifier.classify(utterance, conversation, null);
+		return nnc.classify(utterance, conversation, tim);
 	}
 	
 }
