@@ -48,15 +48,19 @@ public class ResponseGenerator {
                 +"processactions/srt folder. Defaults to responses.json. If file exists, it is read "
                 +"from and responses are added to it.\n"
                 +"Args:\n\t-h, --help: Display this message" );
-        } else if (args.size() > 2 || args.size() == 0){
+        } 
+        else if (args.size() > 2 || args.size() == 0){
             System.out.println("Error with arguments: need one or two. You provided "+args.size());
-        } else {
+        } 
+        else {
             File inputFile = new File(args.get(0));
             if(!inputFile.exists() || inputFile.isDirectory()) {
                 System.out.println("Error with first arg: not a valid file");
-            } else {
+            } 
+            else {
                 if (args.size() == 1)
                     args.add("responses.json");
+
                 try {
 
                     System.out.println("Reading from input file at "+inputFile.getAbsolutePath());
@@ -83,6 +87,7 @@ public class ResponseGenerator {
                     int numTokens, utterancesLen;
                     PythonInterpreter python = new PythonInterpreter();
                     python.execfile("../scripts/responseTemplater.py");
+
                     for (int p=0; p<paragraphs.size(); p++) {
                         paragraph = paragraphs.get(p);
                         System.out.println("Now querying MSR SPLAT for AMR/Tokens for paragraph "+(p+1)+" of "+paragraphs.size());
@@ -109,6 +114,7 @@ public class ResponseGenerator {
                         python.exec("DATags += lst");
                         System.out.println("Done asking the DAClassifier to classify each utterance with a DATag.");
                     }
+                    
                     System.out.println("Now writing results to output file at "
                             +"../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + args.get(1));
                     python.set("fn", new PyString("../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + args.get(1)));
