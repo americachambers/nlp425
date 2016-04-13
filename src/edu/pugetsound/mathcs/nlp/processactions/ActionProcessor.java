@@ -61,7 +61,7 @@ public class ActionProcessor {
      * Verify that the conversation given to us has all past utterances classified with a DA tag and AMR
      * Never trust other people with your own data validation!!! :)
      */
-    private static void verifyDATags(Conversation convo) {
+    private static void verifyConversation(Conversation convo) {
         DAClassifier classifier = new DAClassifier();
         for(Utterance utt: convo.getConversation()) {
             if (utt.daTag == null) 
@@ -90,7 +90,7 @@ public class ActionProcessor {
      * @return A string representation of the response. In early versions, this might be an AMR
      */
     public static String generateResponse(Conversation convo, DialogueActTag responseDATag) {
-        verifyDATags(convo);
+        verifyConversation(convo);
         ExtendedDialogueActTag xdaTag = ExtendedDialogueActTag.getXDATag(responseDATag);
         SemanticResponseTemplate responseGenerator = xdaTagToSRT.get(xdaTag);        
         if(responseGenerator != null) {
