@@ -192,9 +192,9 @@ public class AMR {
 
     /**
      * @param text   the String to be converted into AMR
-     * @return An array of Strings, which are translations of each sentences' AMR
+     * @return An array of AMR, which are translations of each sentences' AMR
      */
-    public static String convertTextToAMR(String text) {
+    public static AMR[] convertTextToAMR(String text) {
 
         PythonInterpreter python = new PythonInterpreter();
 
@@ -204,16 +204,49 @@ public class AMR {
         JSONParser parser = new JSONParser();
         try {
             Object obj = parser.parse(python.get("amr").toString());
-            return (String) ((JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value")).get(0);
-
+            JSONArray amrStrs = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
+            AMR[] amrs = new AMR[amrStrs.size()];
+            for (int i=0; i<amrs.length; i++)
+                amrs[i] = AMR.parseAMRString(amrStrs.get(i).toString());
+            return amrs;
         } catch(ParseException pe) {
-
             System.out.println("position: " + pe.getPosition());
             System.out.println(pe);
+        } catch(Exception e) {
+            System.out.println(e);
         }
         return null;
-
     }
+
+
+    /**
+     * Returns an English-legible representation of this AMR using the text template
+     * @return A String representation of this AMR
+     */
+    public String convertAMRToText(String[] text) {
+        this.convertAMRToTextHelper(text);
+        String res = "";
+        for (String t: text)
+            res += t+" ";
+        return res.replace(" .",".")
+            .replace(" ,",",")
+            .replace(" !","!")
+            .replace(" ?","?")
+            .replace(" :",":")
+            .replace(" ;",";")
+            .replace(" (","(")
+            .replace(" )",")")
+            .replace(" $","$")
+            .replace(". ",".");
+    }
+
+    public void convertAMRToTextHelper(String[] text) {
+        if (nodeAlignment != null && nodeAlignment.length > 0)
+            text[nodeAlignment[0]] = nodeValue[1];
+        for (AMR child: semanticRelations.values())
+            child.convertAMRToTextHelper(text);
+    }
+
 
     public static void main(String a[]){
         for (String s: a)

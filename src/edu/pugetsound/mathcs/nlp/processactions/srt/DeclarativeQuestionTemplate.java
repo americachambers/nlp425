@@ -2,8 +2,12 @@ package edu.pugetsound.mathcs.nlp.processactions.srt;
 
 import java.util.Random;
 import java.util.HashMap;
+import java.util.List;
+
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.lang.Conversation;
+
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
@@ -19,8 +23,9 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
 public class DeclarativeQuestionTemplate implements SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Utterance utterance) {
-        return new QuestionTemplate().constructResponseFromTemplate(utterance);
+    public String constructResponseFromTemplate(Conversation convo) {
+        Utterance utterance = convo.getLastUtterance();
+        return new QuestionTemplate().constructResponseFromTemplate(convo);
     }
 
 }

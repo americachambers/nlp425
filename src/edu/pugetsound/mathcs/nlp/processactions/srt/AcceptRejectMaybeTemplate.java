@@ -2,8 +2,12 @@ package edu.pugetsound.mathcs.nlp.processactions.srt;
 
 import java.util.Random;
 import java.util.HashMap;
+import java.util.List;
+
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.lang.Conversation;
+
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
@@ -23,21 +27,22 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.MaybeTemplate;
 public class AcceptRejectMaybeTemplate implements SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Utterance utterance) {
+    public String constructResponseFromTemplate(Conversation convo) {
         Random rand = new Random();
+        Utterance utterance = convo.getLastUtterance();
         switch(rand.nextInt(4)) {
         case 0:
-            return new AcceptTemplate().constructResponseFromTemplate(utterance);
+            return new AcceptTemplate().constructResponseFromTemplate(convo);
         case 1:
-            return new AcceptPartTemplate().constructResponseFromTemplate(utterance);
+            return new AcceptPartTemplate().constructResponseFromTemplate(convo);
         case 2:
-            return new RejectTemplate().constructResponseFromTemplate(utterance);
+            return new RejectTemplate().constructResponseFromTemplate(convo);
         case 3:
-            return new RejectPartTemplate().constructResponseFromTemplate(utterance);
+            return new RejectPartTemplate().constructResponseFromTemplate(convo);
         }
 
         // Else
-        return new MaybeTemplate().constructResponseFromTemplate(utterance);
+        return new MaybeTemplate().constructResponseFromTemplate(convo);
     }
 
 }

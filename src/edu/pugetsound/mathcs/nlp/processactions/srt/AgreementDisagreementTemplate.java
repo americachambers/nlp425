@@ -2,7 +2,10 @@ package edu.pugetsound.mathcs.nlp.processactions.srt;
 
 import java.util.Random;
 
+
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.lang.Conversation;
+
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
@@ -17,12 +20,13 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.DisagreementTemplate;
 public class AgreementDisagreementTemplate implements SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Utterance utterance) {
+    public String constructResponseFromTemplate(Conversation convo) {
         Random rand = new Random();
+        Utterance utterance = convo.getLastUtterance();
         if(rand.nextBoolean()) {
-            return new AgreementTemplate().constructResponseFromTemplate(utterance);
+            return new AgreementTemplate().constructResponseFromTemplate(convo);
         } else {
-            return new DisagreementTemplate().constructResponseFromTemplate(utterance);
+            return new DisagreementTemplate().constructResponseFromTemplate(convo);
         }
     }
 

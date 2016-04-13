@@ -6,6 +6,7 @@ import java.util.List;
 
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
+import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.Tree;
 
@@ -37,6 +38,13 @@ public class Utterance {
 	 * The ending punctuation mark (or null)
 	 */
 	public Punctuation punct;
+
+	/**
+	 * AMR representation
+	 * If you need the AMR for an Utterance utt, 
+	 * call AMR.convertTextToAMR(utt.utterance)[0]
+	 */
+	public AMR amr;
 
 	/**
 	 * The constituency parse tree (or null)

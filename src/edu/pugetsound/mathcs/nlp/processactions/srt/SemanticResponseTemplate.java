@@ -1,6 +1,9 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
+
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.lang.Conversation;
+
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 
@@ -10,9 +13,11 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import org.json.simple.*;
 import org.json.simple.parser.ParseException;
 import org.json.simple.parser.JSONParser;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,25 +36,22 @@ public interface SemanticResponseTemplate {
      * @param utterance The utteranec corresponding to the user's input.
      * @return A string response. In early versions, this might be an AMR response.
      */
-    public String constructResponseFromTemplate(Utterance utterance);
-        
+    public String constructResponseFromTemplate(Conversation convo);
+    
 
-    /* To be filled in with actual amr-to-english conversion
-     *
-     */
-    public static String amrToString(AMR amr, String response) {
-        return amr.toString();
-    }
-
-    public static HashMap<String, AMR> getResponses(String responseTemplate) {
+    public static HashMap<AMR, String[]> getResponses(String responseTemplate) {
         JSONParser parser = new JSONParser();
-        HashMap<String, AMR> responses = new HashMap<String, AMR>();
+        HashMap<AMR, String[]> responses = new HashMap<AMR, String[]>();
         try {
             JSONObject jObject = (JSONObject) ((JSONObject) parser.parse(new FileReader("edu/pugetsound/mathcs/nlp/processactions/srt/responses.json"))).get(responseTemplate);
             Set<String> keys = jObject.keySet();
             for(String o: keys) {
-                String key = (String) o;
-                AMR value = AMR.parseAMRString((String) jObject.get(key));
+                String keyStr = o;
+                AMR key = AMR.parseAMRString(keyStr);
+                JSONArray valueJson = (JSONArray) jObject.get(keyStr);
+                String[] value = new String[valueJson.size()];
+                for (int i=0; i<value.length; i++)
+                    value[i] = valueJson.get(i).toString();
                 responses.put(key, value);
             }
         }

@@ -15,33 +15,34 @@ def getArgIndex(arg):
                 return sys.argv.index(a)
     return -1
 
-utterances, AMRs, DATags = [],[],[]
+tokens, AMRs, DATags = [],[],[]
 
-def analyzeUtteranceString(utteranceStr):
-    global utterances, AMRs
-    oldNum = len(utterances)
-    for msRes in msrsplat.main(utteranceStr,analysers = ["AMR","Tokens"],strRes=False):
+def analyzeUtteranceString(uttstr):
+    global tokens, AMRs
+    oldNum = len(tokens)
+    for msRes in msrsplat.main(uttstr,analysers = ["AMR","Tokens"],strRes=False):
         if msRes['Key'] == "Tokens":
-            utterances += [ 
-                (' '.join([x["RawToken"] 
-                    for x in tokendict['Tokens']]))
-                .replace(' ,', ',')
-                .replace(' .', '.')
-                .replace(' !', '!')
-                .replace(' ?', '?')
-                .replace(' ;', ';')
-                .replace(' \'', '\'')
-                for tokendict in msRes['Value']]
+            tokens.append([x["RawToken"] for x in msRes['Value'][0]['Tokens']])
+            # [ 
+            #     (' '.join([x["RawToken"] 
+            #         for x in tokendict['Tokens']]))
+            #     .replace(' ,', ',')
+            #     .replace(' .', '.')
+            #     .replace(' !', '!')
+            #     .replace(' ?', '?')
+            #     .replace(' ;', ';')
+            #     .replace(' \'', '\'')
+            #     for tokendict in msRes['Value']]
         elif msRes['Key'] == "AMR":
-            AMRs += msRes['Value']
+            AMRs.append(msRes['Value'][0])
         else:
             print("Error with MSResponse")
-    return len(utterances)-oldNum
+    return len(tokens)-oldNum
  
 
 
 '''
-Insert str of utterances with corresponding list of DATags into responses.json. 
+Insert str of tokens with corresponding list of DATags into responses.json. 
 Reads in and overwrites whole file (hence, not very efficient when called many times).
 Call only once on a large list of items for batch use.
 '''
@@ -53,14 +54,15 @@ def main(fName = "../src/edu/pugetsound/mathcs/nlp/processactions/srt/responses.
     else:
         responses = {}
 
-    if [] in [utterances, AMRs, DATags]:
-        print("Error, null pointer to either utterances, AMRs, or DATags")
-        print(utterances, AMRs, DATags)
+    if [] in [tokens, AMRs, DATags]:
+        print("Error, null pointer to either tokens, AMRs, or DATags")
+        print(tokens, AMRs, DATags)
         exit(0)
     for i in range(len(AMRs)):
         if DATags[i] not in responses:
             responses[DATags[i]] = {}
-        responses[DATags[i]][utterances[i]] = AMRs[i]
+        if AMRs[i] not in responses[DATags[i]] or len(tokens[i]) < len(responses[DATags[i]][AMRs[i]]):
+            responses[DATags[i]][AMRs[i]] = tokens[i]
 
     with open(fName,'w') as f:
         json.dump(responses,f)
@@ -69,10 +71,10 @@ if __name__ == '__main__' and len(sys.argv) > 2:
 
     if any([arg in ['-h','--help'] for arg in sys.argv]):
         print('''Usage: 
-            \n  python responseTemplater.py args utterances DATags 
+            \n  python responseTemplater.py args tokens DATags 
             \n\nArgs:   
             \n  DATags: DA Tags as a list to be used as keys for each respective utterance in the next arg, enclosed by double-quotes
-            \n  utterances: utterances, enclosed by double quotes, to be used as resposnses to the user. AMR will be queried via msrsplat
+            \n  tokens: tokens, enclosed by double quotes, to be used as resposnses to the user. AMR will be queried via msrsplat
             \n  -h, --help: Display this help message.
             \n  -j, --json-file fileName: Provide the file name for the json dump output. Default is responses.json in the processactions/srt folder
             \n\nExampes:
@@ -85,6 +87,6 @@ if __name__ == '__main__' and len(sys.argv) > 2:
         fName = sys.argv[i].strip()
     else:
         fName = "../src/edu/pugetsound/mathcs/nlp/processactions/srt/responses.json"
-    analyzeUtteranceString(sys.argv[-2])
+    analyzeuttstring(sys.argv[-2])
     DATags = [s.strip() for s in sys.argv[-1][1:-1].split(',')]
     main(fName)

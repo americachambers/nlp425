@@ -3,6 +3,8 @@ package edu.pugetsound.mathcs.nlp.processactions;
 import java.util.HashMap;
 import java.lang.ProcessBuilder;
 
+import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
+import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
 import edu.pugetsound.mathcs.nlp.processactions.srt.*;
@@ -55,30 +57,54 @@ public class ActionProcessor {
         }};
 
 
+    /*
+     * Verify that the conversation given to us has all past utterances classified with a DA tag and AMR
+     * Never trust other people with your own data validation!!! :)
+     */
+    private static void verifyDATags(Conversation convo) {
+        DAClassifier classifier = new DAClassifier();
+        for(Utterance utt: convo.getConversation()) {
+            if (utt.daTag == null) 
+                utt.daTag = classifier.classify(utt, convo);
+            if (utt.amr == null) 
+                utt.amr = AMR.convertTextToAMR(utt.utterance)[0];
+        }
+    }
+
     
     /**
-     * Takes in an Utterance and a DA tag for what type of statement to respond from the MDP
+     * Wrapper function that converts an utterance to a conversation
+     * For backwards compatability only; use the one that takes a conversation preferably!
+     * @return A string representation of the response. In early versions, this might be an AMR
+     */
+    public static String generateResponse(Utterance utterance, DialogueActTag responseDATag) {
+        Conversation convo = new Conversation();
+        convo.addUtterance(utterance);
+        return generateResponse(convo, responseDATag);
+    }
+
+
+    /**
+     * Takes in a conversation and a DA tag for what type of statement to respond from the MDP
      * Returns a string corresponding to the generated response
      * @return A string representation of the response. In early versions, this might be an AMR
      */
-    public static String generateResponse(Utterance utterance) {
-        // Use the given daTag to determine what type of response to generate
-
-        ExtendedDialogueActTag xdaTag = ExtendedDialogueActTag.getXDATag(utterance.daTag);
-        SemanticResponseTemplate responseGenerator = xdaTagToSRT.get(xdaTag);
-        
-
+    public static String generateResponse(Conversation convo, DialogueActTag responseDATag) {
+        verifyDATags(convo);
+        ExtendedDialogueActTag xdaTag = ExtendedDialogueActTag.getXDATag(responseDATag);
+        SemanticResponseTemplate responseGenerator = xdaTagToSRT.get(xdaTag);        
         if(responseGenerator != null) {
-            return responseGenerator.constructResponseFromTemplate(utterance);
+            // Use the given daTag to determine what type of response to generate
+            return responseGenerator.constructResponseFromTemplate(convo);
         }
 
         // Should probably throw an excetion here
         return "Error: Response could not be generated, bad extendedDA tag";
     }
 
-    // public static void main(String a[]) {
-    //     for (String s: a)
-    //        System.out.println(ActionProcessor.generateResponse(new Utterance(s), ExtendedDialogueActTag.ACCEPT_REJECT_MAYBE));
-    // }
+    public static void main(String[] args){
+        for (String a: args)
+            System.out.println(generateResponse(new Utterance(a), DialogueActTag.WELCOME));
+    }
 
 }

@@ -2,8 +2,12 @@ package edu.pugetsound.mathcs.nlp.processactions.srt;
 
 import java.util.Random;
 import java.util.HashMap;
+import java.util.List;
+
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.lang.Conversation;
+
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
@@ -14,13 +18,15 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  */
 public class WelcomeTemplate implements SemanticResponseTemplate {
 
-    private static final HashMap<String, AMR> outputs = SemanticResponseTemplate.getResponses("WelcomeTemplate");
+    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("WelcomeTemplate");
 
 
     @Override
-    public String constructResponseFromTemplate(Utterance utterance) {
+    public String constructResponseFromTemplate(Conversation convo) {
         Random rand = new Random();
-        return ((String) outputs.keySet().toArray()[rand.nextInt(outputs.size())]);
+        Utterance utterance = convo.getLastUtterance();
+        AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
+        return amr.convertAMRToText(outputs.get(amr));
     }
 
 }
