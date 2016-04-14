@@ -240,7 +240,7 @@ public class AMR {
         // } catch(Exception e) {
         //     System.out.println(e);
         // }
-        return null;
+        // return null;
     }
 
 
@@ -273,7 +273,7 @@ public class AMR {
     }
 
 
-    public static void main(String a[]){
+    public static void main(String a[]) throws Exception{
         for (String s: a)
             System.out.println(AMR.convertTextToAMR(s));
 
