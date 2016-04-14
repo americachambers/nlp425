@@ -105,7 +105,7 @@ public class ActionProcessor {
         for (String a: args)
             convo.addUtterance(ta.analyze(a,convo));
         for (Utterance utt: convo.getConversation())
-            System.out.println(generateResponse(new Utterance(a), ResponseTag.GREETING));
+            System.out.println(generateResponse(utt, ResponseTag.GREETING));
     }
 
 }
