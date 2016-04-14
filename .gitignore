@@ -12,6 +12,8 @@
 /bin/
 /lib/
 
+/resources/swb1_dialogact_annot/scrubbed
+
 # Eclipse things
 .classpath
 .project
