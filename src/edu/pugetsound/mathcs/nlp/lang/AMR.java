@@ -210,7 +210,7 @@ public class AMR {
      * @param text   the String to be converted into AMR
      * @return An array of AMR, which are translations of each sentences' AMR
      */
-    public static AMR[] convertTextToAMR(String text) throws Exception{
+    public static AMR[] convertTextToAMR(String text) {
 
         PythonInterpreter python = new PythonInterpreter();
         python.execfile("../scripts/msrsplat.py");
@@ -218,7 +218,7 @@ public class AMR {
         System.out.println("Querying MSR_SPLAT for the AMR string for '"+text+"'");
         python.exec("amr = main(text)");
         JSONParser parser = new JSONParser();
-        // try {
+        try {
             if (System.currentTimeMillis() - queryTime < 1000)
                 Thread.sleep(1000 - System.currentTimeMillis() + queryTime);
             System.out.println("Got the AMR String; parsing in a moment...");
@@ -234,13 +234,13 @@ public class AMR {
                 amrs[i] = AMR.parseAMRString(amrStrs.get(i).toString());
             }
             return amrs;
-        // } catch(ParseException pe) {
-        //     System.out.println("position: " + pe.getPosition());
-        //     System.out.println(pe);
-        // } catch(Exception e) {
-        //     System.out.println(e);
-        // }
-        // return null;
+        } catch(ParseException pe) {
+            System.out.println("position: " + pe.getPosition());
+            System.out.println(pe);
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+        return null;
     }
 
 
@@ -273,7 +273,7 @@ public class AMR {
     }
 
 
-    public static void main(String a[]) throws Exception{
+    public static void main(String a[]) {
         for (String s: a)
             System.out.println(AMR.convertTextToAMR(s));
 
