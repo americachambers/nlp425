@@ -16,9 +16,9 @@ class SwitchboardParser {
 
 	private static final String SB_SUFFIX = ".utt";
 	private static final String START_SENTINEL = "=";
-	private static final String ACT_SPLIT = "[ ]{10}";
-	private static final String TOKEN_REGEX = "\\w+";
-	private static final String[] REMOVALS = {"\\{", "[A-Z]\\s", "\\}", "!", ",", "\\[", "\\]"};
+	private static final String ACT_SPLIT = "\t";
+	private static final String TOKEN_REGEX = "[\\w\\.\\?,!']+";
+	private static final String[] REMOVALS = {"\\{", "\\}", ","};
 	
 	private Map<DialogueActTag,List<DialogueAct>> tagToActs;
 	private Map<String,Integer> tokenToIndex;
@@ -80,7 +80,7 @@ class SwitchboardParser {
 		for(DialogueActTag tag : tags)
 			if(tagToActs.get(tag) != null)
 				acts.addAll(tagToActs.get(tag));
-		
+
 		return acts;
 	}
 	
@@ -108,58 +108,77 @@ class SwitchboardParser {
 		
 		Scanner input = new Scanner(file);
 		String line;
-		boolean dataReached = false;
+		
+		Map<Character,DialogueAct> lastSpoken = new HashMap<Character,DialogueAct>();
+		Character prevSpeaker = null;
 		
 		while(input.hasNextLine()) {
 			line = input.nextLine();
-			
-			dataReached = true;
-			
-			// Skip past all of the metadata
-			if(!dataReached && line.startsWith(START_SENTINEL)) {
-				dataReached = true;
-				input.nextLine();
-				input.nextLine();
-				continue;
-			}
-			
-			if(dataReached) {
-				String[] split = line.split(ACT_SPLIT);
-				if(split != null && split.length > 0) {
-					String tagString = split[0];
-					
-					if(tagString.length() > 0 && tagString.charAt(0) != '^' && tagString.indexOf('^') != -1)
-						tagString = tagString.substring(tagString.indexOf('^'));
-					
-					if(tagString.endsWith(")"))
-						tagString = tagString.substring(0, tagString.length() - 1);
-					
-					if(split != null && split.length > 1) {
-						int colonIndex = split[1].indexOf(':');
-						if(colonIndex != -1) {
-							
-							String utterance = split[1].substring(colonIndex + 1);
-							for(String removal : REMOVALS)
-								utterance = utterance.replaceAll(removal, "");
-							
-							List<String> utteranceTokens = tokenizeUtterance(utterance);
-							
-							// DEBUG
-							this.totalTags++;
 
-							try {
-								DialogueActTag tag = DialogueActTag.fromLabel(tagString);
-								putAct(new DialogueAct(tag, utteranceTokens));
-							} catch(IllegalArgumentException e) {
-								this.errorTags++;
+			String[] split = line.split(ACT_SPLIT);
+			if(split != null && split.length > 0) {
+				String tagString = split[0];
+				
+				if(tagString.length() > 0 && tagString.charAt(0) != '^' && tagString.indexOf('^') != -1)
+					tagString = tagString.substring(tagString.indexOf('^'));
+				
+				if(tagString.endsWith(")"))
+					tagString = tagString.substring(0, tagString.length() - 1);
+				
+				if(split != null && split.length > 2) {
+					
+					char speaker;
+					if(split[1].startsWith("@"))
+						speaker = split[1].charAt(1);
+					else
+						speaker = split[1].charAt(0);
+					
+					String utterance = split[2];
+					
+					if(utterance.matches(".*[\\?\\.,!]$")) {
+						char punctuation = utterance.charAt(utterance.length()-1);
+						utterance = utterance.substring(0, utterance.length()-1);
+						utterance += " " + punctuation;
+					}
+					
+					for(String removal : REMOVALS)
+						utterance = utterance.replaceAll(removal, "");
+					
+					List<String> utteranceTokens = tokenizeUtterance(utterance);
+					
+					// DEBUG
+					this.totalTags++;
+
+					try {
+						if(utteranceTokens.size() > 0) {
+							DialogueActTag tag = DialogueActTag.fromLabel(tagString);
+							if(tag.equals(DialogueActTag.CONTINUED_FROM_PREVIOUS)) {
+								if(lastSpoken.get(speaker) != null)
+									lastSpoken.get(speaker).appendWords(utteranceTokens);	
+							} else {
+								if(lastSpoken.get(speaker) != null)
+									putAct(lastSpoken.get(speaker));
+								
+								DialogueAct newAct = new DialogueAct(tag, utteranceTokens);
+								lastSpoken.put(speaker, newAct);
+								prevSpeaker = speaker;
+								
 							}
 							
-							
+						} else {
+							this.errorTags++;
 						}
+					} catch(IllegalArgumentException e) {
+						this.errorTags++;
 					}
+						
+						
 				}
 			}
 		}
+		
+		putAct(lastSpoken.get(prevSpeaker));
+		
 		input.close();
 	}
 	
@@ -202,6 +221,10 @@ class SwitchboardParser {
 		}
 		
 		actList.add(act);
+	}
+	
+	public static void main(String[] args) throws FileNotFoundException {
+		SwitchboardParser parser = new SwitchboardParser(new File("resources/swb1_dialogact_annot/scrubbed"));
 	}
 	
 }
