@@ -17,7 +17,7 @@ import java.io.FileNotFoundException;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
-// import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
+// import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
 // import edu.pugetsound.mathcs.nlp.processactions.srt.*;
 
 
