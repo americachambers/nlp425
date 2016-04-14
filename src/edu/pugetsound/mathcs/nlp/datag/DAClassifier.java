@@ -8,31 +8,24 @@ import edu.pugetsound.mathcs.nlp.lang.Utterance;
 
 public class DAClassifier {
 	
-	private static final String SWITCHBOARD_DIR = "resources/swb1_dialogact_annot";
+	private static final String INDEX_MAP_FILE = "models/datag/Token-Index-Map.txt";
 	
-//	private final Classifier dumbClassifier;
-	private final TrainableClassifier nnc;
-	private final TokenIndexMap tim;
+	private Classifier dumbClassifier;
+	private TokenIndexMap tokenIndexMap;
 	
 	/**
 	 * Constructs a new DAClassifier
 	 * This constructor loads and parses the Switchboard data set
 	 */
 	public DAClassifier() {
-		String testDir = "resources/swb1_dialogact_annot/sw00utt";
-//		File switchboardData = new File(SWITCHBOARD_DIR);
-		File switchboardData = new File(testDir);
-		SwitchboardParser parser = null;
 		
 		try {
-			parser = new SwitchboardParser(switchboardData);
+			dumbClassifier = new DumbClassifier();
+			tokenIndexMap = new TokenIndexMap(new File(INDEX_MAP_FILE));
 		} catch (FileNotFoundException e) {
-			System.err.println("[DATAG] Could not load Switchboard data from " + switchboardData.getAbsolutePath() + " : File not found.");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		tim = parser.getTokenIndexMap();
-		
-//		dumbClassifier = new DumbClassifier();
-		nnc = new NeuralNetClassifier("nn.nnet");
 		
 	}
 	
@@ -43,7 +36,7 @@ public class DAClassifier {
 	 * @return The predicted DialogueActTag for the utterance
 	 */
 	public DialogueActTag classify(Utterance utterance, Conversation conversation) {
-		return nnc.classify(utterance, conversation, tim);
+		return dumbClassifier.classify(utterance, conversation, tokenIndexMap);
 	}
 	
 }
