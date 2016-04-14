@@ -218,7 +218,7 @@ public class AMR {
         System.out.println("Querying MSR_SPLAT for the AMR string for '"+text+"'");
         python.exec("amr = main(text)");
         JSONParser parser = new JSONParser();
-        try {
+        // try {
             if (System.currentTimeMillis() - queryTime < 1000)
                 Thread.sleep(1000 - System.currentTimeMillis() + queryTime);
             System.out.println("Got the AMR String; parsing in a moment...");
@@ -234,12 +234,12 @@ public class AMR {
                 amrs[i].amrString = amrStrs.get(i).toString();
             }
             return amrs;
-        } catch(ParseException pe) {
-            System.out.println("position: " + pe.getPosition());
-            System.out.println(pe);
-        } catch(Exception e) {
-            System.out.println(e);
-        }
+        // } catch(ParseException pe) {
+        //     System.out.println("position: " + pe.getPosition());
+        //     System.out.println(pe);
+        // } catch(Exception e) {
+        //     System.out.println(e);
+        // }
         return null;
     }
 
