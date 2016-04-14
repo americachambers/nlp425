@@ -139,6 +139,9 @@ public class TextAnalyzer {
 		// Compute parse tree features
 		storeParseTrees(h, sentence);
 		storeParseFeatures(h);
+
+		// Jon would like to add this if the API call doesn't cause trouble for anyone...
+		h.amr = AMR.convertTextToAMR(input)[0];
 		
 		anaphoraAnalyzer.analyze(h, conversation, pipeline);
 		semAnalyzer.analyze(h, conversation);

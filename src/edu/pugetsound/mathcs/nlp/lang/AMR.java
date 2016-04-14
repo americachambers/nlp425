@@ -2,6 +2,7 @@ package edu.pugetsound.mathcs.nlp.lang;
 
 import java.util.HashMap;
 import java.util.List;
+import java.lang.Thread;
 
 //Requires Jython 2.5: http://www.jython.org/
 //http://search.maven.org/remotecontent?filepath=org/python/jython-standalone/2.7.0/jython-standalone-2.7.0.jar
@@ -178,6 +179,9 @@ public class AMR {
      * @return A String representation of this AMR
      */
     public String toString() {
+        if (amrString != null)
+            return amrString;
+
         String stringForm = "(" + nodeValue[0] + " / " + nodeValue[1];
 
         for(SemanticRelation sr : SemanticRelation.values()) {
@@ -189,6 +193,18 @@ public class AMR {
         stringForm += ")";
         return stringForm;
     }
+
+
+    /**
+     * The String representation of the AMR as given my MSR Splat
+     */
+    public String amrString;
+
+    /**
+     * The time since the MSR Splat API was last queried
+     */
+    private static long queryTime = 0;
+
 
     /**
      * @param text   the String to be converted into AMR
@@ -203,11 +219,16 @@ public class AMR {
         python.exec("amr = main(text)");
         JSONParser parser = new JSONParser();
         try {
+            if (System.currentTimeMillis() - queryTime < 1000)
+                Thread.sleep(1000 - System.currentTimeMillis() + queryTime);
             Object obj = parser.parse(python.get("amr").toString());
+            queryTime = System.currentTimeMillis();
             JSONArray amrStrs = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
             AMR[] amrs = new AMR[amrStrs.size()];
-            for (int i=0; i<amrs.length; i++)
+            for (int i=0; i<amrs.length; i++){
                 amrs[i] = AMR.parseAMRString(amrStrs.get(i).toString());
+                amrs[i].amrString = amrStrs.get(i).toString();
+            }
             return amrs;
         } catch(ParseException pe) {
             System.out.println("position: " + pe.getPosition());

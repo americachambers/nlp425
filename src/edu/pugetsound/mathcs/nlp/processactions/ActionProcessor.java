@@ -60,13 +60,12 @@ public class ActionProcessor {
     /*
      * Verify that the conversation given to us has all past utterances classified with a DA tag and AMR
      * Never trust other people with your own data validation!!! :)
+     * Look into using TextAnalyzer.analyze instead
      */
     private static void verifyConversation(Conversation convo) {
         DAClassifier classifier = new DAClassifier();
         for(Utterance utt: convo.getConversation()) {
-            if (utt.daTag == null) 
-                utt.daTag = classifier.classify(utt, convo);
-            if (utt.amr == null) 
+            if (utt.daTag == null ||utt.amr == null) 
                 utt.amr = AMR.convertTextToAMR(utt.utterance)[0];
         }
     }
@@ -103,8 +102,12 @@ public class ActionProcessor {
     }
 
     public static void main(String[] args){
+        TextAnalyzer ta = new TextAnalyzer();
+        Conversation convo = new Conversation();
         for (String a: args)
-            System.out.println(generateResponse(new Utterance(a), DialogueActTag.WELCOME));
+            convo.addUtterance(ta.analyze(a,convo));
+        for (Utterance utt: convo.getConversation())
+            System.out.println(generateResponse(utt, DialogueActTag.WELCOME));
     }
 
 }

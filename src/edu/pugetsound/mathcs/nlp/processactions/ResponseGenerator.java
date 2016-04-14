@@ -16,7 +16,7 @@ import java.io.FileNotFoundException;
 
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
-import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
+import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
 // import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
 // import edu.pugetsound.mathcs.nlp.processactions.srt.*;
 
@@ -57,6 +57,87 @@ public class ResponseGenerator {
         return sentences.toArray(utts);
     }
 
+    private static int saveUtterancesWithAnalysis(String[] utterances, String outfileName) {
+        Conversation tempConvo;
+        ArrayList<Utterance> convoList = new ArrayList<Utterance>();
+        PyString[] tokens;
+        TextAnalyzer ta = new TextAnalyzer();
+        PythonInterpreter python = new PythonInterpreter();
+        python.execfile("../scripts/responseTemplater.py");            
+        for (int p=0; p<utterances.length; p++) {
+            try {
+                verifyLists(python);
+
+                if (p > 15 && (p % 15) == 0){
+                    System.out.println("Writing current progress to file since we've analyzed "+p+" paragraphs.");
+                    python.exec("main(fn)");
+                }
+
+                tempConvo = new Conversation();
+                for (Utterance u: convoList)
+                    tempConvo.addUtterance(u);
+                Utterance currentUtt = ta.analyze(utterances[p], tempConvo);
+                convoList.add(currentUtt);
+                if (convoList.size() > 10)
+                    convoList.remove(0);
+                python.set("dat", new PyString(currentUtt.daTag.toString()));
+                python.exec("DATags.append(dat)");
+                python.set("amr", new PyString(currentUtt.amr.toString()));
+                python.exec("AMRs.append(amr)");
+
+                tokens = new PyString[currentUtt.tokens.size()];
+                for (int i=0; i<currentUtt.tokens.size(); i++)
+                    tokens[i] = new PyString(currentUtt.tokens.get(i).token);
+                python.set("ts", new PyList(tokens));
+                python.exec("tokens.append(ts)");
+
+                System.out.println("Done asking the TextAnalyzer to analyze each utterance with an AMR/DATag/tokens.");
+            } catch(Exception e) {
+                System.out.println("Issue with paragraph "+p+"; reverting any added amrs/utterances/datags to last paragraph.");
+                System.out.println(e);
+            }
+        }
+        python.exec("tokensLen = len(tokens)");
+        int tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
+        System.out.println("Now writing "+tokensLen+" results to output file at "+outfileName);
+        python.set("fn", new PyString(outfileName));
+        python.exec("main(fn)");
+
+        return tokensLen;
+    }
+
+    private static void verifyLists(PythonInterpreter python) {
+
+        python.exec("tokensLen = len(tokens)");
+        int tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
+        python.exec("amrLen = len(AMRs)");
+        int amrLen = ((PyInteger) python.get("amrLen")).asInt();
+        python.exec("daTagsLen = len(DATags)");
+        int daTagsLen = ((PyInteger) python.get("daTagsLen")).asInt();
+        
+        if (tokensLen != amrLen)
+            if (tokensLen > amrLen) {
+                python.exec("utterances = utterances[:amrLen]");
+                python.exec("tokensLen = len(tokens)");
+                tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
+            }
+            else {
+                python.exec("AMRs = AMRs[:tokensLen]");
+                python.exec("amrLen = len(AMRs)");
+                amrLen = ((PyInteger) python.get("amrLen")).asInt();
+            }
+        if (tokensLen > daTagsLen){
+            python.exec("utterances = utterances[:daTagsLen]");
+            python.exec("tokensLen = len(tokens)");
+            tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
+        }
+        if (amrLen > daTagsLen){
+            python.exec("AMRs = AMRs[:daTagsLen]");
+            python.exec("amrLen = len(AMRs)");
+            amrLen = ((PyInteger) python.get("amrLen")).asInt();
+        }
+    }
+
 
 
     public static void main(String a[]) {
@@ -91,92 +172,13 @@ public class ResponseGenerator {
                     System.out.println("Reading from input file at "+inputFile.getAbsolutePath());
                     String[] utterances = getUtterances(inputFile);
                     System.out.println("Done reading from input file.");
-
-                    long queryTime = 0;
-                    Conversation tempConvo;
-                    int tokensLen, amrLen, daTagsLen;
-                    String text;
-                    ArrayList<Utterance> convoList = new ArrayList<Utterance>();
-                    DAClassifier classifier = new DAClassifier();
-                    PythonInterpreter python = new PythonInterpreter();
-                    python.execfile("../scripts/responseTemplater.py");
-                    python.set("fn", new PyString("../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + args.get(1)));
-                        
-                    for (int p=0; p<utterances.length; p++) {
-                        try {
-                            python.exec("tokensLen = len(tokens)");
-                            tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
-                            python.exec("amrLen = len(AMRs)");
-                            amrLen = ((PyInteger) python.get("amrLen")).asInt();
-                            python.exec("daTagsLen = len(DATags)");
-                            daTagsLen = ((PyInteger) python.get("daTagsLen")).asInt();
-                            if (tokensLen != amrLen)
-                                if (tokensLen > amrLen) {
-                                    python.exec("utterances = utterances[:amrLen]");
-                                    python.exec("tokensLen = len(tokens)");
-                                    tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
-                                }
-                                else {
-                                    python.exec("AMRs = AMRs[:tokensLen]");
-                                    python.exec("amrLen = len(AMRs)");
-                                    amrLen = ((PyInteger) python.get("amrLen")).asInt();
-                                }
-                            if (tokensLen > daTagsLen){
-                                python.exec("utterances = utterances[:daTagsLen]");
-                                python.exec("tokensLen = len(tokens)");
-                                tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
-                            }
-                            if (amrLen > daTagsLen){
-                                python.exec("AMRs = AMRs[:daTagsLen]");
-                                python.exec("amrLen = len(AMRs)");
-                                amrLen = ((PyInteger) python.get("amrLen")).asInt();
-                            }
-
-                            if (p > 15 && (p % 15) == 0){
-                                System.out.println("Writing current progress to file since we've analyzed "+p+" paragraphs and "+tokensLen+" utterances.");
-                                python.exec("main(fn)");
-                            }
-
-
-                            text = utterances[p];
-                            System.out.println("Now querying MSR SPLAT for AMR/Tokens for utterance "+(p+1)+" of "+utterances.length);
-                            
-                            python.set("text", new PyString(text)); //Watch out for "Cannot create PyString with non-byte value"
-                            if (System.currentTimeMillis() - queryTime < 1500)
-                                Thread.sleep(1500 - System.currentTimeMillis() + queryTime);
-                            python.exec("analyzeUtteranceString(text)");
-                            queryTime = System.currentTimeMillis();
-                            System.out.println("Done querying MSR SPLAT for AMR/Tokens\n"
-                                +"Now asking the DAClassifier to classify each utterance with a DATag for utterance "+(p+1)+" of "+utterances.length);
-
-                            tempConvo = new Conversation();
-                            for (Utterance u: convoList)
-                                tempConvo.addUtterance(u);
-                            Utterance currentUtt = new Utterance(text);
-                            convoList.add(currentUtt);
-                            currentUtt.daTag = classifier.classify(currentUtt, tempConvo);
-                            if (convoList.size() > 10)
-                                convoList.remove(0);
-                            python.set("dat", new PyString(currentUtt.daTag.toString()));
-                            python.exec("DATags.append(dat)");
-                            System.out.println("Done asking the DAClassifier to classify each utterance with a DATag.");
-                            System.out.println("Now have " + (tokensLen+1) +" utterances total." );
-                        } catch(Exception e) {
-                            System.out.println("Issue with paragraph "+p+"; reverting any added amrs/utterances/datags to last paragraph.");
-                            System.out.println(e);
-                        }
-                    }
-                    python.exec("tokensLen = len(tokens)");
-                    tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
+                    int tokensLen = saveUtterancesWithAnalysis(utterances, "../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + args.get(1));
                     if (tokensLen > 0) {
-                        System.out.println("Now writing "+tokensLen+" results to output file at "
-                                +"../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + args.get(1));
-                        python.exec("main(fn)");
                         System.out.println("Done writing results to output file!");
                     }
                     else {
                         System.out.println("Warning: no utterances/AMRs found. Not writing anything to output file.");
-                    }   
+                    }
 
                 } catch(FileNotFoundException ex) {
                     System.out.println("Error: Unable to open file");    
