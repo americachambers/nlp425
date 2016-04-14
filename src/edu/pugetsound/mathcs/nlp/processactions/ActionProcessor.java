@@ -3,7 +3,6 @@ package edu.pugetsound.mathcs.nlp.processactions;
 import java.util.HashMap;
 import java.lang.ProcessBuilder;
 
-import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
@@ -106,7 +105,7 @@ public class ActionProcessor {
         for (String a: args)
             convo.addUtterance(ta.analyze(a,convo));
         for (Utterance utt: convo.getConversation())
-            System.out.println(generateResponse(utt, DialogueActTag.GREETING));
+            System.out.println(generateResponse(new Utterance(a), ResponseTag.GREETING));
     }
 
 }
