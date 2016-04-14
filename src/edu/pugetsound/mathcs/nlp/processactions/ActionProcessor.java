@@ -106,7 +106,7 @@ public class ActionProcessor {
         for (String a: args)
             convo.addUtterance(ta.analyze(a,convo));
         for (Utterance utt: convo.getConversation())
-            System.out.println(generateResponse(utt, DialogueActTag.WELCOME));
+            System.out.println(generateResponse(utt, DialogueActTag.GREETING));
     }
 
 }
