@@ -31,11 +31,6 @@ public enum DialogueActTag {
 	AGREEMENTS("a"),
 	
 	/**
-	 * indeterminate, interrupted, or contains just a floor holder (see manual)
-	 */
-	INDETERMINATE("%"),
-	
-	/**
 	 * comment  (followed by "*[[comment...]]" after transcription to explain)
 	 */
 	COMMENT("*"),
@@ -297,6 +292,14 @@ public enum DialogueActTag {
 	          return tag;
 	    throw new IllegalArgumentException("\"" + label + "\" is not a valid dialogue act tag label.");
 	  }
+	
+	static int indexOf(DialogueActTag tag) {
+		int numTags = DialogueActTag.values().length;
+		for(int i = 0; i < numTags; i++)
+			if(DialogueActTag.values()[i].equals(tag))
+				return i;
+		return -1;
+	}
 	
 	@Override
 	public String toString() {
