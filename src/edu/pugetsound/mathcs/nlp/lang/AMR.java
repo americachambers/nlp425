@@ -228,10 +228,10 @@ public class AMR {
             JSONArray amrStrs = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
             System.out.println("About to convert the parsed AMR Strings into AMR Objects");
             
+            String temp;
             AMR[] amrs = new AMR[amrStrs.size()];
             for (int i=0; i<amrs.length; i++){
                 amrs[i] = AMR.parseAMRString(amrStrs.get(i).toString());
-                amrs[i].amrString = amrStrs.get(i).toString();
             }
             return amrs;
         // } catch(ParseException pe) {
@@ -310,6 +310,7 @@ public class AMR {
 
         // The current AMR object we are filling
         AMR cur_amr = new AMR();
+        cur_amr.amrString = text;
 
         // Flag for if we're insidez quotation marks
         boolean in_quote = false;
