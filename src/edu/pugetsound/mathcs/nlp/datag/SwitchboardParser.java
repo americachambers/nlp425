@@ -2,21 +2,27 @@ package edu.pugetsound.mathcs.nlp.datag;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 class SwitchboardParser {
 
 	private static final String SB_SUFFIX = ".utt";
 	private static final String START_SENTINEL = "=";
-	private static final String ACT_SPLIT = "[ ]{10}";
-	private static final String TOKEN_REGEX = "\\w+";
-	private static final String[] REMOVALS = {"\\{", "[A-Z]\\s", "\\}", "\\.", ",", "\\[", "\\]"};
+	private static final String ACT_SPLIT = "\t";
+	private static final String TOKEN_REGEX = "[\\w\\.\\?,!']+";
+	private static final String[] REMOVALS = {"\\{", "\\}", ","};
 	
 	private Map<DialogueActTag,List<DialogueAct>> tagToActs;
+	private Map<String,Integer> tokenToIndex;
+	private Set<String> tokenSet;
 	
 	// DEBUG
 	private int totalTags = 0, errorTags = 0;
@@ -28,6 +34,8 @@ class SwitchboardParser {
 	 */
 	public SwitchboardParser(File dataDirectory) throws FileNotFoundException {
 		tagToActs = new HashMap<DialogueActTag,List<DialogueAct>>();
+		tokenToIndex = new HashMap<String,Integer>();
+		tokenSet = new LinkedHashSet<String>();
 		
 		System.out.println("[DATAG] Loading Switchboard data...");
 		
@@ -35,6 +43,12 @@ class SwitchboardParser {
 			parseDir(dataDirectory);
 		} else {
 			parseFile(dataDirectory);
+		}
+		
+		int index = 0;
+		for(String token : tokenSet) {
+			tokenToIndex.put(token, index);
+			index++;
 		}
 		
 		double parseError = (1.0 - (double)(errorTags) / (double)(totalTags)) * 100;
@@ -66,8 +80,27 @@ class SwitchboardParser {
 		for(DialogueActTag tag : tags)
 			if(tagToActs.get(tag) != null)
 				acts.addAll(tagToActs.get(tag));
-		
+
 		return acts;
+	}
+	
+	public List<DialogueAct> getActsExcluding(DialogueActTag... tags) {
+		Set<DialogueActTag> tagSet = new HashSet<DialogueActTag>(Arrays.asList(tags));
+		List<DialogueAct> actList = new LinkedList<DialogueAct>();
+		
+		for(DialogueAct act : this.getActs())
+			if(!tagSet.contains(act.getTag()))
+				actList.add(act);
+		
+		return actList;
+	}
+	
+	/**
+	 * Gets the TokenIndexMap created while parsing the data
+	 * @return A TokenIndexMap
+	 */
+	public TokenIndexMap getTokenIndexMap() {
+		return new TokenIndexMap(this.tokenToIndex);
 	}
 	
 	// Parses a single .utt file and stuffs the recognizable dialogue acts into tagToActs
@@ -75,50 +108,77 @@ class SwitchboardParser {
 		
 		Scanner input = new Scanner(file);
 		String line;
-		boolean dataReached = false;
+		
+		Map<Character,DialogueAct> lastSpoken = new HashMap<Character,DialogueAct>();
+		Character prevSpeaker = null;
 		
 		while(input.hasNextLine()) {
 			line = input.nextLine();
-			
-			// Skip past all of the metadata
-			if(!dataReached && line.startsWith(START_SENTINEL)) {
-				dataReached = true;
-				input.nextLine();
-				input.nextLine();
-				continue;
-			}
-			
-			if(dataReached) {
-				String[] split = line.split(ACT_SPLIT);
-				if(split != null && split.length > 0) {
-					String tagString = split[0];
+
+			String[] split = line.split(ACT_SPLIT);
+			if(split != null && split.length > 0) {
+				String tagString = split[0];
+				
+				if(tagString.length() > 0 && tagString.charAt(0) != '^' && tagString.indexOf('^') != -1)
+					tagString = tagString.substring(tagString.indexOf('^'));
+				
+				if(tagString.endsWith(")"))
+					tagString = tagString.substring(0, tagString.length() - 1);
+				
+				if(split != null && split.length > 2) {
 					
-					if(split != null && split.length > 1) {
-						int colonIndex = split[1].indexOf(':');
-						if(colonIndex != -1) {
-							
-							String utterance = split[1].substring(colonIndex + 1);
-							for(String removal : REMOVALS)
-								utterance = utterance.replaceAll(removal, "");
-							
-							List<String> utteranceTokens = tokenizeUtterance(utterance);
-							
-							// DEBUG
-							this.totalTags++;
-							
-							try {
-								DialogueActTag tag = DialogueActTag.fromLabel(tagString);
-								putAct(new DialogueAct(tag, utteranceTokens));
-							} catch(IllegalArgumentException e) {
-								this.errorTags++;
+					char speaker;
+					if(split[1].startsWith("@"))
+						speaker = split[1].charAt(1);
+					else
+						speaker = split[1].charAt(0);
+					
+					String utterance = split[2];
+					
+					if(utterance.matches(".*[\\?\\.,!]$")) {
+						char punctuation = utterance.charAt(utterance.length()-1);
+						utterance = utterance.substring(0, utterance.length()-1);
+						utterance += " " + punctuation;
+					}
+					
+					for(String removal : REMOVALS)
+						utterance = utterance.replaceAll(removal, "");
+					
+					List<String> utteranceTokens = tokenizeUtterance(utterance);
+					
+					// DEBUG
+					this.totalTags++;
+
+					try {
+						if(utteranceTokens.size() > 0) {
+							DialogueActTag tag = DialogueActTag.fromLabel(tagString);
+							if(tag.equals(DialogueActTag.CONTINUED_FROM_PREVIOUS)) {
+								if(lastSpoken.get(speaker) != null)
+									lastSpoken.get(speaker).appendWords(utteranceTokens);	
+							} else {
+								if(lastSpoken.get(speaker) != null)
+									putAct(lastSpoken.get(speaker));
+								
+								DialogueAct newAct = new DialogueAct(tag, utteranceTokens);
+								lastSpoken.put(speaker, newAct);
+								prevSpeaker = speaker;
+								
 							}
 							
-							
+						} else {
+							this.errorTags++;
 						}
+					} catch(IllegalArgumentException e) {
+						this.errorTags++;
 					}
+						
+						
 				}
 			}
 		}
+		
+		putAct(lastSpoken.get(prevSpeaker));
+		
 		input.close();
 	}
 	
@@ -141,9 +201,12 @@ class SwitchboardParser {
 		
 		String[] split = utterance.split("[ ]+");
 		
-		for(String token : split)
-			if(token.matches(TOKEN_REGEX))
+		for(String token : split) {
+			if(token.matches(TOKEN_REGEX)) {
 				tokens.add(token.toLowerCase());
+				this.tokenSet.add(token.toLowerCase());
+			}
+		}
 		
 		return tokens;
 	}
@@ -158,6 +221,10 @@ class SwitchboardParser {
 		}
 		
 		actList.add(act);
+	}
+	
+	public static void main(String[] args) throws FileNotFoundException {
+		SwitchboardParser parser = new SwitchboardParser(new File("resources/swb1_dialogact_annot/scrubbed"));
 	}
 	
 }

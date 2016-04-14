@@ -1,5 +1,9 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
+import java.util.HashMap;
+
+import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
+
 /**
  * @author Thomas Gagne
  * A list of extended DA tags, based off Chili's DA tags
@@ -35,11 +39,25 @@ public enum ExtendedDialogueActTag {
     YES_NO_ANSWER("YES_NO_ANSWER"),
     QUESTION("QUESTION"),
     QUESTION_YES_NO("QUESTION_YES_NO"),
-    QUESTION_WH("QUESTION_WH");
+    QUESTION_WH("QUESTION_WH"),
+    GREETING("GREETING");
 
     private String name;
 
     ExtendedDialogueActTag(String name) {
         this.name = name;
     }
+
+
+    private static final HashMap<DialogueActTag, ExtendedDialogueActTag> daToXDA = new HashMap<DialogueActTag, ExtendedDialogueActTag>() {{
+        // put( someDATag, itsCorrospondingXDATag);
+    }};
+
+    public static ExtendedDialogueActTag getXDATag(DialogueActTag daTag) {
+        if (daToXDA.containsKey(daTag))
+            return daToXDA.get(daTag);
+        return GREETING;
+    }
+        
+
 }

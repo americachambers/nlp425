@@ -9,7 +9,7 @@ package edu.pugetsound.mathcs.nlp.mdp;
  *
  * @author Zachary Cohan
  */
- class HyperVariables {
+ public class HyperVariables {
 
     private static double GAMMA;
     private static int EXPLORE;
