@@ -210,7 +210,7 @@ public class AMR {
      * @param text   the String to be converted into AMR
      * @return An array of AMR, which are translations of each sentences' AMR
      */
-    public static AMR[] convertTextToAMR(String text) {
+    public static AMR[] convertTextToAMR(String text) throws Exception{
 
         PythonInterpreter python = new PythonInterpreter();
         python.execfile("../scripts/msrsplat.py");
