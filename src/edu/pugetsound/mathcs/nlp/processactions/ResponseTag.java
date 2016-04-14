@@ -9,7 +9,7 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
  * A list of extended DA tags, based off Chili's DA tags
  * These are more general, and we've collapsed tags such as YES and NO into a single tag
  */
-public enum ExtendedDialogueActTag {
+public enum ResponseTag {
     STATEMENT("STATEMENT"),
     NARRATIVE_DESCRIPTIVE("NARRATIVE_DESCRIPTIVE"),
     VIEWPOINT("VIEWPOINT"),
@@ -44,18 +44,18 @@ public enum ExtendedDialogueActTag {
 
     private String name;
 
-    ExtendedDialogueActTag(String name) {
+    ResponseTag(String name) {
         this.name = name;
     }
 
 
-    private static final HashMap<DialogueActTag, ExtendedDialogueActTag> daToXDA = new HashMap<DialogueActTag, ExtendedDialogueActTag>() {{
+    private static final HashMap<DialogueActTag, ResponseTag> daToResponseTag = new HashMap<DialogueActTag, ResponseTag>() {{
         // put( someDATag, itsCorrospondingXDATag);
     }};
 
-    public static ExtendedDialogueActTag getXDATag(DialogueActTag daTag) {
-        if (daToXDA.containsKey(daTag))
-            return daToXDA.get(daTag);
+    public static ResponseTag getResponseTag(DialogueActTag daTag) {
+        if (daToResponseTag.containsKey(daTag))
+            return daToResponseTag.get(daTag);
         return GREETING;
     }
         

@@ -17,8 +17,6 @@ import java.io.FileNotFoundException;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
-// import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
-// import edu.pugetsound.mathcs.nlp.processactions.srt.*;
 
 
 //Requires Jython 2.5: http://www.jython.org/
