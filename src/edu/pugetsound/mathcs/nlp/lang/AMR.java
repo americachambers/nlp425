@@ -221,12 +221,12 @@ public class AMR {
         try {
             if (System.currentTimeMillis() - queryTime < 1000)
                 Thread.sleep(1000 - System.currentTimeMillis() + queryTime);
-            System.out.println("Got the AMR String; parsing in a moment...")
+            System.out.println("Got the AMR String; parsing in a moment...");
             
             Object obj = parser.parse(python.get("amr").toString());
             queryTime = System.currentTimeMillis();
             JSONArray amrStrs = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
-            System.out.println("About to convert the parsed AMR Strings into AMR Objects")
+            System.out.println("About to convert the parsed AMR Strings into AMR Objects");
             
             AMR[] amrs = new AMR[amrStrs.size()];
             for (int i=0; i<amrs.length; i++){
