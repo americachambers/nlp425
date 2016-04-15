@@ -295,8 +295,10 @@ public class AMR {
      */
     public static AMR parseAMRString(String text) {
         // Force some extra spaces in there to help parsing
-        text = text.replace(")", " )");
-        text = text.replace("(", "( ");
+        text = text.replace(")", " )")
+            .replace("(", "( ")
+            .toLowerCase();
+
 
         // Current state; denotes the last significant symbol encountered.
         // ":" indicates we should start processing the relation name
