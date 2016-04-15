@@ -49,10 +49,12 @@ public class ResponseGenerator {
         ArrayList<String> sentences = new ArrayList<String>();
         String sentence;
         for (List<HasWord> hw: dp){
-            sentence = "";
-            for (HasWord w: hw)
-                sentence+=w.word()+" ";
-            sentences.add(sentence);
+            if (hw.size() > 0 && hw.size() < 26) {
+                sentence = "";
+                for (HasWord w: hw)
+                    sentence+=w.word()+" ";
+                sentences.add(sentence);
+            }
         }
         String[] utts = new String[sentences.size()];
         return sentences.toArray(utts);
