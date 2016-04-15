@@ -63,7 +63,7 @@ public class ResponseGenerator {
         PythonInterpreter python = new PythonInterpreter();
         python.execfile("../scripts/responseTemplater.py");            
         for (int p=0; p<utterances.length; p++) {
-            // try {
+            try {
                 verifyLists(python);
 
                 if (p > 15 && (p % 15) == 0){
@@ -75,9 +75,14 @@ public class ResponseGenerator {
                 for (Utterance u: convoList)
                     tempConvo.addUtterance(u);
                 Utterance currentUtt = ta.analyze(utterances[p], tempConvo);
-                convoList.add(currentUtt);
-                if (convoList.size() > 10)
-                    convoList.remove(0);
+                
+                //currentUtt needs to be totally filled out with data at this point, or else thrown away
+                if (currentUtt.daTag == null || currentUtt.amr == null || currentUtt.tokens == null || currentUtt.tokens.size() > 0) 
+                    throw new Exception("There is some issue with current utterance:"
+                        + "datag:"+currentUtt.daTag
+                        + "amr:" + currentUtt.amr
+                        + "tokens"+ currentUtt.tokens);
+
                 python.set("dat", new PyString(currentUtt.daTag.toString()));
                 python.exec("DATags.append(dat)");
                 python.set("amr", new PyString(currentUtt.amr.toString()));
@@ -89,11 +94,15 @@ public class ResponseGenerator {
                 python.set("ts", new PyList(tokens));
                 python.exec("tokens.append(ts)");
 
+                convoList.add(currentUtt);
+                if (convoList.size() > 10)
+                    convoList.remove(0);
+
                 System.out.println("Done asking the TextAnalyzer to analyze each utterance with an AMR/DATag/tokens.");
-            // } catch(Exception e) {
-            //     System.out.println("Issue with paragraph "+p+"; reverting any added amrs/utterances/datags to last paragraph.");
-            //     System.out.println(e);
-            // }
+            } catch(Exception e) {
+                System.out.println("Issue with paragraph "+p+"; reverting any added amrs/utterances/datags to last paragraph.");
+                System.out.println(e);
+            }
         }
         python.exec("tokensLen = len(tokens)");
         int tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
