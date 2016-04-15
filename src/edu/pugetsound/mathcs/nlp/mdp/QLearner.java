@@ -3,7 +3,7 @@ package edu.pugetsound.mathcs.nlp.mdp;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
-import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
+import edu.pugetsound.mathcs.nlp.processactions.Responsetag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class QLearner {
         actions = new ArrayList<>();
 
 
-        for(ExtendedDialogueActTag dialogueActTag : ExtendedDialogueActTag.values()){
+        for(ResponseTag dialogueActTag : ResponseTag.values()){
             this.actions.add(new Action(dialogueActTag));
         }
 

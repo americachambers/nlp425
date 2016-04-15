@@ -40,7 +40,7 @@ public class ActionProcessorTest {
     }
     
     @Test
-    public void testXDATagMapping() {
+    public void testResponseTagMapping() {
         conversation = new Conversation();
         conversation.addUtterance(utt);
         for(ResponseTag datag : ResponseTag.values()) {

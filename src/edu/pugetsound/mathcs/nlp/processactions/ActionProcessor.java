@@ -18,7 +18,11 @@ import edu.pugetsound.mathcs.nlp.features.*;
  */
 public class ActionProcessor {
 
+<<<<<<< HEAD
+    private static final HashMap<ResponseTag, SemanticResponseTemplate> responseTagToSRT =
+=======
     private static final HashMap<ResponseTag, SemanticResponseTemplate> xdaTagToSRT =
+>>>>>>> f1aa0092865bb62c34e4a4ea824d2183bda2eacd
         new HashMap<ResponseTag, SemanticResponseTemplate>() {{
             // Instantiate HashMap's values
             
@@ -89,7 +93,12 @@ public class ActionProcessor {
      */
     public static String generateResponse(Conversation convo, ResponseTag responseDATag) {
         verifyConversation(convo);
+<<<<<<< HEAD
+        ResponseTag responseTag = ResponseTag.getResponseTag(responseDATag);
+        SemanticResponseTemplate responseGenerator = responseTagToSRT.get(responseTag);        
+=======
         SemanticResponseTemplate responseGenerator = xdaTagToSRT.get(responseDATag);        
+>>>>>>> f1aa0092865bb62c34e4a4ea824d2183bda2eacd
         if(responseGenerator != null) {
             // Use the given daTag to determine what type of response to generate
             return responseGenerator.constructResponseFromTemplate(convo);
