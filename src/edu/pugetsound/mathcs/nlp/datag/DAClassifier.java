@@ -8,7 +8,7 @@ import edu.pugetsound.mathcs.nlp.lang.Utterance;
 
 public class DAClassifier {
 	
-	private static final String INDEX_MAP_FILE = "models/datag/Token-Index-Map.txt";
+	private static final String INDEX_MAP_FILE = "../models/datag/Token-Index-Map.txt";
 	
 	private Classifier dumbClassifier;
 	private TokenIndexMap tokenIndexMap;
