@@ -177,6 +177,7 @@ public class AMR {
                     System.out.println(AMR.parseAMRString(amrStrs.get(i).toString()));
                 }
                 amrs[i] = AMR.parseAMRString(amrStrs.get(i).toString());
+                System.out.println(amrs[i]);
             }
             return amrs;
         } catch(ParseException pe) {
