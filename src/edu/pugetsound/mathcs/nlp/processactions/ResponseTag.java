@@ -47,17 +47,6 @@ public enum ResponseTag {
     ResponseTag(String name) {
         this.name = name;
     }
-
-
-    private static final HashMap<DialogueActTag, ResponseTag> daToResponseTag = new HashMap<DialogueActTag, ResponseTag>() {{
-        // put( someDATag, itsCorrospondingXDATag);
-    }};
-
-    public static ResponseTag getResponseTag(DialogueActTag daTag) {
-        if (daToResponseTag.containsKey(daTag))
-            return daToResponseTag.get(daTag);
-        return GREETING;
-    }
         
 
 }

@@ -87,9 +87,8 @@ public class ActionProcessor {
      * Returns a string corresponding to the generated response
      * @return A string representation of the response. In early versions, this might be an AMR
      */
-    public static String generateResponse(Conversation convo, ResponseTag responseDATag) {
+    public static String generateResponse(Conversation convo, ResponseTag responseTag) {
         verifyConversation(convo);
-        ResponseTag responseTag = ResponseTag.getResponseTag(responseDATag);
         SemanticResponseTemplate responseGenerator = responseTagToSRT.get(responseTag);        
         if(responseGenerator != null) {
             // Use the given daTag to determine what type of response to generate
