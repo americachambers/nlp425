@@ -1,5 +1,6 @@
 package edu.pugetsound.mathcs.nlp.controller;
 
+import static com.sun.xml.internal.ws.dump.LoggingDumpTube.Position.Before;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
