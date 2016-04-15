@@ -9,7 +9,7 @@ import gnu.prolog.vm.PrologCode;
 import gnu.prolog.vm.PrologException;
 import gnu.prolog.vm.buildins.database.Predicate_assert;
 import gnu.prolog.vm.buildins.database.Predicate_assertz;
-
+ 
 public class KBController{
   private Environment env;
   private Interpreter interpreter;

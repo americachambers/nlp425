@@ -14,6 +14,8 @@ __pycache__
 /lib/
 lincoln.json
 
+/resources/swb1_dialogact_annot/scrubbed
+
 # Eclipse things
 .classpath
 .project

@@ -136,12 +136,21 @@ public class TextAnalyzer {
 		// TODO: Go back and check for DA Tags that don't need further processing.
 		h.daTag = dialogueClassifier.classify(h, conversation);
 
+		AMR[] temp = AMR.convertTextToAMR(input);
+		if (temp != null && temp.length > 0)
+			h.amr = temp[0];
+
 		// Compute parse tree features
 		storeParseTrees(h, sentence);
 		storeParseFeatures(h);
 		
 		anaphoraAnalyzer.analyze(h, conversation, pipeline);
-		semAnalyzer.analyze(h, conversation);
+		try {
+			semAnalyzer.analyze(h, conversation);
+		} catch (java.lang.IndexOutOfBoundsException e) {
+			System.out.println("Error with semantic analysis");
+			System.out.println(e);
+		}
 				
 		return h;		
 	}	
@@ -157,7 +166,6 @@ public class TextAnalyzer {
 	 */
 	private boolean canShortCircuit(Utterance h){
 		return h.daTag == DialogueActTag.BACKCHANNEL ||
-				h.daTag == DialogueActTag.INDETERMINATE ||
 				h.daTag == DialogueActTag.ACKNOWLEDGE_ANSWER;
 	}
 	

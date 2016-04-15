@@ -2,6 +2,7 @@ package edu.pugetsound.mathcs.nlp.lang;
 
 import java.util.HashMap;
 import java.util.List;
+import java.lang.Thread;
 
 //Requires Jython 2.5: http://www.jython.org/
 //http://search.maven.org/remotecontent?filepath=org/python/jython-standalone/2.7.0/jython-standalone-2.7.0.jar
@@ -181,6 +182,9 @@ public class AMR {
      * @return A String representation of this AMR
      */
     public String toString() {
+        if (amrString != null)
+            return amrString;
+
         String stringForm = "(" + nodeValue[0] + " / " + nodeValue[1];
 
         for(SemanticRelation sr : SemanticRelation.values()) {
@@ -193,6 +197,18 @@ public class AMR {
         return stringForm;
     }
 
+
+    /**
+     * The String representation of the AMR as given my MSR Splat
+     */
+    public String amrString;
+
+    /**
+     * The time since the MSR Splat API was last queried
+     */
+    private static long queryTime = 0;
+
+
     /**
      * @param text   the String to be converted into AMR
      * @return An array of AMR, which are translations of each sentences' AMR
@@ -200,14 +216,22 @@ public class AMR {
     public static AMR[] convertTextToAMR(String text) {
 
         PythonInterpreter python = new PythonInterpreter();
-
         python.execfile("../scripts/msrsplat.py");
         python.set("text", new PyString(text));
+        System.out.println("Querying MSR_SPLAT for the AMR string for '"+text+"'");
         python.exec("amr = main(text)");
         JSONParser parser = new JSONParser();
         try {
+            if (System.currentTimeMillis() - queryTime < 1000)
+                Thread.sleep(1000 - System.currentTimeMillis() + queryTime);
+            System.out.println("Got the AMR String; parsing in a moment...");
+            
             Object obj = parser.parse(python.get("amr").toString());
+            queryTime = System.currentTimeMillis();
             JSONArray amrStrs = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
+            System.out.println("About to convert the parsed AMR Strings into AMR Objects");
+            
+            String temp;
             AMR[] amrs = new AMR[amrStrs.size()];
             for (int i=0; i<amrs.length; i++) {
                 System.out.println(amrStrs.get(i));
@@ -254,6 +278,7 @@ public class AMR {
     }
 
 
+<<<<<<< HEAD
     public static void main(String a[]){
         for (String s: a) {
             //System.out.println(AMR.convertTextToAMR(s));
@@ -265,6 +290,11 @@ public class AMR {
             convertTextToAMR(s);
         }
             
+=======
+    public static void main(String a[]) {
+        for (String s: a)
+            System.out.println(AMR.convertTextToAMR(s));
+>>>>>>> f1aa0092865bb62c34e4a4ea824d2183bda2eacd
 
         //AMR fluffy = new AMR("f", "fluffy", AMRType.noun);
         //AMR cute = new AMR("c", "cute", AMRType.adjective);
@@ -302,6 +332,7 @@ public class AMR {
 
         // The current AMR object we are filling
         AMR cur_amr = new AMR();
+        cur_amr.amrString = text;
 
         // Flag for if we're insidez quotation marks
         boolean in_quote = false;

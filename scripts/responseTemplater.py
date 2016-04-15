@@ -57,15 +57,15 @@ def main(fName = "../src/edu/pugetsound/mathcs/nlp/processactions/srt/responses.
     if [] in [tokens, AMRs, DATags]:
         print("Error, null pointer to either tokens, AMRs, or DATags")
         print(tokens, AMRs, DATags)
-        exit(0)
-    for i in range(len(AMRs)):
-        if DATags[i] not in responses:
-            responses[DATags[i]] = {}
-        if AMRs[i] not in responses[DATags[i]] or len(tokens[i]) < len(responses[DATags[i]][AMRs[i]]):
-            responses[DATags[i]][AMRs[i]] = tokens[i]
+    else:
+        for i in range(len(AMRs)):
+            if DATags[i] not in responses:
+                responses[DATags[i]] = {}
+            if AMRs[i] not in responses[DATags[i]] or len(tokens[i]) < len(responses[DATags[i]][AMRs[i]]):
+                responses[DATags[i]][AMRs[i]] = tokens[i]
 
-    with open(fName,'w') as f:
-        json.dump(responses,f)
+        with open(fName,'w') as f:
+            json.dump(responses,f)
 
 if __name__ == '__main__' and len(sys.argv) > 2:
 

@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-
+/**
+ * 
+ * @author z
+ */
 public class QLearner {
 
     private ArrayList<State> states;
@@ -76,6 +79,7 @@ public class QLearner {
 
             double maxAPrime = bestResponseValue(newStateIndex);
 
+            //need to move this outside the method somehow??? in order to update the proper states at the proper times
             q_table[stateIndex][choice] = q_table[stateIndex][choice] + (alpha) * (((double) reward + (GAMMA * maxAPrime)) - q_table[stateIndex][choice]);
 
         } else {//exploit
@@ -132,9 +136,16 @@ public class QLearner {
 
     private int rateActionChoice(int state, int choice) {
         Scanner in = new Scanner(System.in);
+        int r = -1;
         System.out.println("I am in state" + states.get(state).DATag + " and would like to use a " + actions.get(choice).DATag);
         System.out.println("On a scale of 1-5, how accurate is this response?");
-        int r = in.nextInt();
+       
+        try{
+            r = in.nextInt();
+        }catch(Exception e){
+        
+        }
+        
         if (r < 1 || r > 5) {
             System.err.println("Enter values between in the range [1,5]; no decimals");
             rateActionChoice(state, choice);

@@ -3,7 +3,6 @@ package edu.pugetsound.mathcs.nlp.processactions;
 import java.util.HashMap;
 import java.lang.ProcessBuilder;
 
-import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
@@ -19,7 +18,11 @@ import edu.pugetsound.mathcs.nlp.features.*;
  */
 public class ActionProcessor {
 
+<<<<<<< HEAD
     private static final HashMap<ResponseTag, SemanticResponseTemplate> responseTagToSRT =
+=======
+    private static final HashMap<ResponseTag, SemanticResponseTemplate> xdaTagToSRT =
+>>>>>>> f1aa0092865bb62c34e4a4ea824d2183bda2eacd
         new HashMap<ResponseTag, SemanticResponseTemplate>() {{
             // Instantiate HashMap's values
             
@@ -60,13 +63,12 @@ public class ActionProcessor {
     /*
      * Verify that the conversation given to us has all past utterances classified with a DA tag and AMR
      * Never trust other people with your own data validation!!! :)
+     * Look into using TextAnalyzer.analyze instead
      */
     private static void verifyConversation(Conversation convo) {
         DAClassifier classifier = new DAClassifier();
         for(Utterance utt: convo.getConversation()) {
-            if (utt.daTag == null) 
-                utt.daTag = classifier.classify(utt, convo);
-            if (utt.amr == null) 
+            if (utt.daTag == null ||utt.amr == null) 
                 utt.amr = AMR.convertTextToAMR(utt.utterance)[0];
         }
     }
@@ -77,7 +79,7 @@ public class ActionProcessor {
      * For backwards compatability only; use the one that takes a conversation preferably!
      * @return A string representation of the response. In early versions, this might be an AMR
      */
-    public static String generateResponse(Utterance utterance, DialogueActTag responseDATag) {
+    public static String generateResponse(Utterance utterance, ResponseTag responseDATag) {
         Conversation convo = new Conversation();
         convo.addUtterance(utterance);
         return generateResponse(convo, responseDATag);
@@ -89,10 +91,14 @@ public class ActionProcessor {
      * Returns a string corresponding to the generated response
      * @return A string representation of the response. In early versions, this might be an AMR
      */
-    public static String generateResponse(Conversation convo, DialogueActTag responseDATag) {
+    public static String generateResponse(Conversation convo, ResponseTag responseDATag) {
         verifyConversation(convo);
+<<<<<<< HEAD
         ResponseTag responseTag = ResponseTag.getResponseTag(responseDATag);
         SemanticResponseTemplate responseGenerator = responseTagToSRT.get(responseTag);        
+=======
+        SemanticResponseTemplate responseGenerator = xdaTagToSRT.get(responseDATag);        
+>>>>>>> f1aa0092865bb62c34e4a4ea824d2183bda2eacd
         if(responseGenerator != null) {
             // Use the given daTag to determine what type of response to generate
             return responseGenerator.constructResponseFromTemplate(convo);
@@ -103,8 +109,12 @@ public class ActionProcessor {
     }
 
     public static void main(String[] args){
+        TextAnalyzer ta = new TextAnalyzer();
+        Conversation convo = new Conversation();
         for (String a: args)
-            System.out.println(generateResponse(new Utterance(a), DialogueActTag.WELCOME));
+            convo.addUtterance(ta.analyze(a,convo));
+        for (Utterance utt: convo.getConversation())
+            System.out.println(generateResponse(utt, ResponseTag.GREETING));
     }
 
 }

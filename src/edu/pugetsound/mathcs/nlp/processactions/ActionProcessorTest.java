@@ -43,7 +43,7 @@ public class ActionProcessorTest {
     public void testResponseTagMapping() {
         conversation = new Conversation();
         conversation.addUtterance(utt);
-        for(DialogueActTag datag : DialogueActTag.values()) {
+        for(ResponseTag datag : ResponseTag.values()) {
             String response = ActionProcessor.generateResponse(conversation, datag);
             assertNotNull("should not be null", response);
             assertFalse("failure - response should not be \"Error: Response could not be generated, bad extendedDaTag\"",
