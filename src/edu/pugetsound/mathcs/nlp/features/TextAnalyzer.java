@@ -157,7 +157,6 @@ public class TextAnalyzer {
 	 */
 	private boolean canShortCircuit(Utterance h){
 		return h.daTag == DialogueActTag.BACKCHANNEL ||
-				h.daTag == DialogueActTag.INDETERMINATE ||
 				h.daTag == DialogueActTag.ACKNOWLEDGE_ANSWER;
 	}
 	
