@@ -63,7 +63,7 @@ public class ResponseGenerator {
         PythonInterpreter python = new PythonInterpreter();
         python.execfile("../scripts/responseTemplater.py");            
         for (int p=0; p<utterances.length; p++) {
-            try {
+            // try {
                 verifyLists(python);
 
                 if (p > 15 && (p % 15) == 0){
@@ -90,10 +90,10 @@ public class ResponseGenerator {
                 python.exec("tokens.append(ts)");
 
                 System.out.println("Done asking the TextAnalyzer to analyze each utterance with an AMR/DATag/tokens.");
-            } catch(Exception e) {
-                System.out.println("Issue with paragraph "+p+"; reverting any added amrs/utterances/datags to last paragraph.");
-                System.out.println(e);
-            }
+            // } catch(Exception e) {
+            //     System.out.println("Issue with paragraph "+p+"; reverting any added amrs/utterances/datags to last paragraph.");
+            //     System.out.println(e);
+            // }
         }
         python.exec("tokensLen = len(tokens)");
         int tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
