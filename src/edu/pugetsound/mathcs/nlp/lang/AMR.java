@@ -238,9 +238,12 @@ public class AMR {
         } catch(ParseException pe) {
             System.out.println("position: " + pe.getPosition());
             System.out.println(pe);
-        } catch(Exception e) {
+        } catch(InterruptedException e) {
             System.out.println(e);
         }
+        // } catch(Exception e) {
+        //     System.out.println(e);
+        // }
         return null;
     }
 
