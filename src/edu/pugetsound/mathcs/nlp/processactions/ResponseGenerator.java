@@ -75,13 +75,13 @@ public class ResponseGenerator {
                 for (Utterance u: convoList)
                     tempConvo.addUtterance(u);
                 Utterance currentUtt = ta.analyze(utterances[p], tempConvo);
-                
+
                 //currentUtt needs to be totally filled out with data at this point, or else thrown away
                 if (currentUtt.daTag == null || currentUtt.amr == null || currentUtt.tokens == null || currentUtt.tokens.size() > 0) 
-                    throw new Exception("There is some issue with current utterance:"
+                    throw new Exception("There is some issue with current utterance:\n"
                         + "datag:"+currentUtt.daTag
-                        + "amr:" + currentUtt.amr
-                        + "tokens"+ currentUtt.tokens);
+                        + "\namr:" + currentUtt.amr
+                        + "\ntokens"+ currentUtt.tokens);
 
                 python.set("dat", new PyString(currentUtt.daTag.toString()));
                 python.exec("DATags.append(dat)");
