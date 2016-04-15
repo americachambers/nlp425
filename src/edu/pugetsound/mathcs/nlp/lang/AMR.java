@@ -232,6 +232,7 @@ public class AMR {
             AMR[] amrs = new AMR[amrStrs.size()];
             for (int i=0; i<amrs.length; i++){
                 amrs[i] = AMR.parseAMRString(amrStrs.get(i).toString());
+                System.out.println(amrs[i]);
             }
             return amrs;
         } catch(ParseException pe) {
