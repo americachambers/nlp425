@@ -140,11 +140,15 @@ public class TextAnalyzer {
 		storeParseTrees(h, sentence);
 		storeParseFeatures(h);
 
-		// Jon would like to add this if the API call doesn't cause trouble for anyone...
 		h.amr = AMR.convertTextToAMR(input)[0];
 		
 		anaphoraAnalyzer.analyze(h, conversation, pipeline);
-		semAnalyzer.analyze(h, conversation);
+		try {
+			semAnalyzer.analyze(h, conversation);
+		} catch (java.lang.IndexOutOfBoundsException e) {
+			System.out.println("Error with semantic analysis");
+			System.out.println(e);
+		}
 				
 		return h;		
 	}	
