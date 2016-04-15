@@ -279,23 +279,9 @@ public class AMR {
     }
 
 
-<<<<<<< HEAD
-    public static void main(String a[]){
-        for (String s: a) {
-            //System.out.println(AMR.convertTextToAMR(s));
-            //String amr = convertTextToAMR(s)[0];
-            //System.out.println(amr);
-            //AMR result = parseAMRString(amr);
-            //System.out.println(result.toString());
-            //System.out.println();
-            convertTextToAMR(s);
-        }
-            
-=======
     public static void main(String a[]) {
         for (String s: a)
             System.out.println(AMR.convertTextToAMR(s));
->>>>>>> f1aa0092865bb62c34e4a4ea824d2183bda2eacd
 
         //AMR fluffy = new AMR("f", "fluffy", AMRType.noun);
         //AMR cute = new AMR("c", "cute", AMRType.adjective);
