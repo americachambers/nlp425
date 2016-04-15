@@ -80,7 +80,7 @@ public class ResponseGenerator {
                 Utterance currentUtt = ta.analyze(utterances[p], tempConvo);
 
                 //currentUtt needs to be totally filled out with data at this point, or else thrown away
-                if (currentUtt.daTag == null || currentUtt.amr == null || currentUtt.tokens == null || currentUtt.tokens.size() > 0) 
+                if (currentUtt.daTag == null || currentUtt.amr == null || currentUtt.tokens == null || currentUtt.tokens.size() == 0) 
                     throw new Exception("There is some issue with current utterance:\n"
                         + "datag:"+currentUtt.daTag
                         + "\namr:" + currentUtt.amr
