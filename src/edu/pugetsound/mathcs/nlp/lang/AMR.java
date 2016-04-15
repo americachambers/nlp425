@@ -233,13 +233,11 @@ public class AMR {
     private static AMR parseAMRStringRecurse(String text, ArrayList<AMR> encounteredAMRs) {
         // I am so sorry if you have to debug this
 
-        // Convert text to lowercase for simplicity
-        text = text.toLowerCase();
-
-        // Force some extra spaces in there to help parsing
-        text = text.replace(")", " )");
-        text = text.replace("(", "( ");
-        text = text.replace(":", " :");
+        // Force some extra spaces in there for parsing and convert to lower case for simplicity
+        text = text.replace(")", " )")
+            .replace("(", "( ")
+            .replace(":", " :");
+            .toLowerCase();
 
         // Current state; denotes the last significant symbol encountered.
         // ":" indicates we should start processing the relation name
