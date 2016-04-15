@@ -136,7 +136,9 @@ public class TextAnalyzer {
 		// TODO: Go back and check for DA Tags that don't need further processing.
 		h.daTag = dialogueClassifier.classify(h, conversation);
 
-		h.amr = AMR.convertTextToAMR(input)[0];
+		AMR[] temp = AMR.convertTextToAMR(input);
+		if (temp != null && temp.length > 0)
+			h.amr = temp[0];
 
 		// Compute parse tree features
 		storeParseTrees(h, sentence);
