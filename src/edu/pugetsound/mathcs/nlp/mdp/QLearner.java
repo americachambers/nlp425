@@ -79,6 +79,7 @@ public class QLearner {
 
             double maxAPrime = bestResponseValue(newStateIndex);
 
+            //need to move this outside the method somehow??? in order to update the proper states at the proper times
             q_table[stateIndex][choice] = q_table[stateIndex][choice] + (alpha) * (((double) reward + (GAMMA * maxAPrime)) - q_table[stateIndex][choice]);
 
         } else {//exploit
