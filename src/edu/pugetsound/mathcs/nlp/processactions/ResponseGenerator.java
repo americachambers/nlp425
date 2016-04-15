@@ -86,7 +86,8 @@ public class ResponseGenerator {
                     throw new Exception("There is some issue with current utterance:\n"
                         + "datag:"+currentUtt.daTag
                         + "\namr:" + currentUtt.amr
-                        + "\ntokens"+ currentUtt.tokens);
+                        + "\ntokens: "+ currentUtt.tokens
+                        + "\ntokens size: "+currentUtt.tokens.size());
 
                 python.set("dat", new PyString(currentUtt.daTag.toString()));
                 python.exec("DATags.append(dat)");

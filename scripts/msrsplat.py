@@ -36,7 +36,7 @@ class Client:
         Returns:
             List of strings of language codes"""
         url = self.serviceUrl() + "/Languages"
-        res = requests.request("get", url, verify=self.verify,timeout=(3.05,27.05))
+        res = requests.request("get", url, verify=self.verify,timeout=(3.05,15.05))
         print(res.text)
         return res.json()
 
@@ -46,7 +46,7 @@ class Client:
         Returns:
             List of analyzer names available for that language"""
         url = self.serviceUrl() + "/Analyzers?language=" + language
-        res = requests.request("get", url, verify=self.verify,timeout=(3.05,27.05))
+        res = requests.request("get", url, verify=self.verify,timeout=(3.05,15.05))
         return res.json()
 
     def analyze(self, language, analyzers, inputString):
@@ -66,7 +66,7 @@ class Client:
         url = url + "&appId=" + self.appId
         url = url + "&jsonp="
         url = url + "&input=" + inputString
-        res = requests.request("get", url, verify=self.verify,timeout=(3.05,60.05))
+        res = requests.request("get", url, verify=self.verify,timeout=(3.05,15.05))
         return res.json()
 
     def serviceUrl(self):
