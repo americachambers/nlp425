@@ -81,32 +81,35 @@ public class AMR {
 
         // Inverse relations
         // Core argX roles, following OntoNotes style
-        arg0_of("arg0_of"), arg1_of("arg1_of"), arg2_of("arg2_of"), arg3_of("arg3_of"),
-        arg4_of("arg4_of"), arg5_o("arg5_of"),
+        arg0_of("arg0-of"), arg1_of("arg1-of"), arg2_of("arg2-of"), arg3_of("arg3-of"),
+        arg4_of("arg4-of"), arg5_o("arg5-of"),
 
-        //Non-core roles
-        accompanier_of("accompanier_of"), age_of("age_of"), beneficiary_of("beneficiary_of"),
-        compared_to_of("compared_to_of"), concession_of("concession_of"),
-        condition_of("condition_of"),consist_of_of("consist_of_of"), degree_of("degree_of"),
-        destination_of("destination_of"), direction_of("direction_of"), domain_of("domain_of"),
-        duration_of("duration_of"),example_of("example_of"), extent_of("extent_of"),
-        frequency_of("frequency_of"), instrument_of("instrument_of"), location_of("location_of"),
-        manner_of("manner_of"), medium_of("medium_of"),mod_of("mod_of"), mode_of("mode_of"),
-        name_of("name_of"), ord_of("ord_of"), part_of("part_of"), path_of("path_of"),
-        polarity_of("polarity_of"), poss_of("poss_of"), purpose_of("purpose_of"),
-        quant_of("uant_of"), scale_of("scale_of"), source_of("source_of"), subevent_of("subevent_of"),
-        time_of("time_of"), topic_of("topic_of"), unit_of("unit_of"), value_of("value_of"),
-        wiki_of("wiki_of"),
+        //Non_core roles
+        accompanier_of("accompanier-of"), age_of("age-of"), beneficiary_of("beneficiary-of"),
+        compared_to_of("compared_to-of"), concession_of("concession-of"),
+        condition_of("condition-of"),consist_of_of("consist_of-of"), degree_of("degree-of"),
+        destination_of("destination-of"), direction_of("direction-of"), domain_of("domain-of"),
+        duration_of("duration-of"),example_of("example-of"), extent_of("extent-of"),
+        frequency_of("frequency-of"), instrument_of("instrument-of"), location_of("location-of"),
+        manner_of("manner-of"), medium_of("medium-of"),mod_of("mod-of"), mode_of("mode-of"),
+        name_of("name-of"), ord_of("ord-of"), part_of("part-of"), path_of("path-of"),
+        polarity_of("polarity-of"), poss_of("poss-of"), purpose_of("purpose-of"),
+        quant_of("uant-of"), scale_of("scale-of"), source_of("source-of"), subevent_of("subevent-of"),
+        time_of("time-of"), topic_of("topic-of"), unit_of("unit-of"), value_of("value-of"),
+        wiki_of("wiki-of"),
 
-        // Date-entity roles
-        calendar_of("calendar_of"), century_of("century_of"), day_of("day_of"),
-        dayperiod_of("dayperiod_of"), decade_of("decade_of"), era_of("era_of"),
-        month_of("month_of"), quarter_of("quarter_of"),season_of("season_of"),
-        timezone_of("timezone_of"), weekday_of("weekday_of"), year_of("year_of"), year2_of("year2_of"),
+        // Date_entity roles
+        calendar_of("calendar-of"), century_of("century-of"), day_of("day-of"),
+        dayperiod_of("dayperiod-of"), decade_of("decade-of"), era_of("era-of"),
+        month_of("month-of"), quarter_of("quarter-of"),season_of("season-of"),
+        timezone_of("timezone-of"), weekday_of("weekday-of"), year_of("year-of"), year2_of("year2-of"),
 
-        // Used in conjunctions and certain date-times and locations. Might not be used
-        op1_of("op1_of"), op2_of("op2_of"), op3_of("op3_of"), op4_of("op4_of"), op5_of("op5_of"),
-        op6_of("op6_of"), op7_of("op7_of"), op8_of("op8_of"), op9_of("op9_of"), op10_of("op10_of");
+        // Used in conjunctions and certain date_times and locations. Might not be used
+        op1_of("op1-of"), op2_of("op2-of"), op3_of("op3-of"), op4_of("op4-of"), op5_of("op5-of"),
+        op6_of("op6-of"), op7_of("op7-of"), op8_of("op8-of"), op9_of("op9-of"), op10_of("op10-of"),
+
+        // Not sure what this is for, but msrsplat uses it sometimes
+        lf_measure("lf-measure");
 
         private String label;
 
@@ -206,8 +209,11 @@ public class AMR {
             Object obj = parser.parse(python.get("amr").toString());
             JSONArray amrStrs = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
             AMR[] amrs = new AMR[amrStrs.size()];
-            for (int i=0; i<amrs.length; i++)
+            for (int i=0; i<amrs.length; i++) {
+                System.out.println(amrStrs.get(i));
+                System.out.println(AMR.parseAMRString(amrStrs.get(i).toString()));
                 amrs[i] = AMR.parseAMRString(amrStrs.get(i).toString());
+            }
             return amrs;
         } catch(ParseException pe) {
             System.out.println("position: " + pe.getPosition());
@@ -249,8 +255,16 @@ public class AMR {
 
 
     public static void main(String a[]){
-        for (String s: a)
-            System.out.println(AMR.convertTextToAMR(s));
+        for (String s: a) {
+            //System.out.println(AMR.convertTextToAMR(s));
+            //String amr = convertTextToAMR(s)[0];
+            //System.out.println(amr);
+            //AMR result = parseAMRString(amr);
+            //System.out.println(result.toString());
+            //System.out.println();
+            convertTextToAMR(s);
+        }
+            
 
         //AMR fluffy = new AMR("f", "fluffy", AMRType.noun);
         //AMR cute = new AMR("c", "cute", AMRType.adjective);
@@ -269,6 +283,9 @@ public class AMR {
      * @return The parsed AMR object
      */
     public static AMR parseAMRString(String text) {
+        // Convert text to lowercase for simplicity
+        text = text.toLowerCase();
+        
         // Force some extra spaces in there to help parsing
         text = text.replace(")", " )");
         text = text.replace("(", "( ");
@@ -363,8 +380,11 @@ public class AMR {
                         System.out.println("Error: Unrecognized relation " + last_word  + " while parsing AMR!");
                         return null;
                     } else {
-                        // Add recursed to cur_amr's map of semantic relations
-                        cur_amr.semanticRelations.put(sr, recursed);
+                        // If recursed == null, just don't add the AMR
+                        if(recursed != null) {
+                            // Add recursed to cur_amr's map of semantic relations
+                            cur_amr.semanticRelations.put(sr, recursed);
+                        }
                     }
 
                     cur_charseq = "";
@@ -420,7 +440,6 @@ public class AMR {
                             System.out.println("Error: Unrecognized relation " + last_word  + " while parsing AMR!");
                             return null;
                         } else {
-                            System.out.println("Creating a new AMR for: " + cur_charseq);
                             // Create a new AMR to hold the term
                             AMR relation_val = new AMR("" + cur_charseq.charAt(0), cur_charseq, AMRType.string);
                             cur_amr.semanticRelations.put(sr, relation_val);
