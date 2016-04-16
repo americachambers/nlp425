@@ -5,6 +5,7 @@ import java.lang.Thread;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
+import java.util.HashMap;
 
 
 import java.io.File;
@@ -17,7 +18,8 @@ import java.io.FileNotFoundException;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
-// import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
+import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
+import edu.pugetsound.mathcs.nlp.processactions.MappingGenerator;
 // import edu.pugetsound.mathcs.nlp.processactions.srt.*;
 import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
 
@@ -65,6 +67,7 @@ public class ResponseGenerator {
         ArrayList<Utterance> convoList = new ArrayList<Utterance>();
         PyString[] tokens;
         TextAnalyzer ta = new TextAnalyzer();
+        HashMap<DialogueActTag, String> daTagToTemplate = MappingGenerator.populateMappingDATags();
         PythonInterpreter python = new PythonInterpreter();
         python.execfile("../scripts/responseTemplater.py");            
         for (int p=0; p<utterances.length; p++) {
@@ -88,23 +91,26 @@ public class ResponseGenerator {
                         + "\namr:" + currentUtt.amr
                         + "\ntokens: "+ currentUtt.tokens
                         + "\ntokens size: "+currentUtt.tokens.size());
+                if ( ! daTagToTemplate.containsKey(currentUtt.daTag))
+                    System.out.println("Unfortunately, the current daTag '"+currentUtt.daTag+"' isn't in our datagToTemplate mapping");
+                else {
+                    python.set("dat", new PyString(daTagToTemplate.get(currentUtt.daTag)));
+                    python.exec("DATags.append(dat)");
+                    python.set("amr", new PyString(currentUtt.amr.toString()));
+                    python.exec("AMRs.append(amr)");
 
-                python.set("dat", new PyString(currentUtt.daTag.toString()));
-                python.exec("DATags.append(dat)");
-                python.set("amr", new PyString(currentUtt.amr.toString()));
-                python.exec("AMRs.append(amr)");
+                    tokens = new PyString[currentUtt.tokens.size()];
+                    for (int i=0; i<currentUtt.tokens.size(); i++)
+                        tokens[i] = new PyString(currentUtt.tokens.get(i).token);
+                    python.set("ts", new PyList(tokens));
+                    python.exec("tokens.append(ts)");
 
-                tokens = new PyString[currentUtt.tokens.size()];
-                for (int i=0; i<currentUtt.tokens.size(); i++)
-                    tokens[i] = new PyString(currentUtt.tokens.get(i).token);
-                python.set("ts", new PyList(tokens));
-                python.exec("tokens.append(ts)");
+                    convoList.add(currentUtt);
+                    if (convoList.size() > 10)
+                        convoList.remove(0);
 
-                convoList.add(currentUtt);
-                if (convoList.size() > 10)
-                    convoList.remove(0);
-
-                System.out.println("Done asking the TextAnalyzer to analyze each utterance with an AMR/DATag/tokens.");
+                    System.out.println("Done asking the TextAnalyzer to analyze each utterance with an AMR/DATag/tokens.");
+                }
             } catch(Exception e) {
                 System.out.println("Issue with paragraph "+p+"; reverting any added amrs/utterances/datags to last paragraph.");
                 System.out.println(e);

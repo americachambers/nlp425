@@ -67,7 +67,7 @@ public class MappingGenerator {
      * Call this if you want a mapping of daTags to response tags by adherence
      *
      */
-    public static HashMap<String, HashMap<String, Double>> populateMapping(String fName) {
+    public static HashMap<String, HashMap<String, Double>> populateMappingMultinomial(String fName) {
         try {
 
             HashMap<String, String[]> responses = getResponses(
@@ -104,6 +104,55 @@ public class MappingGenerator {
         return null;
     }
 
+    public static HashMap<String, String> populateMapping(HashMap<String, HashMap<String, Double>> multinomMap) {
+        HashMap<String, String> likelyhoodMap = new HashMap<String, String>();
+        HashMap<String, Double> resTags;
+        double max;
+        for (String daTag: multinomMap.keySet()) {
+            max = -1;
+            resTags = multinomMap.get(daTag);
+            for (String resTag: resTags.keySet())
+                if (resTags.get(resTag) > max) {
+                    max = resTags.get(resTag);
+                    likelyhoodMap.put(daTag, resTag);
+                }
+        }
+        return likelyhoodMap;
+    }
+
+    public static HashMap<String, String> populateMapping(String fName) {
+        HashMap<String, HashMap<String, Double>> multinomMap = populateMappingMultinomial(fName);
+        if (multinomMap == null)
+            return null;
+        return populateMapping(multinomMap);
+    }
+
+    public static HashMap<String, String> populateMapping() {
+        return populateMapping("responses.json");
+    }
+
+    public static HashMap<DialogueActTag, String> populateMappingDATags(String fName) {
+        HashMap<String, HashMap<String, Double>> multinomMap = populateMappingMultinomial(fName);
+        if (multinomMap == null)
+            return null;
+        HashMap<String, String> likelyhoodMap = populateMapping(multinomMap);
+        if (likelyhoodMap == null)
+            return null;
+        HashMap<DialogueActTag, String> daMap = new HashMap<DialogueActTag, String>();
+        for (String daLabel: likelyhoodMap.keySet())
+            try {
+                daMap.put(DialogueActTag.fromLabel(daLabel), likelyhoodMap.get(daLabel));
+            } catch (IllegalArgumentException e) {
+                System.out.println("Error with datag label: "+daLabel);
+                System.out.println(e);
+            }
+        return daMap;
+    }
+
+    public static HashMap<DialogueActTag, String> populateMappingDATags() {
+        return populateMappingDATags("responses.json");
+    }
+
 
     public static void main(String a[]) {
         ArrayList<String> args = new ArrayList<String>(Arrays.asList(a));
@@ -116,14 +165,22 @@ public class MappingGenerator {
         else {
             if (args.size() < 1)
                 args.add("responses.json");
-            HashMap<String, HashMap<String, Double>> mapping = populateMapping(args.get(0));
-            try (FileWriter file = new FileWriter("../src/edu/pugetsound/mathcs/nlp/processactions/DATagToSRT.json")) {
+            HashMap<String, HashMap<String, Double>> mapping = populateMappingMultinomial(args.get(0));
+            
+            try (FileWriter file = new FileWriter("../src/edu/pugetsound/mathcs/nlp/processactions/DATagToSRT_probabilities.json")) {
                 file.write((new JSONObject(mapping)).toJSONString());
             } catch (IOException e) {
-            System.out.println("Error: IOException");
-            e.printStackTrace();
+                System.out.println("Error: IOException");
+                e.printStackTrace();
+            }
+
+            try (FileWriter file = new FileWriter("../src/edu/pugetsound/mathcs/nlp/processactions/DATagToSRT.json")) {
+                file.write((new JSONObject(populateMapping(mapping))).toJSONString());
+            } catch (IOException e) {
+                System.out.println("Error: IOException");
+                e.printStackTrace();
             }
         }
-    }       
+    }
 
 }
