@@ -12,6 +12,10 @@ class DialogueAct {
 		this.words = words;
 	}
 	
+	public void appendWords(List<String> words) {
+		this.words.addAll(words);
+	}
+	
 	public DialogueActTag getTag() { return this.tag; }
 	public List<String> getWords() { return this.words; }
 	

@@ -136,12 +136,21 @@ public class TextAnalyzer {
 		// Certain dialogue acts do not need deep semantic and anaphora analysis		
 		h.daTag = dialogueClassifier.classify(h, conversation);
 
+		AMR[] temp = AMR.convertTextToAMR(input);
+		if (temp != null && temp.length > 0)
+			h.amr = temp[0];
+
 		// Compute parse tree features
 		storeParseTrees(h, sentence);
 		storeParseFeatures(h);
 		
 		anaphoraAnalyzer.analyze(h, conversation, pipeline);
-		semAnalyzer.analyze(h, conversation);
+		try {
+			semAnalyzer.analyze(h, conversation);
+		} catch (java.lang.IndexOutOfBoundsException e) {
+			System.out.println("Error with semantic analysis");
+			System.out.println(e);
+		}
 				
 		return h;		
 	}	

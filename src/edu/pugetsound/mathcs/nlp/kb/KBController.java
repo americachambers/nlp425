@@ -9,7 +9,7 @@ import gnu.prolog.vm.PrologCode;
 import gnu.prolog.vm.PrologException;
 import gnu.prolog.vm.buildins.database.Predicate_assert;
 import gnu.prolog.vm.buildins.database.Predicate_assertz;
-
+ 
 public class KBController{
   private Environment env;
   private Interpreter interpreter;
@@ -37,7 +37,9 @@ public class KBController{
     String pred = struct.getName();
     int arity = struct.getArity();
     String[] args = new String[arity];
-    for(int i=0;i<arity;args[i++]=struct.getArgument(i));
+    for(int i=0;i<arity;i++){
+        args[i]=struct.getArgument(i);
+    }
     try{
       int rc = runQuery(interpret, pred,args);
       if (rc == PrologCode.SUCCESS || rc == PrologCode.SUCCESS_LAST){

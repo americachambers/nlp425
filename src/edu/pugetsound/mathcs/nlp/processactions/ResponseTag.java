@@ -1,11 +1,15 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
+import java.util.HashMap;
+
+import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
+
 /**
  * @author Thomas Gagne
  * A list of extended DA tags, based off Chili's DA tags
  * These are more general, and we've collapsed tags such as YES and NO into a single tag
  */
-public enum ExtendedDialogueActTag {
+public enum ResponseTag {
     STATEMENT("STATEMENT"),
     NARRATIVE_DESCRIPTIVE("NARRATIVE_DESCRIPTIVE"),
     VIEWPOINT("VIEWPOINT"),
@@ -35,11 +39,14 @@ public enum ExtendedDialogueActTag {
     YES_NO_ANSWER("YES_NO_ANSWER"),
     QUESTION("QUESTION"),
     QUESTION_YES_NO("QUESTION_YES_NO"),
-    QUESTION_WH("QUESTION_WH");
+    QUESTION_WH("QUESTION_WH"),
+    GREETING("GREETING");
 
     private String name;
 
-    ExtendedDialogueActTag(String name) {
+    ResponseTag(String name) {
         this.name = name;
     }
+        
+
 }
