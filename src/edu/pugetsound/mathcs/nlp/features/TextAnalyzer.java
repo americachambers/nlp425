@@ -173,15 +173,11 @@ public class TextAnalyzer {
 	 */
 	private boolean canShortCircuit(Utterance h){
 		return h.daTag == DialogueActTag.BACKCHANNEL ||
-				h.daTag == DialogueActTag.INDETERMINATE ||
 				h.daTag == DialogueActTag.SIGNAL_NON_UNDERSTANDING ||
-				h.daTag == DialogueActTag.SIGNAL_NON_UNDERSTANDING_MIMIC ||
 				h.daTag == DialogueActTag.AGREEMENTS ||
-				h.daTag == DialogueActTag.INDETERMINATE ||
 				h.daTag == DialogueActTag.COMMENT ||
 				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION ||
 				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION ||				
-				h.daTag == DialogueActTag.NON_SPEECH;
 	}
 	
 	/**
