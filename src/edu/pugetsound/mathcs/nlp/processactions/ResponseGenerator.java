@@ -68,6 +68,7 @@ public class ResponseGenerator {
         PyString[] tokens;
         TextAnalyzer ta = new TextAnalyzer();
         HashMap<DialogueActTag, String> daTagToTemplate = MappingGenerator.populateMappingDATags();
+        System.out.println(daTagToTemplate);
         PythonInterpreter python = new PythonInterpreter();
         python.execfile("../scripts/responseTemplater.py");            
         for (int p=0; p<utterances.length; p++) {
@@ -118,7 +119,7 @@ public class ResponseGenerator {
         }
         python.exec("tokensLen = len(tokens)");
         int tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
-        System.out.println("Now writing "+tokensLen+" results to output file at "+outfileName);
+        System.out.println("Now writing "+tokensLen+"/"+utterances.length+" results to output file at "+outfileName);
         python.set("fn", new PyString(outfileName));
         python.exec("main(fn)");
 
