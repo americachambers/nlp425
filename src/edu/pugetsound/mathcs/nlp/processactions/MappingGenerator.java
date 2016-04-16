@@ -5,7 +5,10 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.lang.Math;
+import java.lang.Double;
 
 
 import java.io.File;
@@ -107,15 +110,53 @@ public class MappingGenerator {
     public static HashMap<String, String> populateMapping(HashMap<String, HashMap<String, Double>> multinomMap) {
         HashMap<String, String> likelyhoodMap = new HashMap<String, String>();
         HashMap<String, Double> resTags;
-        double max;
         for (String daTag: multinomMap.keySet()) {
-            max = -1;
             resTags = multinomMap.get(daTag);
-            for (String resTag: resTags.keySet())
-                if (resTags.get(resTag) > max) {
-                    max = resTags.get(resTag);
-                    likelyhoodMap.put(daTag, resTag);
-                }
+            if (resTags.size() > 0)
+                likelyhoodMap.put(daTag, Collections.max(
+                    resTags.keySet(), 
+                    new Comparator<String>() {
+                        public int compare(String o1, String o2) {
+                            return Double.compare(multinomMap.get(daTag).get(o1), multinomMap.get(daTag).get(o2));
+                        }
+                    }));
+        }
+        return likelyhoodMap;
+    }
+
+    public static HashMap<String, String> populateMappingUnique(HashMap<String, HashMap<String, Double>> multinomMap) {
+        ArrayList<String> templates = new ArrayList<String>();
+        for ( HashMap<String, Double> map: multinomMap.values())
+            for (String key: map.keySet())
+                if (! templates.contains(key))
+                    templates.add(key);
+        DialogueActTag[] daTags = DialogueActTag.values();
+        Arrays.sort(daTags, new Comparator<DialogueActTag>() {
+            public int compare(DialogueActTag o1, DialogueActTag o2) {
+                return Double.compare(multinomMap.get(o2.getLabel()).size(), multinomMap.get(o1.getLabel()).size());
+            }
+        });
+
+        HashMap<String, String> likelyhoodMap = new HashMap<String, String>();
+        HashMap<String, Double> resTags;
+        String[] resTemp;        
+        for (DialogueActTag daTag: daTags) {
+            resTags = multinomMap.get(daTag.getLabel());
+            resTemp = new String[resTags.size()];
+            for (String resTag: resTags.keySet().toArray(resTemp))
+                if (!templates.contains(resTag))
+                    resTags.remove(resTag);
+            if (resTags.size() > 0) {
+                likelyhoodMap.put(daTag.getLabel(), Collections.max(
+                    resTags.keySet(), 
+                    new Comparator<String>() {
+                        public int compare(String o1, String o2) {
+                            return Double.compare(multinomMap.get(daTag.getLabel()).get(o2), multinomMap.get(daTag.getLabel()).get(o1));
+                        }
+                    }));
+                templates.remove(likelyhoodMap.get(daTag.getLabel()));
+
+            }
         }
         return likelyhoodMap;
     }
