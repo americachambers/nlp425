@@ -305,4 +305,8 @@ public enum DialogueActTag {
 	public String toString() {
 		return String.format("(%s,  %s)", this.name(), this.label);
 	}
+
+	public String getLabel() {
+		return this.label;
+	}
 }

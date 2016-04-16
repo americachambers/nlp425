@@ -54,22 +54,7 @@ public class ActionProcessor {
             put(ResponseTag.QUESTION_WH, new WhQuestionTemplate());
             put(ResponseTag.GREETING, new GreetingTemplate());
         }};
-
-
-    /*
-     * Verify that the conversation given to us has all past utterances classified with a DA tag and AMR
-     * Never trust other people with your own data validation!!! :)
-     * Look into using TextAnalyzer.analyze instead
-     */
-    private static void verifyConversation(Conversation convo) {
-        DAClassifier classifier = new DAClassifier();
-        for(Utterance utt: convo.getConversation()) {
-            if (utt.daTag == null ||utt.amr == null) 
-                utt.amr = AMR.convertTextToAMR(utt.utterance)[0];
-        }
-    }
-
-    
+            
     /**
      * Wrapper function that converts an utterance to a conversation
      * For backwards compatability only; use the one that takes a conversation preferably!
@@ -88,7 +73,6 @@ public class ActionProcessor {
      * @return A string representation of the response. In early versions, this might be an AMR
      */
     public static String generateResponse(Conversation convo, ResponseTag responseTag) {
-        verifyConversation(convo);
         SemanticResponseTemplate responseGenerator = responseTagToSRT.get(responseTag);        
         if(responseGenerator != null) {
             // Use the given daTag to determine what type of response to generate
