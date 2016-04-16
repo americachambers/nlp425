@@ -176,8 +176,7 @@ public class TextAnalyzer {
 				h.daTag == DialogueActTag.SIGNAL_NON_UNDERSTANDING ||
 				h.daTag == DialogueActTag.AGREEMENTS ||
 				h.daTag == DialogueActTag.COMMENT ||
-				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION ||
-				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION ||				
+				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION;								
 	}
 	
 	/**
