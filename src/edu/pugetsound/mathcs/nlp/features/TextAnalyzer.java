@@ -65,7 +65,7 @@ public class TextAnalyzer {
 	private AnaphoraAnalyzer anaphoraAnalyzer;
 	
 	/**
-	 * Classifiers utterance by dialogue act
+	 * Classifies utterance by dialogue act
 	 */
 	private DAClassifier dialogueClassifier;
 	
@@ -105,14 +105,14 @@ public class TextAnalyzer {
 		if(input == null || conversation == null){
 			throw new IllegalArgumentException();
 		}
-		
+
 		// Checks for a standardized form TODO: Refactor this into its own class
 		if(standardizedForms.containsKey(input)){
 			input = standardizedForms.get(input);
 		}
 
 		// Create the utterance
-		Utterance h = new Utterance(input);
+		Utterance h = new Utterance(input);		
 		storePunctuation(h, input);
 		
 		// Annotate document with all tools registered with the pipeline
@@ -133,7 +133,7 @@ public class TextAnalyzer {
 			return h;
 		}		
 
-		// TODO: Go back and check for DA Tags that don't need further processing.
+		// Certain dialogue acts do not need deep semantic and anaphora analysis		
 		h.daTag = dialogueClassifier.classify(h, conversation);
 
 		// Compute parse tree features
@@ -146,9 +146,16 @@ public class TextAnalyzer {
 		return h;		
 	}	
 
+	/*------------------------------------------------------------------
+	 * 						Protected Methods
+	 *------------------------------------------------------------------*/
+
+	
+	
+	
 	
 	/*------------------------------------------------------------------
-	 * 						Auxiliary Methods
+	 * 						Private Auxiliary Methods
 	 *------------------------------------------------------------------*/
 	
 	/**
@@ -158,7 +165,14 @@ public class TextAnalyzer {
 	private boolean canShortCircuit(Utterance h){
 		return h.daTag == DialogueActTag.BACKCHANNEL ||
 				h.daTag == DialogueActTag.INDETERMINATE ||
-				h.daTag == DialogueActTag.ACKNOWLEDGE_ANSWER;
+				h.daTag == DialogueActTag.SIGNAL_NON_UNDERSTANDING ||
+				h.daTag == DialogueActTag.SIGNAL_NON_UNDERSTANDING_MIMIC ||
+				h.daTag == DialogueActTag.AGREEMENTS ||
+				h.daTag == DialogueActTag.INDETERMINATE ||
+				h.daTag == DialogueActTag.COMMENT ||
+				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION ||
+				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION ||				
+				h.daTag == DialogueActTag.NON_SPEECH;
 	}
 	
 	/**
