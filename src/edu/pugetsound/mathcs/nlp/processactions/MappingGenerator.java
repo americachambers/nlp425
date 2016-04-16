@@ -1,6 +1,5 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
-import java.lang.Thread;
 
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import java.lang.Math;
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -23,8 +21,6 @@ import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
-// import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
-// import edu.pugetsound.mathcs.nlp.processactions.srt.*;
 import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
 
 //Requires Simple Json: https://code.google.com/archive/p/json-simple/
