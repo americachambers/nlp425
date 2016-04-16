@@ -285,7 +285,7 @@ public enum DialogueActTag {
 	 * @return The DialogueActTag member associated with the switchboard label
 	 * @throws IllegalArgumentException if label is not represented in the enum
 	 */
-	static DialogueActTag fromLabel(String label) throws IllegalArgumentException {
+	public static DialogueActTag fromLabel(String label) throws IllegalArgumentException {
 	    if (label != null)
 	      for (DialogueActTag tag : DialogueActTag.values())
 	        if (tag.label.equalsIgnoreCase(label))
@@ -304,5 +304,9 @@ public enum DialogueActTag {
 	@Override
 	public String toString() {
 		return String.format("(%s,  %s)", this.name(), this.label);
+	}
+
+	public String getLabel() {
+		return this.label;
 	}
 }

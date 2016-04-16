@@ -92,7 +92,7 @@ public class Controller {
 		Action action = mdp.train(conversation);
 
 		// Process the action and produce a response for the user
-		String response = ActionProcessor.generateResponse(utt, action.getDATag());			
+		String response = ActionProcessor.generateResponse(conversation, action.getDATag());			
 		Utterance agentUtt = analyzer.analyze(response, conversation);
 		conversation.addUtterance(agentUtt);
 		respondToUser(agentUtt);

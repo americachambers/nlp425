@@ -63,4 +63,25 @@ public class Token {
 		return "[token=" + token + ", pos=" + pos + ", begin=" + beginPosition 
 				+ ", end=" + endPosition + ", entity=" + entityTag + "]";
 	}	
+
+	/**
+	 * Returns a string representation of the list of tokens as a sentence
+	 * @param strings of tokens in a sentence 
+	 * @return a string representing the tokens's sentence
+	 */	
+	public static String detokenize(String[] tokens) {
+		String res = "";
+	    for (String t: tokens)
+	        res += t+" ";
+	    return res.replace(" .",".")
+	        .replace(" ,",",")
+	        .replace(" !","!")
+	        .replace(" ?","?")
+	        .replace(" :",":")
+	        .replace(" ;",";")
+	        .replace(" (","(")
+	        .replace(" )",")")
+	        .replace(" $","$")
+	        .replace(". ",".");
+	}
 }

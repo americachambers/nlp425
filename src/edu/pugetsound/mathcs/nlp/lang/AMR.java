@@ -15,7 +15,7 @@ import org.json.simple.*;
 import org.json.simple.parser.ParseException;
 import org.json.simple.parser.JSONParser;
 
-
+import edu.pugetsound.mathcs.nlp.lang.Token;
 
 /**
  * Represents a filled-in AMR node
@@ -256,19 +256,7 @@ public class AMR {
      */
     public String convertAMRToText(String[] text) {
         this.convertAMRToTextHelper(text);
-        String res = "";
-        for (String t: text)
-            res += t+" ";
-        return res.replace(" .",".")
-            .replace(" ,",",")
-            .replace(" !","!")
-            .replace(" ?","?")
-            .replace(" :",":")
-            .replace(" ;",";")
-            .replace(" (","(")
-            .replace(" )",")")
-            .replace(" $","$")
-            .replace(". ",".");
+        return Token.detokenize(text);
     }
 
     public void convertAMRToTextHelper(String[] text) {
