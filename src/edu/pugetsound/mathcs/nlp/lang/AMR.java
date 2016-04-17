@@ -219,15 +219,15 @@ public class AMR {
         python.execfile("../scripts/msrsplat.py");
         python.set("text", new PyString(text));
         System.out.println("Querying MSR_SPLAT for the AMR string for '"+text+"'");
-        python.exec("amr = main(text)");
+        
         JSONParser parser = new JSONParser();
         try {
             if (System.currentTimeMillis() - queryTime < 1000)
                 Thread.sleep(1000 - System.currentTimeMillis() + queryTime);
-            System.out.println("Got the AMR String; parsing in a moment...");
-            
-            Object obj = parser.parse(python.get("amr").toString());
+            python.exec("amr = main(text)");
             queryTime = System.currentTimeMillis();
+            System.out.println("Got the AMR String; parsing in a moment...");
+            Object obj = parser.parse(python.get("amr").toString());
             JSONArray amrStrs = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
             System.out.println("About to convert the parsed AMR Strings into AMR Objects");
             
