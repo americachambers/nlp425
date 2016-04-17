@@ -20,7 +20,6 @@ import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.processactions.MappingGenerator;
-// import edu.pugetsound.mathcs.nlp.processactions.srt.*;
 import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
 
 
@@ -37,9 +36,23 @@ import edu.stanford.nlp.process.DocumentPreprocessor;
 
 
 /**
- * The main response generator of the Process Actions step
- * This class should only be used to access the method generateResponse(...);
- * @author Thomas Gagne
+ * This script will read a text file of utterances and generate
+ * responses from them for the processActions templates to use.
+ * Class is only ment to be called for its main() when preloading json responses.
+ *
+ * Now, we can make this bot talk like Abe Lincoln or Darth Vader or Donald Trump!!!
+ * Make NLP great again!
+ *
+ *
+ *Usage: java -cp ClasspathToJars edu.pugetsound.mathcs.nlp.processactions.ResponseGenerator args inputFile.txt outputFile.txt
+ *
+ *  inputFile.txt: The exact path to the file to be used as input
+ *  outputFile.txt: The name of the file to be writen to as output, within the processactions/srt folder. 
+ *      Defaults to responses.json. If file exists, it is read from and responses are added to it.\n"
+ *  Args:
+ *    -h, --help: Display this message
+ *
+ * @author Jon Sims
  */
 public class ResponseGenerator {
 
@@ -68,7 +81,6 @@ public class ResponseGenerator {
         PyString[] tokens;
         TextAnalyzer ta = new TextAnalyzer();
         HashMap<DialogueActTag, String> daTagToTemplate = MappingGenerator.populateMappingDATags();
-        System.out.println(daTagToTemplate);
         PythonInterpreter python = new PythonInterpreter();
         python.execfile("../scripts/responseTemplater.py");            
         for (int p=0; p<utterances.length; p++) {
