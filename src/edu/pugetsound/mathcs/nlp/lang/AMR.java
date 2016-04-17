@@ -222,10 +222,10 @@ public class AMR {
         
         JSONParser parser = new JSONParser();
         try {
-            if (System.currentTimeMillis() - queryTime < 1000)
-                Thread.sleep(1000 - System.currentTimeMillis() + queryTime);
-            python.exec("amr = main(text)");
+            if (System.currentTimeMillis() - queryTime < 2000)
+                Thread.sleep(2000 - System.currentTimeMillis() + queryTime);
             queryTime = System.currentTimeMillis();
+            python.exec("amr = main(text)");
             System.out.println("Got the AMR String; parsing in a moment...");
             Object obj = parser.parse(python.get("amr").toString());
             JSONArray amrStrs = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
