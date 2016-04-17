@@ -44,6 +44,58 @@ import org.json.simple.parser.JSONParser;
  */
 public class MappingGenerator {
 
+
+    /**
+     * A Hardcoded list of DATags that definitely go to certain response templates
+     */
+    protected static HashMap<DialogueActTag, String> hardcodedMap = 
+        new HashMap<DialogueActTag, String>() {{
+            // Instantiate HashMap's values
+            put(DialogueActTag.ACKNOWLEDGE_ANSWER , "AcknowledgeAnswerTemplate");
+            put(DialogueActTag.ACCEPT_PART , "AcceptPartTemplate");
+            put(DialogueActTag.ACCEPT , "AcceptTemplate");
+            put(DialogueActTag.ACTION_DIRECTIVE , "ActionDirectiveTemplate"); 
+            put(DialogueActTag.AGREEMENTS , "AgreementTemplate");
+            put(DialogueActTag.ANSWER_DISPREFERRED , "AnswerDispreferredTemplate");
+            put(DialogueActTag.APOLOGY , "ApologyTemplate");
+            put(DialogueActTag.BACKCHANNEL , "BackchannelTemplate");
+            put(DialogueActTag.COMMIT , "CommitTemplate");
+            put(DialogueActTag.CONVENTIONAL_CLOSING , "ConventionalClosingTemplate");
+            put(DialogueActTag.CONVENTIONAL_OPENING , "ConventionalOpeningTemplate");
+            put(DialogueActTag.DOWNPLAYING_SYMPATHY , "DownplaySympathyTemplate");
+            put(DialogueActTag.EXCLAMATION , "ExclamationTemplate");
+            put(DialogueActTag.MAYBE , "MaybeTemplate");
+            put(DialogueActTag.OPEN_OPTION , "OpenOptionTemplate");
+            put(DialogueActTag.OFFER , "QuestionTemplate");
+            put(DialogueActTag.QUESTION , "QuestionTemplate");
+            put(DialogueActTag.REJECT , "RejectTemplate");
+            put(DialogueActTag.REJECT_PART , "RejectPartTemplate");
+            put(DialogueActTag.SIGNAL_NON_UNDERSTANDING , "NonUnderstandingTemplate");
+            put(DialogueActTag.SYMPATHETIC_COMMENT , "SympathyTemplate");
+            put(DialogueActTag.THANKS , "ThanksTemplate");
+            put(DialogueActTag.WELCOME , "WelcomeTemplate");
+            put(DialogueActTag.INDETERMINATE_RESPONSE , "IndeterminateResponseTemplate");
+            put(DialogueActTag.ASSESSMENT_APPRECIATION , "AssessmentAppreciationTemplate");
+            put(DialogueActTag.DECLARATIVE_QUESTION , "DeclarativeQuestionTemplate");
+            put(DialogueActTag.CONTINUER , "AcknowledgeAnswerTemplate");
+            put(DialogueActTag.HOLD , "AcknowledgeAnswerTemplate");
+            put(DialogueActTag.MIMIC_OTHER , "NonUnderstandingMimicTemplate");
+            put(DialogueActTag.QUOTATION , "RhetoricalQuestionContinuer");
+            put(DialogueActTag.QUESTION_YES_NO , "YesNoQuestionTemplate");
+            put(DialogueActTag.YES , "YesTemplate");
+            put(DialogueActTag.NO , "NoTemplate");
+            put(DialogueActTag.QUESTION_WH , "WhQuestionTemplate");
+            put(DialogueActTag.QUESTION_OPEN_ENDED , "RhetoricalQuestionContinuer");
+            put(DialogueActTag.QUESTION_RHETORICAL , "RhetoricalQuestionContinuer");
+            put(DialogueActTag.VIEWPOINT , "StatementOpinionTemplate");
+            put(DialogueActTag.TAG_QUESTION , "TagQuestionTemplate");
+            put(DialogueActTag.REFORMULATE_SUMMARIZE , "ReformulateTemplate");
+            put(DialogueActTag.QUESTION_ALTERNATIVE , "QuestionTemplate");
+            put(DialogueActTag.NARRATIVE_DESCRIPTIVE , "StatementNonOpinionTemplate");
+            put(DialogueActTag.ABOUT_COMMUNICATION , "RepeatPhraseTemplate");
+          
+          }};
+
     /**
      * Helper method to get responses out of the responses.json file
      * Optionally can use another responses file name
@@ -88,8 +140,11 @@ public class MappingGenerator {
                 new File("../src/edu/pugetsound/mathcs/nlp/processactions/srt/" + fName));
             HashMap<String, HashMap<String, Double>> mapping = new HashMap<String, HashMap<String, Double>>();
             
-            for(DialogueActTag datag : DialogueActTag.values())
+            for(DialogueActTag datag : DialogueActTag.values()) {
                 mapping.put(datag.getLabel(), new HashMap<String, Double>());
+                if (hardcodedMap.containsKey(datag))
+                    mapping.get(datag.getLabel()).put(hardcodedMap.get(datag), Double.POSITIVE_INFINITY);
+            }
             DAClassifier dac = new DAClassifier();
             HashMap<String, Double> curDATagReses;
 
