@@ -1,6 +1,5 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
-
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Map;
@@ -10,14 +9,12 @@ import java.util.Comparator;
 import java.lang.Math;
 import java.lang.Double;
 
-
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-
 
 import edu.pugetsound.mathcs.nlp.lang.Token;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
@@ -33,20 +30,32 @@ import org.json.simple.parser.ParseException;
 import org.json.simple.parser.JSONParser;
 
 /**
- * Maps from DATag label to a list of adherences for each ResponseTag (as a fraction of how many reses of the restag adhere to it) 
+ * MappingGenerator solves the problem of "given an utterance with a DATag, 
+ *   determine which type of response the utterance should be considered"
+ *
+ * Three types of maps are constructed in this file:
+ *   populateMappingMultinomial: a mapping of DATags to probabilities for how adherent each response template is to each DATag
+ *   populateMapping: a mapping of DATags to the highest probability Response template
+ *   populateMappingUnique: an injective mapping of DATags to the highest probability Response template
+ *
+ * Run the main method to save your mapping to a file in json
+ *
  * @author Jon Sims
  */
 public class MappingGenerator {
 
+    /**
+     * Helper method to get responses out of the responses.json file
+     * Optionally can use another responses file name
+     * @param the file from which to draw responses from
+     * @return A mapping of ResponseTemplate names with a list of detokenized response sentences
+     */
     protected static HashMap<String, String[]> getResponses(File f) throws FileNotFoundException,ParseException,IOException {
-        
         JSONParser parser = new JSONParser();
         JSONObject dict = (JSONObject) parser.parse(
             new BufferedReader(
                 new FileReader(f)));
-
         HashMap<String, String[]> responses = new HashMap<String, String[]>();
-
         ArrayList<String> temp;
         String[] temp2;
         for (Object resTagAMRsObj: dict.entrySet()) {
@@ -66,9 +75,11 @@ public class MappingGenerator {
     }
 
 
-    /*
+    /**
+     * Maps from DATag label to a list of adherences for each ResponseTag (as a fraction of how many reses of the restag adhere to it) 
      * Call this if you want a mapping of daTags to response tags by adherence
-     *
+     * @param the file name from which to read responses from
+     * @return a mapping from DATag labels to a mapping of Response Template names to how adherent the response template is to that DA tag
      */
     public static HashMap<String, HashMap<String, Double>> populateMappingMultinomial(String fName) {
         try {
@@ -107,6 +118,13 @@ public class MappingGenerator {
         return null;
     }
 
+
+    /**
+     * Maps from DATag label to the most probably-associated ResponseTag 
+     * Call this if you want a general, non-injective mapping of daTags to response tags
+     * @param the multinomial mapping from above
+     * @return a mapping from DATag labels to a mapping of Response Template names
+     */
     public static HashMap<String, String> populateMapping(HashMap<String, HashMap<String, Double>> multinomMap) {
         HashMap<String, String> likelyhoodMap = new HashMap<String, String>();
         HashMap<String, Double> resTags;
@@ -124,6 +142,35 @@ public class MappingGenerator {
         return likelyhoodMap;
     }
 
+    /**
+     * Helper method
+     * Call this if you want the above, only given a responses filename, and the multinomial mapping will be generated for you
+     * @param the responses file name
+     * @return a mapping from DATag labels to a mapping of Response Template names
+     */
+    public static HashMap<String, String> populateMapping(String fName) {
+        HashMap<String, HashMap<String, Double>> multinomMap = populateMappingMultinomial(fName);
+        if (multinomMap == null)
+            return null;
+        return populateMapping(multinomMap);
+    }
+
+    /**
+     * Helper method
+     * Call this if you want the above, only given the default responses filename 'responses.json', and the multinomial mapping will be generated for you
+     * @return a mapping from DATag labels to a mapping of Response Template names
+     */
+    public static HashMap<String, String> populateMapping() {
+        return populateMapping("responses.json");
+    }
+
+
+    /**
+     * Maps injectively from DATag label to the most probably-associated ResponseTag 
+     * Call this if you want a less-general, injective mapping of daTags to response tags
+     * @param the multinomial mapping from above
+     * @return an injective mapping from DATag labels to a mapping of Response Template names
+     */
     public static HashMap<String, String> populateMappingUnique(HashMap<String, HashMap<String, Double>> multinomMap) {
         ArrayList<String> templates = new ArrayList<String>();
         for ( HashMap<String, Double> map: multinomMap.values())
@@ -133,10 +180,9 @@ public class MappingGenerator {
         DialogueActTag[] daTags = DialogueActTag.values();
         Arrays.sort(daTags, new Comparator<DialogueActTag>() {
             public int compare(DialogueActTag o1, DialogueActTag o2) {
-                return Double.compare(multinomMap.get(o2.getLabel()).size(), multinomMap.get(o1.getLabel()).size());
+                return Double.compare(multinomMap.get(o1.getLabel()).size(), multinomMap.get(o2.getLabel()).size());
             }
         });
-
         HashMap<String, String> likelyhoodMap = new HashMap<String, String>();
         HashMap<String, Double> resTags;
         String[] resTemp;        
@@ -151,34 +197,45 @@ public class MappingGenerator {
                     resTags.keySet(), 
                     new Comparator<String>() {
                         public int compare(String o1, String o2) {
-                            return Double.compare(multinomMap.get(daTag.getLabel()).get(o2), multinomMap.get(daTag.getLabel()).get(o1));
+                            return Double.compare(multinomMap.get(daTag.getLabel()).get(o1), multinomMap.get(daTag.getLabel()).get(o2));
                         }
                     }));
                 templates.remove(likelyhoodMap.get(daTag.getLabel()));
-
             }
         }
         return likelyhoodMap;
     }
 
-    public static HashMap<String, String> populateMapping(String fName) {
+    /**
+     * Helper method
+     * Call this if you want the above, only given a responses filename, and the multinomial mapping will be generated for you
+     * @param the responses file name
+     * @return an injective mapping from DATag labels to a mapping of Response Template names
+     */
+    public static HashMap<String, String> populateMappingUnique(String fName) {
         HashMap<String, HashMap<String, Double>> multinomMap = populateMappingMultinomial(fName);
         if (multinomMap == null)
             return null;
-        return populateMapping(multinomMap);
+        return populateMappingUnique(multinomMap);
     }
 
-    public static HashMap<String, String> populateMapping() {
-        return populateMapping("responses.json");
+    /**
+     * Helper method
+     * Call this if you want the above, only given the default responses filename 'responses.json', and the multinomial mapping will be generated for you
+     * @return an injective mapping from DATag labels to a mapping of Response Template names
+     */
+    public static HashMap<String, String> populateMappingUnique() {
+        return populateMappingUnique("responses.json");
     }
 
-    public static HashMap<DialogueActTag, String> populateMappingDATags(String fName) {
-        HashMap<String, HashMap<String, Double>> multinomMap = populateMappingMultinomial(fName);
-        if (multinomMap == null)
-            return null;
-        HashMap<String, String> likelyhoodMap = populateMapping(multinomMap);
-        if (likelyhoodMap == null)
-            return null;
+
+    /**
+     * Maps from DATag object to the most probably-associated ResponseTag 
+     * Call this if you want a general, non-injective mapping of daTags to response tags
+     * @param any mapping from DATag label to Response Template String
+     * @return a mapping from DATag Objects to a mapping of Response Template names
+     */
+    public static HashMap<DialogueActTag, String> populateMappingDATags(HashMap<String, String> likelyhoodMap) {
         HashMap<DialogueActTag, String> daMap = new HashMap<DialogueActTag, String>();
         for (String daLabel: likelyhoodMap.keySet())
             try {
@@ -190,37 +247,121 @@ public class MappingGenerator {
         return daMap;
     }
 
+    /**
+     * Helper method
+     * Call this if you want the above, only given a responses filename, 
+     *   and a noninjective mapping from DATag label to Response Template String will be generated for you
+     * @param the responses file name
+     * @return a mapping from DATag Objects to a mapping of Response Template names
+     */
+    public static HashMap<DialogueActTag, String> populateMappingDATags(String fName) {
+        HashMap<String, HashMap<String, Double>> multinomMap = populateMappingMultinomial(fName);
+        if (multinomMap == null)
+            return null;
+        HashMap<String, String> likelyhoodMap = populateMapping(multinomMap);
+        if (likelyhoodMap == null)
+            return null;
+        return populateMappingDATags(likelyhoodMap);
+    }
+
+    /**
+     * Helper method
+     * Call this if you want the above, only given the default responses filename 'responses.json', and the multinomial mapping will be generated for you
+     * @return a mapping from DATag Objects to a mapping of Response Template names
+     */
     public static HashMap<DialogueActTag, String> populateMappingDATags() {
         return populateMappingDATags("responses.json");
+    }
+
+
+
+    /**
+     * Maps injectively from DATag Object to the most probably-associated ResponseTag 
+     * Call this if you want the above, only given a responses filename,
+     *   and an injective mapping from DATag label to Response Template String will be generated for you
+     * @param the responses file name
+     * @return an injective mapping from DATag Objects to a mapping of Response Template names
+     */
+    public static HashMap<DialogueActTag, String> populateMappingDATagsUnique(String fName) {
+        HashMap<String, HashMap<String, Double>> multinomMap = populateMappingMultinomial(fName);
+        if (multinomMap == null)
+            return null;
+        HashMap<String, String> likelyhoodMap = populateMappingUnique(multinomMap);
+        if (likelyhoodMap == null)
+            return null;
+        return populateMappingDATags(likelyhoodMap);
+    }
+
+    /**
+     * Helper method
+     * Call this if you want the above, only given the default responses filename 'responses.json', and the multinomial mapping will be generated for you
+     * @return an injective mapping from DATag Objects to a mapping of Response Template names
+     */
+    public static HashMap<DialogueActTag, String> populateMappingDATagsUnique() {
+        return populateMappingDATagsUnique("responses.json");
+    }
+
+    /**
+     * Just write the mapping to a file
+     * @param the file name
+     * @param the mapping
+     */
+    protected static void writeOut(String fName, HashMap<?,?> map) {
+        try (FileWriter file = new FileWriter(fName)) {
+            file.write((new JSONObject(map)).toJSONString());
+        } catch (IOException e) {
+            System.out.println("Error: IOException");
+            e.printStackTrace();
+        }
     }
 
 
     public static void main(String a[]) {
         ArrayList<String> args = new ArrayList<String>(Arrays.asList(a));
         if (args.contains("-h") || args.contains("--help")) {
-            System.out.println( "Help message goes here" );
+            System.out.println( 
+                "MappingGenerator solves the problem of 'given an utterance with a DATag, determine which type of response the utterance should be considered'"
+                +"Three types of maps can be constructed by this class:"
+                +"   populateMappingMultinomial: a mapping of DATags to probabilities for how adherent each response template is to each DATag"
+                +"   populateMapping: a mapping of DATags to the highest probability Response template"
+                +"   populateMappingUnique: an injective mapping of DATags to the highest probability Response template"
+                +""
+                +"Run the main method to save the result of populateMapping to a file in json format in the processactions directory"
+                +"The filename will be 'DATagToSRT.json' by default, but can be set by the LAST argument to the main method (cant have a dash in it!)"
+                +""
+                +"Arguments are as follows:"
+                +"  -h, --help: Display this help message" 
+                +"  -u, --unique, -i, --injective: Only do & save populateMappingUnique(). For each distinct DATag, ensure that it's corrosponding Response Template is distinct & unique, such that the mapping is injective"
+                +"  -m, --multinomial: Only do & save the Multinomial mapping, populateMappingMultinomial()"
+                +"  -d, --datag: Use the DATag toString method to save mappings instead of their labels. Can be used with populateMappingUnique or populateMapping.");
         } 
-        else if (args.size() > 1){
+        else if (args.size() > 3){
             System.out.println("Error with arguments: need one or two. You provided "+args.size());
         } 
         else {
-            if (args.size() < 1)
+            String rootDir = "../src/edu/pugetsound/mathcs/nlp/processactions/";
+            if (args.size() == 0 || args.get(args.size()-1).contains("-")) {
                 args.add("responses.json");
-            HashMap<String, HashMap<String, Double>> mapping = populateMappingMultinomial(args.get(0));
-            
-            try (FileWriter file = new FileWriter("../src/edu/pugetsound/mathcs/nlp/processactions/DATagToSRT_probabilities.json")) {
-                file.write((new JSONObject(mapping)).toJSONString());
-            } catch (IOException e) {
-                System.out.println("Error: IOException");
-                e.printStackTrace();
+                System.out.print("Using default input file name at ");
             }
+            else 
+                System.out.print("Using custom input file name at ");
+            System.out.print(args.get(args.size()-1)+'\n');
 
-            try (FileWriter file = new FileWriter("../src/edu/pugetsound/mathcs/nlp/processactions/DATagToSRT.json")) {
-                file.write((new JSONObject(populateMapping(mapping))).toJSONString());
-            } catch (IOException e) {
-                System.out.println("Error: IOException");
-                e.printStackTrace();
-            }
+            HashMap<String, HashMap<String, Double>> multinomMap = populateMappingMultinomial(args.get(args.size()-1));
+            
+            HashMap<String,String> map = null;
+
+            if (args.contains("-u") || args.contains("--unique") || args.contains("-i") || args.contains("--injective")) 
+                map = populateMappingUnique(multinomMap);
+            else if (!args.contains("-m") && !args.contains("--multinomial")) 
+                map = populateMapping(multinomMap);
+            else
+                writeOut(rootDir+"DATagToSRT.json", multinomMap);
+            if (args.contains("-d") || args.contains("--datag"))
+                writeOut(rootDir+"DATagToSRT.json", populateMappingDATags(map));
+            else if (!args.contains("-m") && !args.contains("--multinomial")) 
+                writeOut(rootDir+"DATagToSRT.json", map);
         }
     }
 
