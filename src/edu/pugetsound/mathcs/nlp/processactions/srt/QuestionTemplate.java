@@ -13,7 +13,7 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * The catch-all class for constructing questions.
  * This class will attempt to ask a question about something the user said, and if failing at that will
  * attempt to ask a question about basically anything.

@@ -13,7 +13,7 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a "yes" response to a user's yes-no question.
  */
 public class YesTemplate implements SemanticResponseTemplate {

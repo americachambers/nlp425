@@ -21,14 +21,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * The interface for all response templates.
  * All templates need to be able to take in an utterance and return a String response.
  */
 public interface SemanticResponseTemplate {
 
     /**
-     * @author Thomas Gagne
+     * @author Thomas Gagne & Jon Sims
      * Returns a response to a user's utterance in string form.
      * Since interfaces in Java can't have static methods, this method must be called on an object.
      * For inline expressions, new MyTemplate().constructResponseFromTemplate(utt); works well

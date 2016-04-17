@@ -13,7 +13,7 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a greeting to the user of the form "Hello."
  * This class differs from ConventionalOpeningTemplate, which asks things like "What's up?"
  */

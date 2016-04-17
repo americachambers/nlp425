@@ -14,7 +14,7 @@ import edu.pugetsound.mathcs.nlp.features.*;
 /**
  * The main response generator of the Process Actions step
  * This class should only be used to access the method generateResponse(...);
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  */
 public class ActionProcessor {
 

@@ -19,7 +19,7 @@ import edu.pugetsound.mathcs.nlp.lang.Token;
 
 /**
  * Represents a filled-in AMR node
- * @author tgagne
+ * @author tgagne & Jon Sims
  */
 public class AMR {
 
@@ -205,6 +205,7 @@ public class AMR {
 
     /**
      * The time since the MSR Splat API was last queried
+     * For rate-limiting requests to every two seconds
      */
     private static long queryTime = 0;
 

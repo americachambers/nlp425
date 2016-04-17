@@ -18,7 +18,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.RejectPartTemplate;
 import edu.pugetsound.mathcs.nlp.processactions.srt.MaybeTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a response which can either agree with, disagree with, or be uncertain
  * whether or not to agree with a statement the user just said. Which is chosen depends on the user's input.
  * This differs from AgreementDisagreementTemplate in that that class more explicitly states whether the
