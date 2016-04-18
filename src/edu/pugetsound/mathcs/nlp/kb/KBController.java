@@ -24,6 +24,13 @@ public class KBController{
     env.runInitialization(interpreter);
   }
 
+  public KBCOntroller(String filename){
+    env = new Environment();
+    env.ensureLoaded(AtomTerm.get(KBCOntroller.class.getResource(filename).getFile()));
+    interpreter = env.createInterpreter();
+    env.runInitialization(interpreter);
+  }
+
 /**
 * User called yes/no query method
 * @param pred   predicate being queried
