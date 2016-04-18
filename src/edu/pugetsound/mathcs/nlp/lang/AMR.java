@@ -222,8 +222,8 @@ public class AMR {
         python.exec("amr = main(text)");
         JSONParser parser = new JSONParser();
         try {
-            if (System.currentTimeMillis() - queryTime < 1000)
-                Thread.sleep(1000 - System.currentTimeMillis() + queryTime);
+            if (System.currentTimeMillis() - queryTime < 5000)
+                Thread.sleep(5000 - System.currentTimeMillis() + queryTime);
             System.out.println("Got the AMR String; parsing in a moment...");
             
             Object obj = parser.parse(python.get("amr").toString());

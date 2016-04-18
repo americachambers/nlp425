@@ -76,7 +76,12 @@ public class ActionProcessor {
         SemanticResponseTemplate responseGenerator = responseTagToSRT.get(responseTag);        
         if(responseGenerator != null) {
             // Use the given daTag to determine what type of response to generate
-            return responseGenerator.constructResponseFromTemplate(convo);
+            try {
+                return responseGenerator.constructResponseFromTemplate(convo);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            return "Sorry, I didn't understand that.";
         }
 
         // Should probably throw an excetion here
