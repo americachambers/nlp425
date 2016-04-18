@@ -376,19 +376,19 @@ public class MappingGenerator {
         if (args.contains("-h") || args.contains("--help")) {
             System.out.println( 
                 "MappingGenerator solves the problem of 'given an utterance with a DATag, determine which type of response the utterance should be considered'"
-                +"Three types of maps can be constructed by this class:"
-                +"   populateMappingMultinomial: a mapping of DATags to probabilities for how adherent each response template is to each DATag"
-                +"   populateMapping: a mapping of DATags to the highest probability Response template"
-                +"   populateMappingUnique: an injective mapping of DATags to the highest probability Response template"
-                +""
-                +"Run the main method to save the result of populateMapping to a file in json format in the processactions directory"
-                +"The filename will be 'DATagToSRT.json' by default, but can be set by the LAST argument to the main method (cant have a dash in it!)"
-                +""
-                +"Arguments are as follows:"
-                +"  -h, --help: Display this help message" 
-                +"  -u, --unique, -i, --injective: Only do & save populateMappingUnique(). For each distinct DATag, ensure that it's corrosponding Response Template is distinct & unique, such that the mapping is injective"
-                +"  -m, --multinomial: Only do & save the Multinomial mapping, populateMappingMultinomial()"
-                +"  -d, --datag: Use the DATag toString method to save mappings instead of their labels. Can be used with populateMappingUnique or populateMapping.");
+                +"\nThree types of maps can be constructed by this class:"
+                +"\n   populateMappingMultinomial: a mapping of DATags to probabilities for how adherent each response template is to each DATag"
+                +"\n   populateMapping: a mapping of DATags to the highest probability Response template"
+                +"\n   populateMappingUnique: an injective mapping of DATags to the highest probability Response template"
+                +"\n"
+                +"\nRun the main method to save the result of populateMapping to a file in json format in the processactions directory"
+                +"\nThe filename will be 'DATagToSRT.json' by default, but can be set by the LAST argument to the main method (cant have a dash in it!)"
+                +"\n"
+                +"\nArguments are as follows:"
+                +"\n  -h, --help: Display this help message" 
+                +"\n  -u, --unique, -i, --injective: Only do & save populateMappingUnique(). For each distinct DATag, ensure that it's corrosponding Response Template is distinct & unique, such that the mapping is injective"
+                +"\n  -m, --multinomial: Only do & save the Multinomial mapping, populateMappingMultinomial()"
+                +"\n  -d, --datag: Use the DATag toString method to save mappings instead of their labels. Can be used with populateMappingUnique or populateMapping.");
         } 
         else if (args.size() > 3){
             System.out.println("Error with arguments: need one or two. You provided "+args.size());
