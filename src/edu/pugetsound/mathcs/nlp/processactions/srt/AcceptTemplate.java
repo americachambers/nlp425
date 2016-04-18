@@ -13,7 +13,7 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a response which positively akcnowledges/agrees with what the user said.
  * This differs from AgreementTemplate, which explicitly states that the computer agrees with them.
  * Example responses include "Yeah." or "Ok."

@@ -18,7 +18,7 @@ import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for answering yes-no questions posed by the user.
  * This class will call the knowledge base to determine the answer, then return the appropriate answer.x
  */

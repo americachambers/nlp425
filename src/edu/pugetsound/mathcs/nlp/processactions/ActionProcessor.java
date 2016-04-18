@@ -14,7 +14,7 @@ import edu.pugetsound.mathcs.nlp.features.*;
 /**
  * The main response generator of the Process Actions step
  * This class should only be used to access the method generateResponse(...);
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  */
 public class ActionProcessor {
 
@@ -76,7 +76,12 @@ public class ActionProcessor {
         SemanticResponseTemplate responseGenerator = responseTagToSRT.get(responseTag);        
         if(responseGenerator != null) {
             // Use the given daTag to determine what type of response to generate
-            return responseGenerator.constructResponseFromTemplate(convo);
+            try {
+                return responseGenerator.constructResponseFromTemplate(convo);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            return "Sorry, I didn't understand that.";
         }
 
         // Should probably throw an excetion here

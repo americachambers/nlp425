@@ -48,7 +48,7 @@ public class QLearner {
         }
         
         //starting with the null state, adds all states to the state Arraylist
-        this.states.add(new State(null,0));
+//        this.states.add(new State(null,0));
         id = 1;
         for(DialogueActTag dialogueActTag : DialogueActTag.values()){
             this.states.add(new State(dialogueActTag,id));
