@@ -48,7 +48,7 @@ public class MappingGenerator {
     /**
      * A Hardcoded list of DATags that definitely go to certain response templates
      */
-    protected static HashMap<DialogueActTag, String> hardcodedMap = 
+    public static HashMap<DialogueActTag, String> hardcodedMap = 
         new HashMap<DialogueActTag, String>() {{
             // Instantiate HashMap's values
             put(DialogueActTag.ACKNOWLEDGE_ANSWER , "AcknowledgeAnswerTemplate");
@@ -63,7 +63,9 @@ public class MappingGenerator {
             put(DialogueActTag.CONVENTIONAL_CLOSING , "ConventionalClosingTemplate");
             put(DialogueActTag.CONVENTIONAL_OPENING , "ConventionalOpeningTemplate");
             put(DialogueActTag.DOWNPLAYING_SYMPATHY , "DownplaySympathyTemplate");
+            //No Explitic Performative
             put(DialogueActTag.EXCLAMATION , "ExclamationTemplate");
+            //No Forward Looking
             put(DialogueActTag.MAYBE , "MaybeTemplate");
             put(DialogueActTag.OPEN_OPTION , "OpenOptionTemplate");
             put(DialogueActTag.OFFER , "QuestionTemplate");
@@ -80,20 +82,25 @@ public class MappingGenerator {
             put(DialogueActTag.CONTINUER , "AcknowledgeAnswerTemplate");
             put(DialogueActTag.HOLD , "AcknowledgeAnswerTemplate");
             put(DialogueActTag.MIMIC_OTHER , "NonUnderstandingMimicTemplate");
-            put(DialogueActTag.QUOTATION , "RhetoricalQuestionContinuer");
+            put(DialogueActTag.QUOTATION , "StatementNonOpinionTemplate");
+            put(DialogueActTag.STATEMENT , "StatementNonOpinionTemplate");
             put(DialogueActTag.QUESTION_YES_NO , "YesNoQuestionTemplate");
             put(DialogueActTag.YES , "YesTemplate");
             put(DialogueActTag.NO , "NoTemplate");
+            put(DialogueActTag.DESCRIPTIVE_AFFIRMATIVE_ANSWER , "StatementOpinionTemplate");
+            put(DialogueActTag.DESCRIPTIVE_NEGATIVE_ANSWER , "StatementOpinionTemplate");
             put(DialogueActTag.QUESTION_WH , "WhQuestionTemplate");
-            put(DialogueActTag.QUESTION_OPEN_ENDED , "RhetoricalQuestionContinuer");
-            put(DialogueActTag.QUESTION_RHETORICAL , "RhetoricalQuestionContinuer");
+            put(DialogueActTag.QUESTION_OPEN_ENDED , "QuestionTemplate");
+            put(DialogueActTag.QUESTION_RHETORICAL , "QuestionTemplate");
             put(DialogueActTag.VIEWPOINT , "StatementOpinionTemplate");
             put(DialogueActTag.TAG_QUESTION , "TagQuestionTemplate");
             put(DialogueActTag.REFORMULATE_SUMMARIZE , "ReformulateTemplate");
             put(DialogueActTag.QUESTION_ALTERNATIVE , "QuestionTemplate");
             put(DialogueActTag.NARRATIVE_DESCRIPTIVE , "StatementNonOpinionTemplate");
-            put(DialogueActTag.ABOUT_COMMUNICATION , "RepeatPhraseTemplate");
+            // put(DialogueActTag.ABOUT_COMMUNICATION , "RepeatPhraseTemplate");
           
+          //we got to indeterminite response
+
           }};
 
     /**
@@ -141,9 +148,9 @@ public class MappingGenerator {
             HashMap<String, HashMap<String, Double>> mapping = new HashMap<String, HashMap<String, Double>>();
             
             for(DialogueActTag datag : DialogueActTag.values()) {
-                mapping.put(datag.getLabel(), new HashMap<String, Double>());
+                mapping.put(Integer.toString(datag.ordinal()), new HashMap<String, Double>());
                 if (hardcodedMap.containsKey(datag))
-                    mapping.get(datag.getLabel()).put(hardcodedMap.get(datag), Double.POSITIVE_INFINITY);
+                    mapping.get(Integer.toString(datag.ordinal())).put(hardcodedMap.get(datag), Double.POSITIVE_INFINITY);
             }
             DAClassifier dac = new DAClassifier();
             HashMap<String, Double> curDATagReses;
@@ -151,7 +158,7 @@ public class MappingGenerator {
             for (Map.Entry<String,String[]> resTagReses: responses.entrySet()) {
                 double weight = Math.pow(resTagReses.getValue().length, -1);
                 for (String text: resTagReses.getValue()) {
-                    curDATagReses = mapping.get(dac.classify(new Utterance(text), new Conversation()).getLabel());
+                    curDATagReses = mapping.get(Integer.toString(dac.classify(new Utterance(text), new Conversation()).ordinal()));
                     if (! curDATagReses.containsKey(resTagReses.getKey()))
                         curDATagReses.put(resTagReses.getKey(), new Double(weight));
                     else
@@ -235,27 +242,27 @@ public class MappingGenerator {
         DialogueActTag[] daTags = DialogueActTag.values();
         Arrays.sort(daTags, new Comparator<DialogueActTag>() {
             public int compare(DialogueActTag o1, DialogueActTag o2) {
-                return Double.compare(multinomMap.get(o1.getLabel()).size(), multinomMap.get(o2.getLabel()).size());
+                return Double.compare(multinomMap.get(o1.ordinal()).size(), multinomMap.get(o2.ordinal()).size());
             }
         });
         HashMap<String, String> likelyhoodMap = new HashMap<String, String>();
         HashMap<String, Double> resTags;
         String[] resTemp;        
         for (DialogueActTag daTag: daTags) {
-            resTags = multinomMap.get(daTag.getLabel());
+            resTags = multinomMap.get(daTag.ordinal());
             resTemp = new String[resTags.size()];
             for (String resTag: resTags.keySet().toArray(resTemp))
                 if (!templates.contains(resTag))
                     resTags.remove(resTag);
             if (resTags.size() > 0) {
-                likelyhoodMap.put(daTag.getLabel(), Collections.max(
+                likelyhoodMap.put(Integer.toString(daTag.ordinal()), Collections.max(
                     resTags.keySet(), 
                     new Comparator<String>() {
                         public int compare(String o1, String o2) {
-                            return Double.compare(multinomMap.get(daTag.getLabel()).get(o1), multinomMap.get(daTag.getLabel()).get(o2));
+                            return Double.compare(multinomMap.get(Integer.toString(daTag.ordinal())).get(o1), multinomMap.get(daTag.ordinal()).get(o2));
                         }
                     }));
-                templates.remove(likelyhoodMap.get(daTag.getLabel()));
+                templates.remove(likelyhoodMap.get(Integer.toString(daTag.ordinal())));
             }
         }
         return likelyhoodMap;
@@ -292,9 +299,10 @@ public class MappingGenerator {
      */
     public static HashMap<DialogueActTag, String> populateMappingDATags(HashMap<String, String> likelyhoodMap) {
         HashMap<DialogueActTag, String> daMap = new HashMap<DialogueActTag, String>();
+        DialogueActTag[] daOrds = DialogueActTag.values();
         for (String daLabel: likelyhoodMap.keySet())
             try {
-                daMap.put(DialogueActTag.fromLabel(daLabel), likelyhoodMap.get(daLabel));
+                daMap.put(daOrds[Integer.parseInt(daLabel)], likelyhoodMap.get(daLabel));
             } catch (IllegalArgumentException e) {
                 System.out.println("Error with datag label: "+daLabel);
                 System.out.println(e);
@@ -376,19 +384,19 @@ public class MappingGenerator {
         if (args.contains("-h") || args.contains("--help")) {
             System.out.println( 
                 "MappingGenerator solves the problem of 'given an utterance with a DATag, determine which type of response the utterance should be considered'"
-                +"Three types of maps can be constructed by this class:"
-                +"   populateMappingMultinomial: a mapping of DATags to probabilities for how adherent each response template is to each DATag"
-                +"   populateMapping: a mapping of DATags to the highest probability Response template"
-                +"   populateMappingUnique: an injective mapping of DATags to the highest probability Response template"
-                +""
-                +"Run the main method to save the result of populateMapping to a file in json format in the processactions directory"
-                +"The filename will be 'DATagToSRT.json' by default, but can be set by the LAST argument to the main method (cant have a dash in it!)"
-                +""
-                +"Arguments are as follows:"
-                +"  -h, --help: Display this help message" 
-                +"  -u, --unique, -i, --injective: Only do & save populateMappingUnique(). For each distinct DATag, ensure that it's corrosponding Response Template is distinct & unique, such that the mapping is injective"
-                +"  -m, --multinomial: Only do & save the Multinomial mapping, populateMappingMultinomial()"
-                +"  -d, --datag: Use the DATag toString method to save mappings instead of their labels. Can be used with populateMappingUnique or populateMapping.");
+                +"\nThree types of maps can be constructed by this class:"
+                +"\n   populateMappingMultinomial: a mapping of DATags to probabilities for how adherent each response template is to each DATag"
+                +"\n   populateMapping: a mapping of DATags to the highest probability Response template"
+                +"\n   populateMappingUnique: an injective mapping of DATags to the highest probability Response template"
+                +"\n"
+                +"\nRun the main method to save the result of populateMapping to a file in json format in the processactions directory"
+                +"\nThe filename will be 'DATagToSRT.json' by default, but can be set by the LAST argument to the main method (cant have a dash in it!)"
+                +"\n"
+                +"\nArguments are as follows:"
+                +"\n  -h, --help: Display this help message" 
+                +"\n  -u, --unique, -i, --injective: Only do & save populateMappingUnique(). For each distinct DATag, ensure that it's corrosponding Response Template is distinct & unique, such that the mapping is injective"
+                +"\n  -m, --multinomial: Only do & save the Multinomial mapping, populateMappingMultinomial()"
+                +"\n  -d, --datag: Use the DATag toString method to save mappings instead of their labels. Can be used with populateMappingUnique or populateMapping.");
         } 
         else if (args.size() > 3){
             System.out.println("Error with arguments: need one or two. You provided "+args.size());
