@@ -25,7 +25,8 @@ import edu.pugetsound.mathcs.nlp.lang.SemanticRelation;
 public class AMR {
 
     public AMR(String nodeVar, String nodeValue, AMR.AMRType nodeType) {
-        this.nodeValue = new String[]{nodeVar, nodeValue};
+        this.nodeValue[0] = nodeVar;
+        this.nodeValue[1] = nodeValue;
         this.nodeType = nodeType;
     }
 
