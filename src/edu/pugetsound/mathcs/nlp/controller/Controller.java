@@ -16,7 +16,6 @@ import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
 /**
  * This class contains the main input/output loop. 
  * @author alchambers
- *
  */
 public class Controller {
 	protected static final String INITIAL_GREETING = "Hello.";  
@@ -53,7 +52,7 @@ public class Controller {
 	/**
 	 * Returns an absolute path to the base directory of /nlp425
 	 */
-	protected static String getBasePath(String path, String delimiter) throws IOException {
+	public static String getBasePath(String path, String delimiter) throws IOException {
 		if(!path.endsWith(delimiter)){
 			path += delimiter;
 		}
@@ -81,7 +80,7 @@ public class Controller {
 
 		out = outStream;
 		conversation = new Conversation();	
-		analyzer = new TextAnalyzer();
+		analyzer = new TextAnalyzer(path);
 		input = new Scanner(in);
 		hyperVariables = new HyperVariables(GAMMA, EXPLORE);
 		mdp = new QLearner(hyperVariables);
@@ -124,7 +123,8 @@ public class Controller {
 		Action action = mdp.train(conversation);
 
 		// Process the action and produce a response for the user
-		String response = ActionProcessor.generateResponse(conversation, action.getDATag());			
+		//String response = ActionProcessor.generateResponse(conversation, action.getDATag());
+		String response = "Error: Unable to generate response";
 		Utterance agentUtt = analyzer.analyze(response, conversation);
 		conversation.addUtterance(agentUtt);
 		respondToUser(agentUtt);
