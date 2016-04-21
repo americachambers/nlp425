@@ -20,7 +20,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 public class DownplaySympathyTemplate implements SemanticResponseTemplate {
 
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("DownplaySympathyTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

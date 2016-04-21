@@ -25,7 +25,7 @@ public class ActionDirectiveTemplate implements SemanticResponseTemplate {
     // It's also used for changing the subject, such as "Let's talk about X".
     // How about we use something like "Go ahead" when its appropriate, and try to change the subject otherwise
  
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("ActionDirectiveTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

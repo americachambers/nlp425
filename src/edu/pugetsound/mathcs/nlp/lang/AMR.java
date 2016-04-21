@@ -3,6 +3,7 @@ package edu.pugetsound.mathcs.nlp.lang;
 import java.util.HashMap;
 import java.util.List;
 import java.lang.Thread;
+import java.io.IOException;
 
 //Requires Jython 2.5: http://www.jython.org/
 //http://search.maven.org/remotecontent?filepath=org/python/jython-standalone/2.7.0/jython-standalone-2.7.0.jar
@@ -17,6 +18,7 @@ import org.json.simple.parser.JSONParser;
 
 import edu.pugetsound.mathcs.nlp.lang.Token;
 import edu.pugetsound.mathcs.nlp.lang.SemanticRelation;
+import edu.pugetsound.mathcs.nlp.controller.Controller;
 
 /**
  * Represents a filled-in AMR node
@@ -124,9 +126,16 @@ public class AMR {
      * @return An array of AMR, which are translations of each sentences' AMR
      */
     public static AMR[] convertTextToAMR(String text) {
-
+        String scriptPath;
+        try {
+            String delimiter = System.getProperty("file.separator");
+            scriptPath = Controller.getBasePath() + delimiter + "scripts" + delimiter + "msrsplat.py";
+        } catch (IOException e ) {
+            System.out.println(e);
+            return null;
+        }
         PythonInterpreter python = new PythonInterpreter();
-        python.execfile("../scripts/msrsplat.py");
+        python.execfile(scriptPath);
         python.set("text", new PyString(text));
         System.out.println("Querying MSR_SPLAT for the AMR string for '"+text+"'");
         

@@ -25,7 +25,7 @@ public class RepeatPhraseTemplate implements SemanticResponseTemplate {
     // You'd output "Three months."
     // We need to make sure to only output named entities though, so we don't say "There."
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("RepeatPhraseTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {

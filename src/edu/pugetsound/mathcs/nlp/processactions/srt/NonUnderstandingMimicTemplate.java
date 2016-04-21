@@ -23,7 +23,7 @@ public class NonUnderstandingMimicTemplate implements SemanticResponseTemplate {
 
     // This template is like the RepeatPhraseTemplate, but adds a question mark to the end, to signal confusion
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("NonUnderstandingMimicTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

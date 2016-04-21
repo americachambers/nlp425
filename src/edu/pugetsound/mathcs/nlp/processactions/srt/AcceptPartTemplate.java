@@ -21,7 +21,7 @@ import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
  */
 public class AcceptPartTemplate implements SemanticResponseTemplate {
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("AcceptPartTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

@@ -1,12 +1,14 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
 import java.util.HashMap;
+import java.io.IOException;
 import java.lang.ProcessBuilder;
 
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
 import edu.pugetsound.mathcs.nlp.processactions.srt.*;
+import edu.pugetsound.mathcs.nlp.controller.Controller;
 
 import edu.pugetsound.mathcs.nlp.lang.*;
 import edu.pugetsound.mathcs.nlp.features.*;
@@ -88,8 +90,8 @@ public class ActionProcessor {
         return "Error: Response could not be generated, bad extendedDA tag";
     }
 
-    public static void main(String[] args){
-        TextAnalyzer ta = new TextAnalyzer();
+    public static void main(String[] args) throws IOException{
+        TextAnalyzer ta = new TextAnalyzer(Controller.getBasePath());
         Conversation convo = new Conversation();
         for (String a: args)
             convo.addUtterance(ta.analyze(a,convo));

@@ -23,7 +23,7 @@ public class CommitTemplate implements SemanticResponseTemplate {
     // The CommitTemplate is like "I'll try to remember that", "I'll look into that", etc.
     // Hardcoding might be ok, but we might also need to look at what they're saying to pick between outputs
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("CommitTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

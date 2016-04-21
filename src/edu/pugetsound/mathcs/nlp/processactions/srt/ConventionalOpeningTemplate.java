@@ -23,7 +23,7 @@ public class ConventionalOpeningTemplate implements SemanticResponseTemplate {
     // Conventional opening can also involve saying your name
     // We might want to add that.
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("ConventionalOpeningTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override
