@@ -101,6 +101,10 @@ public class TextAnalyzer {
 		dialogueClassifier = new DAClassifier();
 	}
 
+	public TextAnalyzer() throws IOException {
+		this(Controller.getBasePath());
+	}
+
 
 	/**
 	 * Computes syntactic, semantic, and pragmatic features of a piece of text

@@ -75,7 +75,7 @@ public class ResponseGenerator {
         return sentences.toArray(utts);
     }
 
-    private static int saveUtterancesWithAnalysis(String[] utterances, String outfileName) {
+    private static int saveUtterancesWithAnalysis(String[] utterances, String outfileName) throws IOException{
         Conversation tempConvo;
         ArrayList<Utterance> convoList = new ArrayList<Utterance>();
         PyString[] tokens;

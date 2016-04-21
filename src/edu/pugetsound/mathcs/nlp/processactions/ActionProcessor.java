@@ -90,8 +90,8 @@ public class ActionProcessor {
         return "Error: Response could not be generated, bad extendedDA tag";
     }
 
-    public static void main(String[] args) throws IOException{
-        TextAnalyzer ta = new TextAnalyzer(Controller.getBasePath());
+    public static void main(String[] args) throws IOException {
+        TextAnalyzer ta = new TextAnalyzer();
         Conversation convo = new Conversation();
         for (String a: args)
             convo.addUtterance(ta.analyze(a,convo));
