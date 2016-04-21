@@ -5,9 +5,14 @@ group for performing linguistic analyses, such as parsing and POS tagging.
 """
 
 import json
-import sys
-sys.path.append("../scripts")
-sys.path.append("../lib")
+import sys, os
+
+cwd = os.getcwd()
+while cwd[-6:] != "nlp425":
+  cwd = cwd[:-1]
+sys.path.append(cwd[-7].join([cwd, 'lib', 'requests']))
+sys.path.append(cwd[-7].join([cwd, 'scripts']))
+
 import requests
 
 class Client:
