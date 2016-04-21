@@ -7,6 +7,7 @@ group for performing linguistic analyses, such as parsing and POS tagging.
 import json
 import sys
 sys.path.append("../scripts")
+sys.path.append("../lib")
 import requests
 
 class Client:

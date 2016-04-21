@@ -6,6 +6,7 @@ import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -96,6 +97,7 @@ public class QLearner {
             //if e is less than ANNEAL, we will explore
             choice = r.nextInt(actions.size());//chooses random action 
             lReward = rateActionChoice(stateIndex, choice);
+
             maxAPrime = bestResponseValue(stateIndex);
         } else {
             //exploit
@@ -106,7 +108,7 @@ public class QLearner {
                     choice = i;
                 }
             }
-            lReward = rateActionChoice(stateIndex, choice);            
+            lReward = rateActionChoice(stateIndex, choice); 
             maxAPrime = bestResponseValue(stateIndex);
         }
         lAction = choice;
