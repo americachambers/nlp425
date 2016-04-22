@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.lang.Thread;
 import java.io.IOException;
+import java.util.ArrayList;
 
 //Requires Jython 2.5: http://www.jython.org/
 //http://search.maven.org/remotecontent?filepath=org/python/jython-standalone/2.7.0/jython-standalone-2.7.0.jar
@@ -186,8 +187,12 @@ public class AMR {
 
 
     public static void main(String a[]) {
-        for (String s: a)
-            System.out.println(AMR.convertTextToAMR(s));
+        for (String s: a) {
+            //System.out.println(AMR.convertTextToAMR(s));
+            AMR result = parseAMRString(s);
+            System.out.println(result.toString());
+
+        }
 
         //AMR fluffy = new AMR("f", "fluffy", AMRType.noun);
         //AMR cute = new AMR("c", "cute", AMRType.adjective);
@@ -198,7 +203,7 @@ public class AMR {
         // System.out.println(result.toString());
     }
 
-    /**
+        /**
      * Parses an AMR string to an AMR object
      * This is based on the Smatch parsing algorithm, which uses a shift-reduce style for parsing.
      * This method can easily break if the AMR is not well-formed. PLEASE delimit with spaces!
@@ -206,6 +211,15 @@ public class AMR {
      * @return The parsed AMR object
      */
     public static AMR parseAMRString(String text) {
+        ArrayList<AMR> encounteredAMRs = new ArrayList<AMR>();
+        return parseAMRStringRecurse(text, encounteredAMRs);
+    }
+
+    // Helper method to parseAMRString, simply to ensure that every recursion gets the correct
+    // AMR ArrayList
+    // encounteredAMRs is for cases where an AMR references an already-created AMR via its variable
+    // ex: (w / want-01:ARG0 (b / boy):ARG1 (b2 / believe-01:ARG0 (g / girl):ARG1 b))
+    private static AMR parseAMRStringRecurse(String text, ArrayList<AMR> encounteredAMRs) {
         // Convert text to lowercase for simplicity
         text = text.toLowerCase();
         
@@ -225,7 +239,9 @@ public class AMR {
 
         // The current AMR object we are filling
         AMR cur_amr = new AMR();
-        cur_amr.amrString = text;
+        // Bad for debugging, isn't indicative of whether it was parsed correctly
+        //cur_amr.amrString = text;
+        encounteredAMRs.add(cur_amr);
 
         // Flag for if we're insidez quotation marks
         boolean in_quote = false;
@@ -295,7 +311,7 @@ public class AMR {
 
                 // Get the attribute name and recurse to create the new AMR
                 if(state == ':') {
-                    AMR recursed = parseAMRString(text.substring(i));
+                    AMR recursed = parseAMRStringRecurse(text.substring(i), encounteredAMRs);
                     // Skip over the part of text corresponding to recursed
                     skip_amr = 1;
                     //i++; // Prevent skip_amr from counting the first ( twice
@@ -308,6 +324,8 @@ public class AMR {
                         if(recursed != null) {
                             // Add recursed to cur_amr's map of semantic relations
                             cur_amr.semanticRelations.put(sr, recursed);
+                            // Add recursed to the list of encountered AMRs so we can reference it later
+                            encounteredAMRs.add(recursed);
                         }
                     }
 
@@ -364,9 +382,23 @@ public class AMR {
                             System.out.println("Error: Unrecognized relation " + last_word  + " while parsing AMR!");
                             return null;
                         } else {
-                            // Create a new AMR to hold the term
-                            AMR relation_val = new AMR("" + cur_charseq.charAt(0), cur_charseq, AMRType.string);
-                            cur_amr.semanticRelations.put(sr, relation_val);
+
+                            boolean amrExisted = false;
+                            
+                            // If the term is a variable pointing to an existing AMR, simply point to that AMR
+                            for(AMR encountered : encounteredAMRs) {
+                                if(encountered.nodeValue[0].equals(cur_charseq)) {
+                                    cur_amr.semanticRelations.put(sr, encountered);
+                                    amrExisted = true;
+                                }
+                            }
+
+                            if(!amrExisted) {
+                                // Create a new AMR to hold the term
+                                AMR relation_val = new AMR("" + cur_charseq.charAt(0), cur_charseq, AMRType.string);
+                                cur_amr.semanticRelations.put(sr, relation_val);
+                                encounteredAMRs.add(relation_val);
+                            }
 
                             last_word = cur_charseq;
                             cur_charseq = "";
