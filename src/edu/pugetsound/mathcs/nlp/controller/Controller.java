@@ -135,7 +135,6 @@ public class Controller {
 		Utterance agentUtt = analyzer.analyze(response, conversation);
 		conversation.addUtterance(agentUtt);
 		respondToUser(agentUtt);
-
 	}
 
 	/**

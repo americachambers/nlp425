@@ -52,13 +52,9 @@ public class QLearner {
 //        this.states.add(new State(null,0));
         id = 0;
         for(DialogueActTag dialogueActTag : DialogueActTag.values()){
-            this.states.add(new State(null,dialogueActTag,id));
-            id++;
-        }
-        for(DialogueActTag dialogueActTag : DialogueActTag.values()){
             for(DialogueActTag dialogueActTag2 : DialogueActTag.values())
             {
-                this.states.add(new State(dialogueActTag,dialogueActTag,id));
+                this.states.add(new State(dialogueActTag,dialogueActTag2,id));
                 id++;
             }
         }
@@ -71,7 +67,7 @@ public class QLearner {
         GAMMA = h.getGamma();
         EXPLORE = h.getExplore();
         ANNEAL = h.getExplore();
-
+        
         q_table = new double[states.size()][actions.size()];
     }
 
@@ -80,17 +76,20 @@ public class QLearner {
         double alpha = (double) ANNEAL / (double) EXPLORE; //this is the alpha value, it goes down as ANNEAL goes down
         List<Utterance> utterances = conversation.getConversation();
         DialogueActTag mostRecentDAtag = utterances.get(utterances.size() - 1).daTag;
-        
 
-        DialogueActTag olderDAtag = utterances.get(utterances.size() - 3).daTag;
+        DialogueActTag olderDAtag;
+        //CHANGE THIS, ITS BROKEN
+        if(utterances.size() >= 3) {
+            olderDAtag = utterances.get(utterances.size() - 3).daTag;
+        }else{
+            olderDAtag = DialogueActTag.NULL;
+        }
+
         int stateIndex = 0;
 
         //search through states and determine which state we are in.
-
-
-        //CHANGE THIS, ITS BROKEN
         for (int i = 0; i < states.size() - 1; i++) {
-            
+
             if (states.get(i).equals(new State(olderDAtag,mostRecentDAtag,-1))) {
                 stateIndex = i;
             }
