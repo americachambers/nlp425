@@ -50,11 +50,19 @@ public class QLearner {
         
         //starting with the null state, adds all states to the state Arraylist
 //        this.states.add(new State(null,0));
-        id = 1;
+        id = 0;
         for(DialogueActTag dialogueActTag : DialogueActTag.values()){
-            this.states.add(new State(dialogueActTag,id));
+            this.states.add(new State(null,dialogueActTag,id));
             id++;
         }
+        for(DialogueActTag dialogueActTag : DialogueActTag.values()){
+            for(DialogueActTag dialogueActTag2 : DialogueActTag.values())
+            {
+                this.states.add(new State(dialogueActTag,dialogueActTag,id));
+                id++;
+            }
+        }
+        
 
         if (states.size() < 1 || actions.size() < 1) {
             throw new IllegalArgumentException();
@@ -72,11 +80,16 @@ public class QLearner {
         double alpha = (double) ANNEAL / (double) EXPLORE; //this is the alpha value, it goes down as ANNEAL goes down
         List<Utterance> utterances = conversation.getConversation();
         DialogueActTag mostRecentDAtag = utterances.get(utterances.size() - 1).daTag;
+        DialogueActTag olderDAtag = utterances.get(utterances.size() - 3).daTag;
         int stateIndex = 0;
 
         //search through states and determine which state we are in.
+
+
+        //CHANGE THIS, ITS BROKEN
         for (int i = 0; i < states.size() - 1; i++) {
-            if (states.get(i).DATag.equals(mostRecentDAtag)) {
+            
+            if (states.get(i).equals(new State(olderDAtag,mostRecentDAtag,-1))) {
                 stateIndex = i;
             }
         }
@@ -145,7 +158,7 @@ public class QLearner {
     private int rateActionChoice(int state, int choice) {
         Scanner in = new Scanner(System.in);
         int r = -1;
-        System.out.println("I am in state" + states.get(state).DATag + " and will respond with a " + actions.get(choice).DATag);
+        System.out.println("I am in state <" + states.get(state).DATag1+","+states.get(state).DATag2 + "> and will respond with a " + actions.get(choice).DATag);
         System.out.println("On a scale of 1-5, how accurate is this response?");
        
         try{
