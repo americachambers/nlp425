@@ -9,114 +9,31 @@ each conversation, multiple sequential utterances are not
 recorded (only the first), with replacement occuring for
 certain annotation tags.
 
+For each line in a conversation:
+  if the current speaker is on utterance 2+ or wrong speaker or daTag "%" 
+    ignore
+  elif DATag is in list, no @, last speaker is opposite of present, and utt# is 1
+    write line, normal procedure
+  elif the current speaker has an @ or the DATag not in list, 
+    ignore & restart coonvo
+
 '''
-import sys,os
+import sys,os,re
 
-# QUESTION("q"),
-    
-#     STATEMENT("s"),
-    
-#     BACKCHANNEL("b"),
-    
-#     FORWARD_LOOKING("f"),
-    
-#     AGREEMENTS("a"),
-    
-#     COMMENT("*"),
-    
-#     CONTINUED_FROM_PREVIOUS("+"),
-    
-#     COLLABORATIVE_COMPLETION("^2"),
-    
-#     ABOUT_COMMUNICATION("^c"),
-    
-#     DECLARATIVE_QUESTION("^d"),
-    
-#     ELABORATED_REPLY_Y_N_QUESTION("^e"),
-    
-#     TAG_QUESTION("^g"),
-    
-#     HOLD("^h"),
-#     MIMIC_OTHER("^m"),
-    
-#     QUOTATION("^q"),
-    
-#     ABOUT_TASK("^t"),
-    
-#     ACCEPT_PART("aap"),
-    
-#     ACTION_DIRECTIVE("ad"),
-    
-#     ACCEPT("aa"),
-    
-#     MAYBE("am"),
-    
-#     REJECT("ar"),
-    
-#     REJECT_PART("arp"),
-    
-#     CONTINUER("b"),
-#     ASSESSMENT_APPRECIATION("ba"),
-    
-#     DOWNPLAYING_SYMPATHY("bd"),
-    
-#     REFORMULATE_SUMMARIZE("bf"),
-    
-#     ACKNOWLEDGE_ANSWER("bk"),
-    
-#     SIGNAL_NON_UNDERSTANDING("br"),
-    
-#     SYMPATHETIC_COMMENT("by"),
-    
-#     COMMIT("cc"),
-    
-#     OFFER("co"),
-    
-#     APOLOGY("fa"),
-    
-#     CONVENTIONAL_CLOSING("fc"),
-    
-#     EXCLAMATION("fe"),
-#     CONVENTIONAL_OPENING("fp"),
-    
-#     THANKS("ft"),
-    
-#     WELCOME("fw"),
-    
-#     EXPLICIT_PERFORMATIVE("fx"),
-    
-#     DESCRIPTIVE_AFFIRMATIVE_ANSWER("na"),
-    
-#     ANSWER_DISPREFERRED("nd"),
-    
-#     DESCRIPTIVE_NEGATIVE_ANSWER("ng"),
-    
-#     NO("nn"),
-    
-#     INDETERMINATE_RESPONSE("no"),
-    
-#     YES("ny"),
-    
-#     OTHER("o"),
-    
-#     OPEN_OPTION("oo"),
-    
-#     QUESTION_RHETORICAL("qh"),
-    
-#     QUESTION_OPEN_ENDED("qo"),
-    
-#     QUESTION_ALTERNATIVE("qr"),
-    
-#     QUESTION_YES_NO_OR("qrr"),
-    
-#     QUESTION_WH("qw"),
-    
-#     QUESTION_YES_NO("qy"),
-    
-#     NARRATIVE_DESCRIPTIVE("sd"),
-    
-#     VIEWPOINT("sv");
+daTagLabels = ["q", "s", "b", "f", "a", "*", 
+    "+", "^2", "^c", "^d", "^e", "^g", 
+    "^h", "^m", "^q", "^t", "aap", "ad", 
+    "aa", "am", "ar", "arp", "b", "ba", 
+    "bd", "bf", "bk", "br", "by", "cc", 
+    "co", "fa", "fc", "fe", "fp", "ft", 
+    "fw", "fx", "na", "nd", "ng", "nn", 
+    "no", "ny", "o", "oo", "qh", "qo", 
+    "qr", "qrr", "qw", "qy", "sd", "sv"]
 
+getUtteranceNum = re.compile("\s+utt\d+")
+getAgentAndNum = re.compile("[AB]\.\d+\s+")
+getDALabel = re.compile("^.{1,6}\s{5,}")
+getUtt = re.compile("\s+.+$")
 
 
 f = open("models/responses/swb_parsed.csv", 'w')
@@ -125,4 +42,25 @@ for folder in os.listdir("resources/swb1_dialogact_annot"):
     for uttFile in os.listdir("resources/swb1_dialogact_annot/"+folder):
         if '.utt' in uttFile:
             with open('/'.join(["resources/swb1_dialogact_annot",folder,uttFile]), 'r') as uF:
+                lastSpeaker = None
+                started = False
                 for line in uF:
+                    if '===========================' in line:
+                        started = True
+                    if started and len(line) > 2:
+                        try:
+                            thisDALabel = getDALabel.match(line).string.strip()
+                            thisAgent, convoNum = getDALabel.match(line).string.strip().split('.')
+                            thisAgent = thisAgent == "A"
+                            convoNum = int(convoNum)
+                            thisUttNum = int(getDALabel.match(line).string.replace("utt","").replace(":",""))
+                            if thisUttNum > 1 or thisAgent==lastSpeaker or daTag == "%": 
+                                pass
+                            elif thisDALabel is in daTagLabels and '@' not in line and thisAgent!=lastSpeaker and thisUttNum == 1:
+                                f.write(','.join([thisDALabel,line.split("utt"+str(thisUttNum)+":")[-1].replace(","," ")]) +"\n") 
+                            else:
+                                f.write("\n") 
+                        except Exception:
+                            pass
+
+
