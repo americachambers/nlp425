@@ -4,6 +4,8 @@ package edu.pugetsound.mathcs.nlp.lang;
  * A list of most of the semantic roles in AMR
  * Current list (used below) is version 1.2.2, updated as of September 18, 2015
  * Source: https://github.com/amrisi/amr-guidelines/blob/master/amr.md#part-ii--concepts-and-relations
+ * @author Thomas Gagne & Jon Sims
+ * @version 04/27/16
  */
 public enum SemanticRelation {
     // align role, for consistency with msrsplat
@@ -88,6 +90,11 @@ public enum SemanticRelation {
         this.label = label;
     }
 
+    /**
+     * Returns the string representation of this semantic relation
+     * ex: arg0_of.getLabel() = ":arg0-of"
+     * @return The string representation of this semantic relation
+     */
     public String getLabel() {
         return ":" + label;
     }
