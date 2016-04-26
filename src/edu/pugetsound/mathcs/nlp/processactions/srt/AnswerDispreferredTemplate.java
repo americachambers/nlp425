@@ -14,13 +14,15 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
- * A template for constructing a response which refuses to speak on a topic and attempts to change the subject.
+ * @version 04/26/16
+ * A template for constructing a response which refuses to speak on a topic and attempts to
+ * change the subject.
  * Example responses include "Let's talk about something else."
  */
 public class AnswerDispreferredTemplate implements SemanticResponseTemplate {
 
-    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
-
+    private HashMap<AMR, String[]> outputs =
+        SemanticResponseTemplate.responses.get(this.getClass().getName());
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {
@@ -31,4 +33,3 @@ public class AnswerDispreferredTemplate implements SemanticResponseTemplate {
     }
 
 }
-

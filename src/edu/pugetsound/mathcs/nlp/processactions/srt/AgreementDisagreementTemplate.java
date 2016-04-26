@@ -14,6 +14,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.DisagreementTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  * A template for constructing a response which either agrees or disagrees with what the user said.
  * Unlike AcceptRejectMaybeTemplate, this class is explicit about whether it agrees.
  */
@@ -31,4 +32,3 @@ public class AgreementDisagreementTemplate implements SemanticResponseTemplate {
     }
 
 }
-
