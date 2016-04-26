@@ -13,14 +13,14 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a disagreement with what the user said.
  * This differs from RejectTemplate in that this is explicit in its disagreement, while Reject is implicit.
  * Example responses include "I disagree."
  */
 public class DisagreementTemplate implements SemanticResponseTemplate {
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("DisagreementTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

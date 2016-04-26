@@ -63,11 +63,18 @@ public class Controller {
 		else if(path.endsWith("nlp425" + delimiter + "build" + delimiter)){
 			return path + ".." + delimiter;
 		}
+		else if(path.endsWith("nlp425" + delimiter + "src" + delimiter)){
+			return path + ".." + delimiter;
+		}
 		else{
 			throw new IOException("Unknown path: " + path);
 		}		
 	}
-	
+
+	public static String getBasePath() throws IOException {
+		return getBasePath(System.getProperty("user.dir"), System.getProperty("file.separator"));
+	}
+
 	/**
 	 * Setups the necessary tools for the conversational agent
 	 */
@@ -128,7 +135,6 @@ public class Controller {
 		Utterance agentUtt = analyzer.analyze(response, conversation);
 		conversation.addUtterance(agentUtt);
 		respondToUser(agentUtt);
-
 	}
 
 	/**

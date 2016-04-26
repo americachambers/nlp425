@@ -13,7 +13,7 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a response which agrees with what the user said.
  * This differs from AcceptTemplate in that this class is explicit about whether it agrees or not,
  * whereas AcceptTemplate is more implicit.
@@ -22,7 +22,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 public class AgreementTemplate implements SemanticResponseTemplate {
 
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("AgreementTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

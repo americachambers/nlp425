@@ -13,13 +13,13 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a non-opinionated response to something the user said.
  * This template should be used for answering non-yes-no questions and for making general statements.
  */
 public class StatementNonOpinionTemplate implements SemanticResponseTemplate {
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("StatementNonOpinionTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

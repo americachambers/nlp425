@@ -13,7 +13,7 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a response which instructs the user to do something.
  * Almost every single time this appeared in the corpus, it was used to tell the user to "Go ahead", as in
  * to start speaking. Currently, this is all this template does, but it might become more advanced.
@@ -25,7 +25,7 @@ public class ActionDirectiveTemplate implements SemanticResponseTemplate {
     // It's also used for changing the subject, such as "Let's talk about X".
     // How about we use something like "Go ahead" when its appropriate, and try to change the subject otherwise
  
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("ActionDirectiveTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

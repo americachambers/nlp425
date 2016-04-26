@@ -75,7 +75,7 @@ public class ResponseGenerator {
         return sentences.toArray(utts);
     }
 
-    private static int saveUtterancesWithAnalysis(String[] utterances, String outfileName) {
+    private static int saveUtterancesWithAnalysis(String[] utterances, String outfileName) throws IOException{
         Conversation tempConvo;
         ArrayList<Utterance> convoList = new ArrayList<Utterance>();
         PyString[] tokens;
@@ -83,6 +83,7 @@ public class ResponseGenerator {
         HashMap<DialogueActTag, String> daTagToTemplate = MappingGenerator.hardcodedMap;
         PythonInterpreter python = new PythonInterpreter();
         python.execfile("../scripts/responseTemplater.py");            
+        python.set("fn", new PyString(outfileName));
         for (int p=0; p<utterances.length; p++) {
             try {
                 verifyLists(python);
@@ -132,7 +133,6 @@ public class ResponseGenerator {
         python.exec("tokensLen = len(tokens)");
         int tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
         System.out.println("Now writing "+tokensLen+"/"+utterances.length+" results to output file at "+outfileName);
-        python.set("fn", new PyString(outfileName));
         python.exec("main(fn)");
 
         return tokensLen;

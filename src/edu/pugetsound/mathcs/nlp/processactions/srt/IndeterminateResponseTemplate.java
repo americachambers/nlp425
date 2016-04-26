@@ -13,13 +13,13 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a response where the computer expresses that it does not know something.
  * Example responses include "I don't know." or "I'm not really sure."
  */
 public class IndeterminateResponseTemplate implements SemanticResponseTemplate {
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("IndeterminateResponseTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

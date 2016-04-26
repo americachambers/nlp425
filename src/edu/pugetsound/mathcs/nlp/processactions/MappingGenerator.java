@@ -97,11 +97,8 @@ public class MappingGenerator {
             put(DialogueActTag.REFORMULATE_SUMMARIZE , "ReformulateTemplate");
             put(DialogueActTag.QUESTION_ALTERNATIVE , "QuestionTemplate");
             put(DialogueActTag.NARRATIVE_DESCRIPTIVE , "StatementNonOpinionTemplate");
-            // put(DialogueActTag.ABOUT_COMMUNICATION , "RepeatPhraseTemplate");
-          
-          //we got to indeterminite response
-
-          }};
+            // No About Communication
+        }};
 
     /**
      * Helper method to get responses out of the responses.json file

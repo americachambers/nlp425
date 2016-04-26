@@ -13,14 +13,14 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a response which downplays the user's sympathy.
  * Example response include "That's ok" or "It's alright."
  */
 public class DownplaySympathyTemplate implements SemanticResponseTemplate {
 
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("DownplaySympathyTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

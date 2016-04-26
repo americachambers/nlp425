@@ -13,13 +13,13 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a response which is polite about telling the user to speak first.
  * Example responses include "You can go first."
  */
 public class OpenOptionTemplate implements SemanticResponseTemplate {
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("OpenOptionTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

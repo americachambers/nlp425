@@ -13,13 +13,13 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a more positive or enthusiastic response to a rhetorical statement.
  * For example the user says "Well, you can't really eat a cat." and the response would be "Right?"
  */
 public class TagQuestionTemplate implements SemanticResponseTemplate {
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("TagQuestionTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
     
     @Override
     public String constructResponseFromTemplate(Conversation convo) {

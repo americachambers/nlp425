@@ -6,6 +6,11 @@ package edu.pugetsound.mathcs.nlp.datag;
  */
 public enum DialogueActTag {
 	/**
+ 	* NULL
+  	*/
+	NULL("n"),
+
+	/**
 	 * Question
 	 */
 	QUESTION("q"),

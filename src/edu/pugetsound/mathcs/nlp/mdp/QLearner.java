@@ -6,6 +6,7 @@ import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -49,11 +50,15 @@ public class QLearner {
         
         //starting with the null state, adds all states to the state Arraylist
 //        this.states.add(new State(null,0));
-        id = 1;
+        id = 0;
         for(DialogueActTag dialogueActTag : DialogueActTag.values()){
-            this.states.add(new State(dialogueActTag,id));
-            id++;
+            for(DialogueActTag dialogueActTag2 : DialogueActTag.values())
+            {
+                this.states.add(new State(dialogueActTag,dialogueActTag2,id));
+                id++;
+            }
         }
+        
 
         if (states.size() < 1 || actions.size() < 1) {
             throw new IllegalArgumentException();
@@ -62,7 +67,7 @@ public class QLearner {
         GAMMA = h.getGamma();
         EXPLORE = h.getExplore();
         ANNEAL = h.getExplore();
-
+        
         q_table = new double[states.size()][actions.size()];
     }
 
@@ -71,11 +76,21 @@ public class QLearner {
         double alpha = (double) ANNEAL / (double) EXPLORE; //this is the alpha value, it goes down as ANNEAL goes down
         List<Utterance> utterances = conversation.getConversation();
         DialogueActTag mostRecentDAtag = utterances.get(utterances.size() - 1).daTag;
+
+        DialogueActTag olderDAtag;
+        //CHANGE THIS, ITS BROKEN
+        if(utterances.size() >= 3) {
+            olderDAtag = utterances.get(utterances.size() - 3).daTag;
+        }else{
+            olderDAtag = DialogueActTag.NULL;
+        }
+
         int stateIndex = 0;
 
         //search through states and determine which state we are in.
         for (int i = 0; i < states.size() - 1; i++) {
-            if (states.get(i).DATag.equals(mostRecentDAtag)) {
+
+            if (states.get(i).equals(new State(olderDAtag,mostRecentDAtag,-1))) {
                 stateIndex = i;
             }
         }
@@ -96,6 +111,7 @@ public class QLearner {
             //if e is less than ANNEAL, we will explore
             choice = r.nextInt(actions.size());//chooses random action 
             lReward = rateActionChoice(stateIndex, choice);
+
             maxAPrime = bestResponseValue(stateIndex);
         } else {
             //exploit
@@ -106,7 +122,7 @@ public class QLearner {
                     choice = i;
                 }
             }
-            lReward = rateActionChoice(stateIndex, choice);            
+            lReward = rateActionChoice(stateIndex, choice); 
             maxAPrime = bestResponseValue(stateIndex);
         }
         lAction = choice;
@@ -143,7 +159,7 @@ public class QLearner {
     private int rateActionChoice(int state, int choice) {
         Scanner in = new Scanner(System.in);
         int r = -1;
-        System.out.println("I am in state" + states.get(state).DATag + " and will respond with a " + actions.get(choice).DATag);
+        System.out.println("I am in state <" + states.get(state).DATag1+","+states.get(state).DATag2 + "> and will respond with a " + actions.get(choice).DATag);
         System.out.println("On a scale of 1-5, how accurate is this response?");
        
         try{

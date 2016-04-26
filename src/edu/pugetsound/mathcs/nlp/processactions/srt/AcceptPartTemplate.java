@@ -15,13 +15,13 @@ import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
 
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a response which mostly agrees with what the user said.
  * Responses include "I guess so" or "Something like that."
  */
 public class AcceptPartTemplate implements SemanticResponseTemplate {
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("AcceptPartTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override

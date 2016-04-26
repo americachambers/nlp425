@@ -13,7 +13,7 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for constructing a response which isolates a noun phrase in the user's input,
  * to signal incredularity or interest.
  * For example, the user says "We ate the whole cat", and so we might respond with "The whole cat."
@@ -25,7 +25,7 @@ public class RepeatPhraseTemplate implements SemanticResponseTemplate {
     // You'd output "Three months."
     // We need to make sure to only output named entities though, so we don't say "There."
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("RepeatPhraseTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {

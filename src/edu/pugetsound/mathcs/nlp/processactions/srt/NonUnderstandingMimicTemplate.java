@@ -13,7 +13,7 @@ import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
- * @author Thomas Gagne
+ * @author Thomas Gagne & Jon Sims
  * A template for expressing nonunderstanding of what the user said.
  * This differs from NonUnderstandingTemplate in that this response is more explicit about what part
  * it did not understand by referencing something in the user's input.
@@ -23,7 +23,7 @@ public class NonUnderstandingMimicTemplate implements SemanticResponseTemplate {
 
     // This template is like the RepeatPhraseTemplate, but adds a question mark to the end, to signal confusion
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("NonUnderstandingMimicTemplate");
+    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
 
 
     @Override
