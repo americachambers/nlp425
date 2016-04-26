@@ -8,7 +8,7 @@ public enum DialogueActTag {
 	/**
  	* NULL
   	*/
-	NULL("n"),
+	NULL(""),
 
 	/**
 	 * Question
