@@ -6,6 +6,11 @@ package edu.pugetsound.mathcs.nlp.datag;
  */
 public enum DialogueActTag {
 	/**
+ 	* NULL
+  	*/
+	NULL(""),
+
+	/**
 	 * Question
 	 */
 	QUESTION("q"),
@@ -306,7 +311,4 @@ public enum DialogueActTag {
 		return String.format("(%s,  %s)", this.name(), this.label);
 	}
 
-	public String getLabel() {
-		return this.label;
-	}
 }
