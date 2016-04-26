@@ -1,17 +1,18 @@
-package edu.pugetsound.mathcs.nlp.datag;
+package edu.pugetsound.mathcs.nlp.datag.classify;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 
-class DumbClassifier implements Classifier {
+public class DumbClassifier implements Classifier {
 
 //	public static void main(String)
 	
-	public DialogueActTag classify(Utterance u, Conversation c, TokenIndexMap tokenIndexMap) {
+	public DialogueActTag classify(Utterance u, Conversation c) {
 		String utterance = u.utterance;
 		
 		if(utterance.contains("?")) {
@@ -27,18 +28,8 @@ class DumbClassifier implements Classifier {
 			} else {
 				return randomTag(DialogueActTag.QUESTION, DialogueActTag.QUESTION_ALTERNATIVE, DialogueActTag.QUESTION_OPEN_ENDED, DialogueActTag.QUESTION_RHETORICAL);
 			}
-		} else if(utterance.endsWith(".")) {
-			return DialogueActTag.STATEMENT;
 		} else {
-			return randomTagExcluding(
-					DialogueActTag.QUESTION,
-					DialogueActTag.QUESTION_ALTERNATIVE,
-					DialogueActTag.QUESTION_OPEN_ENDED,
-					DialogueActTag.QUESTION_RHETORICAL,
-					DialogueActTag.QUESTION_WH,
-					DialogueActTag.QUESTION_YES_NO,
-					DialogueActTag.QUESTION_YES_NO_OR,
-					DialogueActTag.STATEMENT);
+			return null;
 		}
 	}
 	

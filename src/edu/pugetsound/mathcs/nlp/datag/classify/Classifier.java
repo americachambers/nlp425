@@ -1,11 +1,13 @@
-package edu.pugetsound.mathcs.nlp.datag;
+package edu.pugetsound.mathcs.nlp.datag.classify;
 
+import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 
-interface Classifier {
+public interface Classifier {
+	
 	/**
 	* Classifies an Utterance.
 	**/
-	public DialogueActTag classify(Utterance u, Conversation c, TokenIndexMap tokenIndexMap);
+	public DialogueActTag classify(Utterance u, Conversation c);
 }
