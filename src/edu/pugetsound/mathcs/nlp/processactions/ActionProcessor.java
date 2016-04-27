@@ -81,13 +81,21 @@ public class ActionProcessor {
      */
     public static String generateResponse(Conversation convo, ResponseTag responseTag) {
         SemanticResponseTemplate responseGenerator = RESPONSE_TAG_TO_SRT.get(responseTag);
+        //SemanticResponseTemplate responseGenerator = new StatementNonOpinionTemplate();
         if(responseGenerator != null) {
             // Use the given daTag to determine what type of response to generate
             try {
-                return responseGenerator.constructResponseFromTemplate(convo);
+                String response = responseGenerator.constructResponseFromTemplate(convo);
+                if(response == null) {
+                    return "Not goooood";
+                } else {
+                    System.out.println("Response: " + response);
+                    return response;
+                }
             } catch (Exception e) {
                 if(Logger.debug()) {
                     System.out.println(e);
+                    e.printStackTrace();
                 }
             }
             return "Sorry, I didn't understand that.";
