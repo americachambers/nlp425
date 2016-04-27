@@ -146,7 +146,8 @@ public class AMR {
         String scriptPath;
         try {
             String delimiter = System.getProperty("file.separator");
-            scriptPath = Controller.getBasePath() + "scripts" + delimiter + "msrsplat.py";
+            scriptPath = Controller.getBasePath() + "scripts" + delimiter +
+                "msrsplat.py";
         } catch (IOException e ) {
             System.out.println(e);
             return null;
@@ -441,14 +442,14 @@ public class AMR {
     }
 
     /**
-     * Takes an array of AMRs as strings and parses them into AMR objects, then prints the result
-     * @param args The list of AMR strings to parse
+     * Takes a list of strings, converts them to AMR using msrsplat, then prints the result
+     * @param args The list of strings to parse
      */
     public static void main(String args[]) {
         for (String s: args) {
-            //System.out.println(AMR.convertTextToAMR(s));
-            AMR result = parseAMRString(s);
-            System.out.println(result.toString());
+            System.out.println(AMR.convertTextToAMR(s));
+            //AMR result = parseAMRString(s);
+            //System.out.println(result.toString());
 
         }
     }
