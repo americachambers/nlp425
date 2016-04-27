@@ -50,24 +50,21 @@ public class QLearner {
         }
         
         //starting with the null state, adds all states to the state Arraylist
-//        this.states.add(new State(null,0));
         id = 0;
-        for(DialogueActTag dialogueActTag : DialogueActTag.values())
-            {
+        for(DialogueActTag dialogueActTag : DialogueActTag.values()) {
                 this.states.put(new State(DialogueActTag.NULL,dialogueActTag),id);
                 this.ids.put(id,new State(DialogueActTag.NULL,dialogueActTag));
                 id++;
             }
         for(DialogueActTag dialogueActTag : DialogueActTag.values()){
-            for(DialogueActTag dialogueActTag2 : DialogueActTag.values())
-            {
+            for(DialogueActTag dialogueActTag2 : DialogueActTag.values()) {
                 this.states.put(new State(dialogueActTag,dialogueActTag2),id);
                 this.ids.put(id,new State(dialogueActTag,dialogueActTag2));
                 id++;
             }
         }
-        
 
+        //check if state and actions have been created
         if (states.size() < 1 || actions.size() < 1) {
             throw new IllegalArgumentException();
         }
@@ -87,17 +84,18 @@ public class QLearner {
 
         DialogueActTag olderDAtag;
         //CHANGE THIS, ITS BROKEN
-        if(utterances.size() >= 3) {
-            olderDAtag = utterances.get(utterances.size() - 3).daTag;
-        }else{
+        if(utterances.size() == 0){
+            return new Action(ResponseTag.GREETING, -1);
+        }else if(utterances.size() == 2){
             olderDAtag = DialogueActTag.NULL;
+        }else{
+            olderDAtag = utterances.get(utterances.size() - 3).daTag;
         }
 
         int stateIndex = 0;
 
         //search through states and determine which state we are in.
         stateIndex = states.get(new State(olderDAtag,mostRecentDAtag));
-
 
         //this updates the Q(s,a) where s is the previous state and a is the previous action
         //this must be done in order to sync reward functionality
