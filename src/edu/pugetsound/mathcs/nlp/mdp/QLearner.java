@@ -85,7 +85,6 @@ public class QLearner {
             System.out.println("Anneal val: "+ANNEAL);
             System.out.println("Explore val: "+EXPLORE);
             System.out.println("alpha val(anneal/explore): "+alpha);
-            
         }
         List<Utterance> utterances = conversation.getConversation();
         DialogueActTag olderDAtag;
@@ -111,7 +110,6 @@ public class QLearner {
         //this must be done in order to sync reward functionality
         if(DEBUG_MODE){
             System.out.println("Updating previous states");
-            
         }
         
         if(mostRecentDAtag != null){
