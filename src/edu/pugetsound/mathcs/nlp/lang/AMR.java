@@ -173,7 +173,10 @@ public class AMR {
             for (int i=0; i<amrs.length; i++) {
                 System.out.println(amrStrs.get(i));
                 System.out.println(AMR.parseAMRString(amrStrs.get(i).toString()));
-                amrs[i] = AMR.parseAMRString(amrStrs.get(i).toString());
+                temp = amrStrs.get(i).toString();
+                if (temp == null || temp.length() < 2 )
+                    throw new ParseException("MSR_SPLAT AMR String doesn't parse properly");
+                amrs[i] = AMR.parseAMRString(temp);
                 System.out.println("AMR found: \n"+amrs[i]);
             }
             return amrs;
