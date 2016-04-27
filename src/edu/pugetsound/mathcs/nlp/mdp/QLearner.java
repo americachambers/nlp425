@@ -40,6 +40,7 @@ public class QLearner {
     public QLearner(HyperVariables h) {
         //create states and actions
         states = new HashMap<>();
+        ids = new HashMap<>();
         actions = new ArrayList<>();
         int id = 0;
 
