@@ -93,6 +93,10 @@ public class ActionProcessor {
         return "Error: Response could not be generated, bad extendedDA tag";
     }
 
+    /**
+     * Generates a list of responses to an inputted conversation.
+     * @param args A list of Strings should be given, each being 1 line of user input in the convo
+     */
     public static void main(String[] args) throws IOException {
         TextAnalyzer ta = new TextAnalyzer();
         Conversation convo = new Conversation();
