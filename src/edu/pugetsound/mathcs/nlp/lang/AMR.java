@@ -20,6 +20,7 @@ import org.json.simple.parser.JSONParser;
 import edu.pugetsound.mathcs.nlp.lang.Token;
 import edu.pugetsound.mathcs.nlp.lang.SemanticRelation;
 import edu.pugetsound.mathcs.nlp.util.PathFormat;
+import edu.pugetsound.mathcs.nlp.util.Logger;
 
 /**
  * Represents a filled-in AMR
@@ -144,12 +145,13 @@ public class AMR {
      */
     public static AMR[] convertTextToAMR(String text) {
         String scriptPath;
-        String delimiter = System.getProperty("file.separator");
-        scriptPath = PathFormat.absolutePathFromRoot("scripts/msrsplat.py").replace("/", delimiter);
+        scriptPath = PathFormat.absolutePathFromRoot("scripts/msrsplat.py");
         PythonInterpreter python = new PythonInterpreter();
         python.execfile(scriptPath);
         python.set("text", new PyString(text));
-        System.out.println("Querying MSR_SPLAT for the AMR string for '"+text+"'");
+        if(Logger.debug()) {
+            System.out.println("Querying MSR_SPLAT for the AMR string for '"+text+"'");
+        }
 
         JSONParser parser = new JSONParser();
         try {
@@ -157,24 +159,35 @@ public class AMR {
                 Thread.sleep(5000 - System.currentTimeMillis() + queryTime);
             queryTime = System.currentTimeMillis();
             python.exec("amr = main(text)");
-            System.out.println("Got the AMR String; parsing in a moment...");
+
+            if(Logger.debug()) {
+                System.out.println("Got the AMR String; parsing in a moment...");
+            }
             Object obj = parser.parse(python.get("amr").toString());
             JSONArray amrStrs = (JSONArray) ((JSONObject)(((JSONArray) obj).get(0))).get("Value");
-            System.out.println("About to convert the parsed AMR Strings into AMR Objects");
+            if(Logger.debug()) {
+                System.out.println("About to convert the parsed AMR Strings into AMR Objects");
+            }
 
             String temp;
             AMR[] amrs = new AMR[amrStrs.size()];
             for (int i=0; i<amrs.length; i++) {
-                System.out.println(amrStrs.get(i));
-                System.out.println(AMR.parseAMRString(amrStrs.get(i).toString()));
+                if(Logger.debug()) {
+                    System.out.println(amrStrs.get(i));
+                    System.out.println(AMR.parseAMRString(amrStrs.get(i).toString()));
+                }
                 amrs[i] = AMR.parseAMRString(amrStrs.get(i).toString());
             }
             return amrs;
         } catch(ParseException pe) {
-            System.out.println("position: " + pe.getPosition());
-            System.out.println(pe);
+            if(Logger.debug()) {
+                System.out.println("position: " + pe.getPosition());
+                System.out.println(pe);
+            }
         } catch(Exception e) {
-            System.out.println("ERROR: Microsoft msrsplat tool could not be reached for AMR conversion.");
+            if(Logger.debug()) {
+                System.out.println("ERROR: Microsoft msrsplat tool could not be reached for AMR conversion.");
+            }
             return null;
         }
         return null;
@@ -285,8 +298,10 @@ public class AMR {
                     if(state == ':') {
                         SemanticRelation sr = AMR.NAME_TO_RELATION.get(last_word);
                         if(sr == null) {
-                            System.out.println("Error: Unrecognized relation " + last_word +
-                                               " while parsing AMR!");
+                            if(Logger.debug()) {
+                                System.out.println("Error: Unrecognized relation " + last_word +
+                                                   " while parsing AMR!");
+                            }
                             return null;
                         } else {
                             // Add recursed to cur_amr's map of semantic relations
@@ -297,7 +312,9 @@ public class AMR {
                         last_word = "";
 
                     } else {
-                        System.out.println("Error: String without a relation!");
+                        if(Logger.debug()) {
+                            System.out.println("Error: String without a relation!");
+                        }
                         return null;
                     }
                 }
@@ -385,8 +402,10 @@ public class AMR {
                     if(state == ':' && text.charAt(i - cur_charseq.length() - 1) != ':') {
                         SemanticRelation sr = AMR.NAME_TO_RELATION.get(last_word);
                         if(sr == null) {
-                            System.out.println("Error: Unrecognized relation " + last_word +
-                                               " while parsing AMR!");
+                            if(Logger.debug()) {
+                                System.out.println("Error: Unrecognized relation " + last_word +
+                                                   " while parsing AMR!");
+                            }
                             return null;
                         } else {
 
