@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 
 
-import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
+import edu.pugetsound.mathcs.nlp.daTag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.controller.Controller;
 
@@ -41,29 +41,29 @@ public class SwitchboardResponseGuide{
                     Controller.getBasePath()+"models/responses/swb_parsed.csv")));
         
         String previousLine = "";
-        String currentline = "";
+        String currentLine = "";
         String[] entry;
         TreeSet<String> resultsToWrite = new TreeSet<String>();
         String result = "";
         Utterance tempUtterance;
 
-        while ((currentline = bf.readLine()) != null) {
-            if (previousLine.length > 0) {
-                if (currentline.length > 0) {
-                    entry = previousLine.split(',');
+        while ((currentLine = bf.readLine()) != null) {
+            if (previousLine.length() > 0) {
+                if (currentLine.length() > 0) {
+                    entry = previousLine.split(",");
                     tempUtterance = ta.analyze( entry[1], convo);
-                    tempUtterance.datag = DialogueActTag.fromLabel(entry[0]);
+                    tempUtterance.daTag = DialogueActTag.fromLabel(entry[0]);
                     convo.addUtterance(tempUtterance);
-                    result = tempUtterance.datag.toString() + "\n  " + 
-                        tempUtterance.datag.toString() + " \t" +
+                    result = tempUtterance.daTag.toString() + "\n  " + 
+                        tempUtterance.daTag.toString() + " \t" +
                         tempUtterance.utterance + "\t" + 
                         tempUtterance.amr.toString();
-                    entry = currentLine.split(',');
+                    entry = currentLine.split(",");
                     tempUtterance = ta.analyze( entry[1], convo);
-                    convo.getLastUtterance().datag = DialogueActTag.fromLabel(entry[0]);
+                    convo.getLastUtterance().daTag = DialogueActTag.fromLabel(entry[0]);
                     convo.addUtterance(tempUtterance);
-                    result = daTagToTemplate.get(tempUtterance.datag) + "_" + result +
-                        daTagToTemplate.get(tempUtterance.datag) + " \t" +
+                    result = daTagToTemplate.get(tempUtterance.daTag) + "_" + result +
+                        daTagToTemplate.get(tempUtterance.daTag) + " \t" +
                         tempUtterance.utterance + "\t" + 
                         tempUtterance.amr.toString() + "\n\n";
                     resultsToWrite.add(result);
@@ -74,7 +74,17 @@ public class SwitchboardResponseGuide{
             }
             previousLine = currentline;
         }
+
+
+        BufferedWriter bw = new BufferedWriter(
+            new FileWriter(
+                new File(
+                    Controller.getBasePath()+"models/responses/guide.txt")));
         
+
+        for (String line: resultsToWrite)
+            bw.write(line);
+
     }
 
 
