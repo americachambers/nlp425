@@ -55,5 +55,9 @@ public class State {
         }
         return true;
     }
+    
+    public String toString(){
+        return "<"+DATag1.toString()+", "+DATag2.toString()+">";
+    }
 
 }

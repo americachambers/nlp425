@@ -31,7 +31,7 @@ public class QLearner {
     private double maxAPrime;
     private double alpha;
 
-    private final byte DEBUG_MODE = 0; //DEBUG_MODE is 1 when we want to print debug information
+    private final boolean DEBUG_MODE = false; //DEBUG_MODE is 1 when we want to print debug information
 
     /**
      * Constructs the original QLearner: defines the states and actions that are possible, and initializes the QTable based on those states and actions.
@@ -40,6 +40,7 @@ public class QLearner {
     public QLearner(HyperVariables h) {
         //create states and actions
         states = new HashMap<>();
+        ids = new HashMap<>();
         actions = new ArrayList<>();
         int id = 0;
 
@@ -81,7 +82,14 @@ public class QLearner {
 
     public Action train(Conversation conversation) {
 
+        
         double alpha = (double) ANNEAL / (double) EXPLORE; //this is the alpha value, it goes down as ANNEAL goes down
+        if(DEBUG_MODE){
+            System.out.println("Anneal val: "+ANNEAL);
+            System.out.println("Explore val: "+EXPLORE);
+            System.out.println("alpha val(anneal/explore): "+alpha);
+            
+        }
         List<Utterance> utterances = conversation.getConversation();
         DialogueActTag mostRecentDAtag = utterances.get(utterances.size() - 1).daTag;
 
@@ -97,10 +105,19 @@ public class QLearner {
 
         //search through states and determine which state we are in.
         stateIndex = states.get(new State(olderDAtag,mostRecentDAtag));
+        if(DEBUG_MODE){
+            System.out.println("current state index: "+stateIndex);
+            System.out.println("state it represents: "+new State(olderDAtag,mostRecentDAtag));
+        }
 
 
         //this updates the Q(s,a) where s is the previous state and a is the previous action
         //this must be done in order to sync reward functionality
+        if(DEBUG_MODE){
+            System.out.println("Updating previous states");
+            
+        }
+        
         if(mostRecentDAtag != null){
             //last state, last action, aprime, alpha reward;
             updateQTable(lState,lAction,maxAPrime,this.alpha,lReward);
