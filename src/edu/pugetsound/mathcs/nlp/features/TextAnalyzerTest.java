@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.pugetsound.mathcs.nlp.controller.Controller;
+import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Punctuation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
@@ -12,20 +14,49 @@ public class TextAnalyzerTest {
 	
 	private TextAnalyzer analyzer;	
 	private Conversation conversation;
-	private String statement;
-	private String question;
-	private String empty;
-
+	private String statement = "The cat ate the fish.";
+	private String question = "What are you doing?";
+	private String empty = "";
+	private String greeting = "hello!";
 
 	@Before
 	public void setUp() throws Exception {
 		analyzer = new TextAnalyzer();
 		conversation = new Conversation();
-		statement = "The cat ate the fish";
-		question = "What are you doing?";
-		empty = "";
 	}
 
+	@Test
+	public void testPopulateHash(){
+		assertTrue("Hash of greetings/closings not populated", analyzer.greetClose.size() > 0);
+		assertTrue("Hash of standardized forms not populated", analyzer.standardizedForms.size() > 0);		
+		assertTrue("Hash of greetings/closings does not contain 'hello'", analyzer.greetClose.containsKey("hello"));
+		assertTrue("Hash of greetings/closings does not contain 'goodbye'", analyzer.greetClose.containsKey("goodbye"));	
+		assertEquals(DialogueActTag.CONVENTIONAL_OPENING, analyzer.greetClose.get("hello"));
+		assertEquals(DialogueActTag.CONVENTIONAL_CLOSING, analyzer.greetClose.get("goodbye"));		
+		assertEquals("What are you doing?", analyzer.standardizedForms.get("what's up"));
+	}
+	
+	
+	@Test
+	public void testGreetCloseShortCircuit(){
+		Utterance utt = analyzer.analyze(greeting, conversation);		
+		assertEquals(greeting, utt.utterance);
+		assertEquals(1, utt.tokens.size());
+		assertEquals(Punctuation.EXCLAMATION, utt.punct);
+		assertNull(utt.amr);
+		assertFalse(utt.isPassive);
+		assertNull(utt.constituencyParse);
+		assertNull(utt.dependencyParse);
+		assertEquals(0, utt.resolutions.size());
+		assertNull(utt.firstOrderRep);
+		assertEquals(DialogueActTag.CONVENTIONAL_OPENING, utt.daTag);		
+		assertEquals(0, utt.subjects.size());
+		assertEquals(0, utt.directObjects.size());
+		assertNull(utt.rootConstituency);
+		assertNull(utt.rootDependency);						
+	}
+		
+	
 	@Test
 	public void testStatement() {
 		Utterance utt = analyzer.analyze(statement, conversation);
@@ -34,8 +65,8 @@ public class TextAnalyzerTest {
 		assertEquals(statement, utt.utterance);
 		assertFalse(utt.isPassive);
 		assertEquals(5, utt.tokens.size());
-		assertEquals(Punctuation.UNKNOWN, utt.punct);
-		assertEquals("(ROOT (S (NP (DT The) (NN cat)) (VP (VBD ate) (NP (DT the) (NN fish)))))", 
+		assertEquals(Punctuation.PERIOD, utt.punct);
+		assertEquals("(ROOT (S (NP (DT The) (NN cat)) (VP (VBD ate) (NP (DT the) (NN fish))) (. .)))", 
 				utt.constituencyParse.toString());
 		assertEquals(1, utt.subjects.size());
 		assertEquals(1, utt.directObjects.size());

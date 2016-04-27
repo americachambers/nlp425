@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 
@@ -20,8 +21,8 @@ public class ControllerTest {
 	private ByteArrayInputStream in;
 	private ByteArrayOutputStream outputArray;
 	private PrintStream outputStream;
-	
-	
+
+
 	@Before
 	public void setUp() throws Exception {
 		String input = "Is Fluffy a cat?";
@@ -56,10 +57,10 @@ public class ControllerTest {
 	public void testInitiateGreeting() {
 		outputArray.reset();
 		Controller.initiateGreeting();
-		
+
 		String printedResponse = outputArray.toString().trim();
 		assertEquals("Agent: " + Controller.INITIAL_GREETING, printedResponse);
-		
+
 		List<Utterance> convo = Controller.conversation.getConversation();			
 		assertEquals(1, convo.size());		
 	}

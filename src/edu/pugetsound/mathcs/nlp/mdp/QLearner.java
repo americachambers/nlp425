@@ -3,35 +3,70 @@ package edu.pugetsound.mathcs.nlp.mdp;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
-import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
+import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * @author Zachary Cohan and Damon Williams
+ */
+
 public class QLearner {
 
-    private ArrayList<State> states;
+    private HashMap<State,Integer> states;
+    private HashMap<Integer,State> ids;
     private ArrayList<Action> actions;
     private double[][] q_table;
     private double GAMMA;
     private int EXPLORE;
     private int ANNEAL;
+    
+    private int lState;//last state, last action, last reward
+    private int lAction;
+    private int lReward;
+    private double maxAPrime;
+    private double alpha;
 
+    private final byte DEBUG_MODE = 0; //DEBUG_MODE is 1 when we want to print debug information
+
+    /**
+     * Constructs the original QLearner: defines the states and actions that are possible, and initializes the QTable based on those states and actions.
+     * @param h - the {@link HyperVariables} class is the class which configures the variables for the QLearner
+     */
     public QLearner(HyperVariables h) {
         //create states and actions
-        states = new ArrayList<>();
+        states = new HashMap<>();
         actions = new ArrayList<>();
+        int id = 0;
 
-
-        for(ExtendedDialogueActTag dialogueActTag : ExtendedDialogueActTag.values()){
-            this.actions.add(new Action(dialogueActTag));
+        //adds all possible actions to the actions arraylist
+        for(ResponseTag dialogueActTag : ResponseTag.values()){
+            this.actions.add(new Action(dialogueActTag, id));
+            id++;
         }
-
+        
+        //starting with the null state, adds all states to the state Arraylist
+//        this.states.add(new State(null,0));
+        id = 0;
+        for(DialogueActTag dialogueActTag : DialogueActTag.values())
+            {
+                this.states.put(new State(DialogueActTag.NULL,dialogueActTag),id);
+                this.ids.put(id,new State(DialogueActTag.NULL,dialogueActTag));
+                id++;
+            }
         for(DialogueActTag dialogueActTag : DialogueActTag.values()){
-            this.states.add(new State(dialogueActTag));
+            for(DialogueActTag dialogueActTag2 : DialogueActTag.values())
+            {
+                this.states.put(new State(dialogueActTag,dialogueActTag2),id);
+                this.ids.put(id,new State(dialogueActTag,dialogueActTag2));
+                id++;
+            }
         }
+        
 
         if (states.size() < 1 || actions.size() < 1) {
             throw new IllegalArgumentException();
@@ -40,71 +75,66 @@ public class QLearner {
         GAMMA = h.getGamma();
         EXPLORE = h.getExplore();
         ANNEAL = h.getExplore();
-
+        
         q_table = new double[states.size()][actions.size()];
     }
 
     public Action train(Conversation conversation) {
 
+        double alpha = (double) ANNEAL / (double) EXPLORE; //this is the alpha value, it goes down as ANNEAL goes down
         List<Utterance> utterances = conversation.getConversation();
         DialogueActTag mostRecentDAtag = utterances.get(utterances.size() - 1).daTag;
-        int stateIndex = 1;
 
-        for (int i = 0; i < states.size() - 1; i++) {
-            if (states.get(i).DATag.equals(mostRecentDAtag)) {
-                stateIndex = i;
-            }
+        DialogueActTag olderDAtag;
+        //CHANGE THIS, ITS BROKEN
+        if(utterances.size() >= 3) {
+            olderDAtag = utterances.get(utterances.size() - 3).daTag;
+        }else{
+            olderDAtag = DialogueActTag.NULL;
         }
 
-        int reward;
-        int choice;
-        double alpha;
-        int newStateIndex = 0;
+        int stateIndex = 0;
 
-        Random r = new Random();
+        //search through states and determine which state we are in.
+        stateIndex = states.get(new State(olderDAtag,mostRecentDAtag));
 
-        alpha = (double) ANNEAL / (double) EXPLORE;//this is our alpha value, it goes down as ANNEAL goes down
+
+        //this updates the Q(s,a) where s is the previous state and a is the previous action
+        //this must be done in order to sync reward functionality
+        if(mostRecentDAtag != null){
+            //last state, last action, aprime, alpha reward;
+            updateQTable(lState,lAction,maxAPrime,this.alpha,lReward);
+        }
+        
+        int choice;        
+        Random r = new Random(); //A random variable used to choose if we are exploring or exploiting.
+
         //explore vs. exploit
-
         int e = r.nextInt(EXPLORE);//pick a random value between [0,1000)
-        if (e < ANNEAL) {//while e is less than ANNEAL, we will explore
-            choice = r.nextInt(actions.size());
-//                System.out.println("EXPLORE: I am " + states.get(state).DATag + " and would like to " + actions.get(choice).DATag);
-//                System.out.println("is this valid? (if not valid move put -1, -2 to quit) what is my reward?");
-            reward = rateActionChoice(stateIndex, choice);
-            newStateIndex = choice;//if we picked a valid move then our s' becomes whatever choice we made
+        if (e < ANNEAL) {
+            //if e is less than ANNEAL, we will explore
+            choice = r.nextInt(actions.size());//chooses random action 
+            lReward = rateActionChoice(stateIndex, choice);
 
-            double maxAPrime = bestResponseValue(newStateIndex);
-
-            q_table[stateIndex][choice] = q_table[stateIndex][choice] + (alpha) * (((double) reward + (GAMMA * maxAPrime)) - q_table[stateIndex][choice]);
-
-        } else {//exploit
-            //default our choice to the first action
-            choice = 0;
-
+            maxAPrime = bestResponseValue(stateIndex);
+        } else {
+            //exploit
+            choice = 0; //default our choice to the first action
             //go thru all choices to see if there's a better choice
             for (int i = 1; i < q_table[stateIndex].length; i++) {
                 if (q_table[stateIndex][i] > q_table[stateIndex][choice]) {
                     choice = i;
                 }
             }
-
-//                System.out.println("EXPLOIT: I am " + states.get(state).DATag + " and would like to " + actions.get(choice).DATag);
-//                System.out.println("is this valid? what is my reward?");
-            reward = rateActionChoice(stateIndex, choice);
-            newStateIndex = choice;
-
-            
-            double maxAPrime = bestResponseValue(newStateIndex);
-
-            q_table[stateIndex][choice] = q_table[stateIndex][choice] + (alpha) * (((double) reward + (GAMMA * maxAPrime)) - q_table[stateIndex][choice]);
-
+            lReward = rateActionChoice(stateIndex, choice); 
+            maxAPrime = bestResponseValue(stateIndex);
         }
-
-        stateIndex = newStateIndex;
+        lAction = choice;
+        lState = stateIndex;
+        this.alpha = alpha;
         ANNEAL--;
 
-//        printPolicy();
+        //return the action that we decided to take to the processing actions team.
         return actions.get(choice);
     }
 
@@ -132,9 +162,16 @@ public class QLearner {
 
     private int rateActionChoice(int state, int choice) {
         Scanner in = new Scanner(System.in);
-        System.out.println("I am in state" + states.get(state).DATag + " and would like to use a " + actions.get(choice).DATag);
+        int r = -1;
+        System.out.println("I am in state <" + ids.get(state).DATag1+","+ids.get(state).DATag2 + "> and will respond with a " + actions.get(choice).DATag);
         System.out.println("On a scale of 1-5, how accurate is this response?");
-        int r = in.nextInt();
+       
+        try{
+            r = in.nextInt();
+        }catch(Exception e){
+            System.out.println("Exception: " + e.toString() + "\n" + "Scanner is null?");
+        }
+        
         if (r < 1 || r > 5) {
             System.err.println("Enter values between in the range [1,5]; no decimals");
             rateActionChoice(state, choice);
@@ -151,12 +188,18 @@ public class QLearner {
 
     private double bestResponseValue(int ns) {
         double maxAPrime = q_table[ns][0];
-        //check remaining actions to see if there's something better
         for (int i = 1; i < q_table[ns].length; i++) {
             if (q_table[ns][i] > maxAPrime) {
                 maxAPrime = q_table[ns][i];
             }
         }
         return maxAPrime;
+    }
+    
+    private void updateQTable(int state, int action, double aPrime, double alpha, int reward){
+                q_table[state][action] = 
+                q_table[state][action] + 
+                (alpha) * (((double) reward + 
+                (GAMMA * aPrime)) - q_table[state][action]);
     }
 }

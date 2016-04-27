@@ -1,10 +1,10 @@
-what's up?	What are you doing?
-whats up?	What are you doing?
-what up?	What are you doing?
-what you doin?	    What are you doing?
-what ya doin?	    What are you doing?
-whatcha up to?	    What are you doing?
-how's it goin?	How are you doing?
-how you doin?	How are you doing?
-how's it hangin?    How are you doing?
+what's up	What are you doing?
+whats up	What are you doing?
+what up		What are you doing?
+what you doin	    What are you doing?
+what ya doin	    What are you doing?
+whatcha up to	    What are you doing?
+how's it goin	How are you doing?
+how you doin	How are you doing?
+how's it hangin	How are you doing?
 

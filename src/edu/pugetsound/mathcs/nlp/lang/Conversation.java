@@ -54,4 +54,13 @@ public class Conversation {
 	public List<Utterance> getConversation(){
 		return conversation;
 	}
+	
+	/**
+	 * Returns the most recent utterance
+	 * Shortcut because Jon Sims wants it
+	 * @return a list containing all utterances from the conversation so far 
+	 */
+	public Utterance getLastUtterance(){
+		return conversation.get(conversation.size()-1);
+	}
 }

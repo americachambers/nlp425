@@ -1,75 +1,102 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
-import edu.pugetsound.mathcs.nlp.processactions.srt.*;
 import java.util.HashMap;
+import java.io.IOException;
+import java.lang.ProcessBuilder;
 
+import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
-import edu.pugetsound.mathcs.nlp.processactions.ExtendedDialogueActTag;
+import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
+import edu.pugetsound.mathcs.nlp.processactions.srt.*;
+import edu.pugetsound.mathcs.nlp.controller.Controller;
+
+import edu.pugetsound.mathcs.nlp.lang.*;
+import edu.pugetsound.mathcs.nlp.features.*;
 
 /**
  * The main response generator of the Process Actions step
  * This class should only be used to access the method generateResponse(...);
- * @author Thomas Gagne
- *
+ * @author Thomas Gagne & Jon Sims
  */
 public class ActionProcessor {
 
-    private static final HashMap<ExtendedDialogueActTag, SemanticResponseTemplate> xdaTagToSRT =
-        new HashMap<ExtendedDialogueActTag, SemanticResponseTemplate>() {{
+    private static final HashMap<ResponseTag, SemanticResponseTemplate> responseTagToSRT =
+        new HashMap<ResponseTag, SemanticResponseTemplate>() {{
             // Instantiate HashMap's values
-            // Any DA tag which we don't know how to generate for now
-            // will simply go to the ArbitraryTemplate
             
-            put(ExtendedDialogueActTag.STATEMENT, new StatementTemplate());
-            put(ExtendedDialogueActTag.NARRATIVE_DESCRIPTIVE, new StatementNonOpinionTemplate());
-            put(ExtendedDialogueActTag.VIEWPOINT, new StatementOpinionTemplate());
-            put(ExtendedDialogueActTag.BACKCHANNEL, new BackchannelTemplate());
-            put(ExtendedDialogueActTag.AGREEMENT_DISAGREEMENT, new AgreementDisagreementTemplate());
-            put(ExtendedDialogueActTag.DECLARATIVE_QUESTION, new DeclarativeQuestionTemplate());
-            put(ExtendedDialogueActTag.TAG_QUESTION, new TagQuestionTemplate());
-            put(ExtendedDialogueActTag.ACTION_DIRECTIVE, new ActionDirectiveTemplate());
-            put(ExtendedDialogueActTag.ACCEPT_REJECT_MAYBE, new AcceptRejectMaybeTemplate());
-            put(ExtendedDialogueActTag.REPEAT_PHRASE, new RepeatPhraseTemplate());
-            put(ExtendedDialogueActTag.ASSESSMENT_APPRECIATION, new AssessmentAppreciationTemplate());
-            put(ExtendedDialogueActTag.DOWNPLAYING_SYMPATHY, new DownplaySympathyTemplate());
-            put(ExtendedDialogueActTag.REFORMULATE_SUMMARIZE, new ReformulateTemplate());
-            put(ExtendedDialogueActTag.RHETORICAL_QUESTION_CONTINUER, new RhetoricalQuestionContinuer());
-            put(ExtendedDialogueActTag.ACKNOWLEDGE_ANSWER, new AcknowledgeAnswerTemplate());
-            put(ExtendedDialogueActTag.SIGNAL_NON_UNDERSTANDING, new NonUnderstandingTemplate());
-            put(ExtendedDialogueActTag.SIGNAL_NON_UNDERSTANDING_MIMIC, new NonUnderstandingMimicTemplate());
-            put(ExtendedDialogueActTag.SYMPATHETIC_COMMENT, new SympathyTemplate());
-            put(ExtendedDialogueActTag.COMMIT, new CommitTemplate());
-            put(ExtendedDialogueActTag.APOLOGY, new ApologyTemplate());
-            put(ExtendedDialogueActTag.CONVENTIONAL_CLOSING, new ConventionalClosingTemplate());
-            put(ExtendedDialogueActTag.EXCLAMATION, new ExclamationTemplate());
-            put(ExtendedDialogueActTag.CONVENTIONAL_OPENING, new ConventionalOpeningTemplate());
-            put(ExtendedDialogueActTag.THANKS, new ThanksTemplate());
-            put(ExtendedDialogueActTag.WELCOME, new WelcomeTemplate());
-            put(ExtendedDialogueActTag.OPEN_OPTION, new OpenOptionTemplate());
-            put(ExtendedDialogueActTag.YES_NO_ANSWER, new YesNoAnswerTemplate());
-            put(ExtendedDialogueActTag.QUESTION, new QuestionTemplate());
-            put(ExtendedDialogueActTag.QUESTION_YES_NO, new YesNoQuestionTemplate());
-            put(ExtendedDialogueActTag.QUESTION_WH, new WhQuestionTemplate());
-
+            put(ResponseTag.STATEMENT, new StatementTemplate());
+            put(ResponseTag.NARRATIVE_DESCRIPTIVE, new StatementNonOpinionTemplate());
+            put(ResponseTag.VIEWPOINT, new StatementOpinionTemplate());
+            put(ResponseTag.BACKCHANNEL, new BackchannelTemplate());
+            put(ResponseTag.AGREEMENT_DISAGREEMENT, new AgreementDisagreementTemplate());
+            put(ResponseTag.DECLARATIVE_QUESTION, new DeclarativeQuestionTemplate());
+            put(ResponseTag.TAG_QUESTION, new TagQuestionTemplate());
+            put(ResponseTag.ACTION_DIRECTIVE, new ActionDirectiveTemplate());
+            put(ResponseTag.ACCEPT_REJECT_MAYBE, new AcceptRejectMaybeTemplate());
+            put(ResponseTag.REPEAT_PHRASE, new RepeatPhraseTemplate());
+            put(ResponseTag.ASSESSMENT_APPRECIATION, new AssessmentAppreciationTemplate());
+            put(ResponseTag.DOWNPLAYING_SYMPATHY, new DownplaySympathyTemplate());
+            put(ResponseTag.REFORMULATE_SUMMARIZE, new ReformulateTemplate());
+            put(ResponseTag.RHETORICAL_QUESTION_CONTINUER, new RhetoricalQuestionContinuer());
+            put(ResponseTag.ACKNOWLEDGE_ANSWER, new AcknowledgeAnswerTemplate());
+            put(ResponseTag.SIGNAL_NON_UNDERSTANDING, new NonUnderstandingTemplate());
+            put(ResponseTag.SIGNAL_NON_UNDERSTANDING_MIMIC, new NonUnderstandingMimicTemplate());
+            put(ResponseTag.SYMPATHETIC_COMMENT, new SympathyTemplate());
+            put(ResponseTag.COMMIT, new CommitTemplate());
+            put(ResponseTag.APOLOGY, new ApologyTemplate());
+            put(ResponseTag.CONVENTIONAL_CLOSING, new ConventionalClosingTemplate());
+            put(ResponseTag.EXCLAMATION, new ExclamationTemplate());
+            put(ResponseTag.CONVENTIONAL_OPENING, new ConventionalOpeningTemplate());
+            put(ResponseTag.THANKS, new ThanksTemplate());
+            put(ResponseTag.WELCOME, new WelcomeTemplate());
+            put(ResponseTag.OPEN_OPTION, new OpenOptionTemplate());
+            put(ResponseTag.YES_NO_ANSWER, new YesNoAnswerTemplate());
+            put(ResponseTag.QUESTION, new QuestionTemplate());
+            put(ResponseTag.QUESTION_YES_NO, new YesNoQuestionTemplate());
+            put(ResponseTag.QUESTION_WH, new WhQuestionTemplate());
+            put(ResponseTag.GREETING, new GreetingTemplate());
         }};
-    
+            
     /**
-     * Takes in an Utterance and a DA tag for what type of statement to respond from the MDP
+     * Wrapper function that converts an utterance to a conversation
+     * For backwards compatability only; use the one that takes a conversation preferably!
+     * @return A string representation of the response. In early versions, this might be an AMR
+     */
+    public static String generateResponse(Utterance utterance, ResponseTag responseDATag) {
+        Conversation convo = new Conversation();
+        convo.addUtterance(utterance);
+        return generateResponse(convo, responseDATag);
+    }
+
+
+    /**
+     * Takes in a conversation and a DA tag for what type of statement to respond from the MDP
      * Returns a string corresponding to the generated response
      * @return A string representation of the response. In early versions, this might be an AMR
      */
-    public static String generateResponse(Utterance utterance, ExtendedDialogueActTag xdaTag) {
-        // Use the given daTag to determine what type of response to generate
-
-        SemanticResponseTemplate responseGenerator = xdaTagToSRT.get(xdaTag);
-        
+    public static String generateResponse(Conversation convo, ResponseTag responseTag) {
+        SemanticResponseTemplate responseGenerator = responseTagToSRT.get(responseTag);        
         if(responseGenerator != null) {
-            return responseGenerator.constructResponseFromTemplate(utterance);
+            // Use the given daTag to determine what type of response to generate
+            try {
+                return responseGenerator.constructResponseFromTemplate(convo);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            return "Sorry, I didn't understand that.";
         }
 
         // Should probably throw an excetion here
-        return "Error: Response could not be generated, bad DA tag";
+        return "Error: Response could not be generated, bad extendedDA tag";
     }
 
+    public static void main(String[] args) throws IOException {
+        TextAnalyzer ta = new TextAnalyzer();
+        Conversation convo = new Conversation();
+        for (String a: args)
+            convo.addUtterance(ta.analyze(a,convo));
+        for (Utterance utt: convo.getConversation())
+            System.out.println(generateResponse(utt, ResponseTag.GREETING));
+    }
 
 }

@@ -9,13 +9,12 @@ import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.mdp.HyperVariables;
 import edu.pugetsound.mathcs.nlp.mdp.QLearner;
-import edu.pugetsound.mathcs.nlp.mdp.Action;
 import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
+import edu.pugetsound.mathcs.nlp.mdp.Action;
 
 /**
  * This class contains the main input/output loop. 
  * @author alchambers
- *
  */
 public class Controller {
 	protected static final String INITIAL_GREETING = "Hello.";  
@@ -42,7 +41,7 @@ public class Controller {
 	 * to test input/output functionality
 	 */
 	protected static PrintStream out;
-	
+		
 	/**
 	 * Setups the necessary tools for the conversational agent
 	 */
@@ -92,18 +91,17 @@ public class Controller {
 		Action action = mdp.train(conversation);
 
 		// Process the action and produce a response for the user
-		String response = ActionProcessor.generateResponse(utt, action.getDATag());			
+		String response = ActionProcessor.generateResponse(conversation, action.getDATag());
 		Utterance agentUtt = analyzer.analyze(response, conversation);
 		conversation.addUtterance(agentUtt);
 		respondToUser(agentUtt);
-
 	}
 
 	/**
 	 * Main controller for the conversational agent. 
 	 * TODO: Add description of any command line arguments
 	 */
-	public static void main(String[] args){
+	public static void main(String[] args){		
 		setup(System.in, System.out);				
 		initiateGreeting();
 		while(true){
