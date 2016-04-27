@@ -81,7 +81,7 @@ public class QLearner {
 
         double alpha = (double) ANNEAL / (double) EXPLORE; //this is the alpha value, it goes down as ANNEAL goes down
         List<Utterance> utterances = conversation.getConversation();
-        DialogueActTag mostRecentDAtag = utterances.get(utterances.size() - 1).daTag;
+
 
         DialogueActTag olderDAtag;
         //CHANGE THIS, ITS BROKEN
@@ -93,6 +93,7 @@ public class QLearner {
             olderDAtag = utterances.get(utterances.size() - 3).daTag;
         }
 
+        DialogueActTag mostRecentDAtag = utterances.get(utterances.size() - 1).daTag;
         int stateIndex = 0;
 
         //search through states and determine which state we are in.

@@ -40,9 +40,9 @@ public class QLearnerTest {
 
     @Test
     public void test(){
-//        while(true) {
-//            Action action = mdp.train(conversation);
-//        }
+        while(true) {
+            Action action = mdp.train(conversation);
+        }
 
     }
 
