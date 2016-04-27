@@ -9,7 +9,7 @@ import gnu.prolog.vm.PrologCode;
 import gnu.prolog.vm.PrologException;
 import gnu.prolog.vm.buildins.database.Predicate_assert;
 import gnu.prolog.vm.buildins.database.Predicate_assertz;
- 
+
 public class KBController{
   private Environment env;
   private Interpreter interpreter;
@@ -24,9 +24,9 @@ public class KBController{
     env.runInitialization(interpreter);
   }
 
-  public KBCOntroller(String filename){
+  public KBController(String filename){
     env = new Environment();
-    env.ensureLoaded(AtomTerm.get(KBCOntroller.class.getResource(filename).getFile()));
+    env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
     interpreter = env.createInterpreter();
     env.runInitialization(interpreter);
   }
