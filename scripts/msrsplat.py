@@ -10,7 +10,7 @@ import sys, os
 cwd = os.getcwd()
 while cwd[-6:] != "nlp425":
   cwd = cwd[:-1]
-sys.path.append(cwd[-7].join([cwd, 'lib', 'requests']))
+sys.path.append(cwd[-7].join([cwd, 'lib']))
 sys.path.append(cwd[-7].join([cwd, 'scripts']))
 
 import requests
