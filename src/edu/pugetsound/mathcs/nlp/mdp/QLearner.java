@@ -17,7 +17,8 @@ import java.util.Scanner;
 
 public class QLearner {
 
-    private ArrayList<State> states;
+    private HashMap<State,Integer> states;
+    private HashMap<Integer,State> ids;
     private ArrayList<Action> actions;
     private double[][] q_table;
     private double GAMMA;
@@ -38,7 +39,7 @@ public class QLearner {
      */
     public QLearner(HyperVariables h) {
         //create states and actions
-        states = new ArrayList<>();
+        states = new HashMap<>();
         actions = new ArrayList<>();
         int id = 0;
 
@@ -51,10 +52,17 @@ public class QLearner {
         //starting with the null state, adds all states to the state Arraylist
 //        this.states.add(new State(null,0));
         id = 0;
+        for(DialogueActTag dialogueActTag : DialogueActTag.values())
+            {
+                this.states.put(new State(DialogueActTag.NULL,dialogueActTag),id);
+                this.ids.put(id,new State(DialogueActTag.NULL,dialogueActTag));
+                id++;
+            }
         for(DialogueActTag dialogueActTag : DialogueActTag.values()){
             for(DialogueActTag dialogueActTag2 : DialogueActTag.values())
             {
-                this.states.add(new State(dialogueActTag,dialogueActTag2,id));
+                this.states.put(new State(dialogueActTag,dialogueActTag2),id);
+                this.ids.put(id,new State(dialogueActTag,dialogueActTag2));
                 id++;
             }
         }
@@ -88,12 +96,8 @@ public class QLearner {
         int stateIndex = 0;
 
         //search through states and determine which state we are in.
-        for (int i = 0; i < states.size() - 1; i++) {
+        stateIndex = states.get(new State(olderDAtag,mostRecentDAtag));
 
-            if (states.get(i).equals(new State(olderDAtag,mostRecentDAtag,-1))) {
-                stateIndex = i;
-            }
-        }
 
         //this updates the Q(s,a) where s is the previous state and a is the previous action
         //this must be done in order to sync reward functionality
@@ -159,7 +163,7 @@ public class QLearner {
     private int rateActionChoice(int state, int choice) {
         Scanner in = new Scanner(System.in);
         int r = -1;
-        System.out.println("I am in state <" + states.get(state).DATag1+","+states.get(state).DATag2 + "> and will respond with a " + actions.get(choice).DATag);
+        System.out.println("I am in state <" + ids.get(state).DATag1+","+ids.get(state).DATag2 + "> and will respond with a " + actions.get(choice).DATag);
         System.out.println("On a scale of 1-5, how accurate is this response?");
        
         try{
