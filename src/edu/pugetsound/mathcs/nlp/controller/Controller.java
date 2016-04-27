@@ -1,6 +1,5 @@
 package edu.pugetsound.mathcs.nlp.controller;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
@@ -11,7 +10,6 @@ import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.mdp.HyperVariables;
 import edu.pugetsound.mathcs.nlp.mdp.QLearner;
 import edu.pugetsound.mathcs.nlp.mdp.Action;
-import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
 
 /**
  * This class contains the main input/output loop. 
@@ -42,52 +40,14 @@ public class Controller {
 	 * to test input/output functionality
 	 */
 	protected static PrintStream out;
-	
-	/**
-	 * An absolute path to the base directory nlp425/
-	 */
-	protected static String path;
-	
-	
-	/**
-	 * Returns an absolute path to the base directory of /nlp425
-	 */
-	public static String getBasePath(String path, String delimiter) throws IOException {
-		if(!path.endsWith(delimiter)){
-			path += delimiter;
-		}
 		
-		if(path.endsWith("nlp425" + delimiter)){
-			return path;
-		}
-		else if(path.endsWith("nlp425" + delimiter + "build" + delimiter)){
-			return path + ".." + delimiter;
-		}
-		else if(path.endsWith("nlp425" + delimiter + "src" + delimiter)){
-			return path + ".." + delimiter;
-		}
-		else{
-			throw new IOException("Unknown path: " + path);
-		}		
-	}
-
-	public static String getBasePath() throws IOException {
-		return getBasePath(System.getProperty("user.dir"), System.getProperty("file.separator"));
-	}
-
 	/**
 	 * Setups the necessary tools for the conversational agent
 	 */
 	protected static void setup(InputStream in, PrintStream outStream){
-		try{
-			path = getBasePath(System.getProperty("user.dir"), System.getProperty("file.separator"));
-		}catch(IOException e){
-			System.exit(-1);
-		}
-
 		out = outStream;
 		conversation = new Conversation();	
-		analyzer = new TextAnalyzer(path);
+		analyzer = new TextAnalyzer();
 		input = new Scanner(in);
 		hyperVariables = new HyperVariables(GAMMA, EXPLORE);
 		mdp = new QLearner(hyperVariables);

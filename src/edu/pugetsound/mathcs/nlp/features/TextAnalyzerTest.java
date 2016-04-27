@@ -21,8 +21,7 @@ public class TextAnalyzerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		String path = Controller.getBasePath(System.getProperty("user.dir"), System.getProperty("file.separator"));
-		analyzer = new TextAnalyzer(path);
+		analyzer = new TextAnalyzer();
 		conversation = new Conversation();
 	}
 
