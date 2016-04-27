@@ -49,7 +49,7 @@ public enum ResponseTag {
      * Constructor for ResponseTag
      * @param name The string name of this reponse tag
      */
-    public ResponseTag(String name) {
+    ResponseTag(String name) {
         this.name = name;
     }
 }

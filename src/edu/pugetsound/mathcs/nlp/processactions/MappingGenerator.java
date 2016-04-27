@@ -148,7 +148,7 @@ public class MappingGenerator {
                 if (hardcodedMap.containsKey(datag))
                     mapping.get(Integer.toString(datag.ordinal())).put(hardcodedMap.get(datag), Double.POSITIVE_INFINITY);
             }
-            DAClassifier dac = new DAClassifier();
+            DAClassifier dac = new DAClassifier(DAClassifier.Mode.DECISION_TREE);
             HashMap<String, Double> curDATagReses;
 
             for (Map.Entry<String,String[]> resTagReses: responses.entrySet()) {
