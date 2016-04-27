@@ -13,6 +13,8 @@ import edu.pugetsound.mathcs.nlp.controller.Controller;
 import edu.pugetsound.mathcs.nlp.lang.*;
 import edu.pugetsound.mathcs.nlp.features.*;
 
+import edu.pugetsound.mathcs.nlp.util.Logger;
+
 /**
  * The main response generator of the Process Actions step
  * This class should only be used to access the method generateResponse(...);
@@ -84,7 +86,9 @@ public class ActionProcessor {
             try {
                 return responseGenerator.constructResponseFromTemplate(convo);
             } catch (Exception e) {
-                System.out.println(e);
+                if(Logger.debug()) {
+                    System.out.println(e);
+                }
             }
             return "Sorry, I didn't understand that.";
         }
