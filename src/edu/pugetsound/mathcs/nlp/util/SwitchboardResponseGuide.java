@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 
 
-import edu.pugetsound.mathcs.nlp.daTag.DialogueActTag;
+import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.controller.Controller;
 
@@ -72,7 +72,7 @@ public class SwitchboardResponseGuide{
                     convo = new Conversation();
                 }
             }
-            previousLine = currentline;
+            previousLine = currentLine;
         }
 
 
