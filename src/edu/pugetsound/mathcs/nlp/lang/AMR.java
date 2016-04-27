@@ -338,8 +338,10 @@ public class AMR {
                     //i++; // Prevent skip_amr from counting the first ( twice
                     SemanticRelation sr = AMR.NAME_TO_RELATION.get(last_word);
                     if(sr == null) {
-                        System.out.println("Error: Unrecognized relation " + last_word  +
-                                           " while parsing AMR!");
+                        if(Logger.debug()) {
+                            System.out.println("Error: Unrecognized relation " + last_word  +
+                                               " while parsing AMR!");
+                        }
                         return null;
                     } else {
                         // If recursed == null, just don't add the AMR
