@@ -24,7 +24,7 @@ public class KBController{
     env.runInitialization(interpreter);
   }
 
-  public KBCOntroller(String filename){
+  public KBController(String filename){
     env = new Environment();
     env.ensureLoaded(AtomTerm.get(KBCOntroller.class.getResource(filename).getFile()));
     interpreter = env.createInterpreter();
