@@ -88,7 +88,6 @@ public class QLearner {
             
         }
         List<Utterance> utterances = conversation.getConversation();
-
         DialogueActTag olderDAtag;
         //CHANGE THIS, ITS BROKEN
         if(utterances.size() == 0){
@@ -98,7 +97,6 @@ public class QLearner {
         }else{
             olderDAtag = utterances.get(utterances.size() - 3).daTag;
         }
-
         DialogueActTag mostRecentDAtag = utterances.get(utterances.size() - 1).daTag;
         int stateIndex = 0;
 
