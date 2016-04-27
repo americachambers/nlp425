@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import edu.pugetsound.mathcs.nlp.lang.*;
+import edu.pugetsound.mathcs.nlp.util.PathFormat;
 import edu.pugetsound.mathcs.nlp.controller.Controller;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
@@ -73,19 +74,11 @@ public class TextAnalyzer {
 	 */
 	protected DAClassifier dialogueClassifier;
 
-	/**
-	 * An absolute path to the top level nlp425 directory
-	 */
-	protected String basePath;
-
-
 
 	/**
 	 * Creates a new TextAnalyzer
 	 */
-	public TextAnalyzer(String basePath){
-		this.basePath = basePath;
-
+	public TextAnalyzer(){
 		Properties props = new Properties();		
 		props.setProperty("annotators", ANNOTATORS);
 		pipeline = new StanfordCoreNLP(props);			
@@ -100,11 +93,6 @@ public class TextAnalyzer {
 		anaphoraAnalyzer = new AnaphoraAnalyzer();
 		dialogueClassifier = new DAClassifier(DAClassifier.Mode.DUMB_DECISION_TREE);
 	}
-
-	public TextAnalyzer() throws IOException {
-		this(Controller.getBasePath());
-	}
-
 
 	/**
 	 * Computes syntactic, semantic, and pragmatic features of a piece of text
@@ -158,10 +146,10 @@ public class TextAnalyzer {
 		// Certain dialogue acts do not need deep semantic and anaphora analysis		
 		h.daTag = dialogueClassifier.classify(h, conversation);
 
-//		AMR[] temp = AMR.convertTextToAMR(input);
-//		if (temp != null && temp.length > 0){
-//			h.amr = temp[0];
-//		}
+		AMR[] temp = AMR.convertTextToAMR(input);
+		if (temp != null && temp.length > 0){
+			h.amr = temp[0];
+		}
 
 		// Compute parse tree features
 		storeParseTrees(h, sentence);
@@ -330,7 +318,7 @@ public class TextAnalyzer {
 		 */
 		public void populateStandardForms(){
 			try{
-				BufferedReader input = new BufferedReader(new FileReader(basePath + "models/phrases/slang.txt"));
+				BufferedReader input = new BufferedReader(new FileReader(PathFormat.absolutePathFromRoot("models/phrases/slang.txt")));
 				String line = input.readLine();
 				while(line != null){
 					int sep = line.indexOf("\t");
@@ -349,9 +337,9 @@ public class TextAnalyzer {
 		 * Populates the greeting and closing hash
 		 */
 		public void populateGreeting(){
-			try{								
-				readTextFile(new BufferedReader(new FileReader(basePath + "models/phrases/closing.txt")), DialogueActTag.CONVENTIONAL_CLOSING);
-				readTextFile(new BufferedReader(new FileReader(basePath + "models/phrases/greeting.txt")), DialogueActTag.CONVENTIONAL_OPENING);				
+			try{										
+				readTextFile(new BufferedReader(new FileReader(PathFormat.absolutePathFromRoot("models/phrases/closing.txt"))), DialogueActTag.CONVENTIONAL_CLOSING);
+				readTextFile(new BufferedReader(new FileReader(PathFormat.absolutePathFromRoot("models/phrases/greeting.txt"))), DialogueActTag.CONVENTIONAL_OPENING);				
 			}
 			catch(IOException e){
 				System.out.println(e);
@@ -388,17 +376,8 @@ public class TextAnalyzer {
 	 * @param args
 	 */
 	public static void main(String[] args){
-		String path = "";
-		
-		// Attempt to get the path 
-		try{
-			path = Controller.getBasePath(System.getProperty("user.dir"), System.getProperty("file.separator"));
-		}
-		catch(IOException e){			
-			System.exit(-1);
-		}
 		Scanner scan = new Scanner(System.in);
-		TextAnalyzer analyzer = new TextAnalyzer(path);
+		TextAnalyzer analyzer = new TextAnalyzer();
 		Conversation convo = new Conversation();
 		while(true){			
 			System.out.print("Enter a line of text: ");

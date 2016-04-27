@@ -5,9 +5,10 @@ import java.util.HashMap;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 
 /**
- * @author Thomas Gagne
  * A list of extended DA tags, based off Chili's DA tags
  * These are more general, and we've collapsed tags such as YES and NO into a single tag
+ * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  */
 public enum ResponseTag {
     STATEMENT("STATEMENT"),
@@ -44,9 +45,11 @@ public enum ResponseTag {
 
     private String name;
 
+    /**
+     * Constructor for ResponseTag
+     * @param name The string name of this reponse tag
+     */
     ResponseTag(String name) {
         this.name = name;
     }
-        
-
 }
