@@ -208,7 +208,16 @@ public class QLearner {
         }
         return maxAPrime;
     }
-    
+
+
+    public boolean saveToFile(){
+        return false;
+    }
+
+    private boolean readFromFile(){
+        return false;
+    }
+
     private void updateQTable(int state, int action, double aPrime, double alpha, int reward){
                 q_table[state][action] = 
                 q_table[state][action] + 
