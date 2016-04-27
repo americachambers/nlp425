@@ -19,10 +19,13 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.MaybeTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
- * A template for constructing a response which can either agree with, disagree with, or be uncertain
- * whether or not to agree with a statement the user just said. Which is chosen depends on the user's input.
- * This differs from AgreementDisagreementTemplate in that that class more explicitly states whether the
- * computer agrees with the user; this one is less direct and can also be unsure whether it agrees.
+ * @version 04/26/16
+ * A template for constructing a response which can either agree with, disagree with, or be
+ * uncertain whether or not to agree with a statement the user just said. Which is chosen depends
+ * on the user's input.
+ * This differs from AgreementDisagreementTemplate in that that class more explicitly states
+ * whether the computer agrees with the user; this one is less direct and can also be unsure
+ * whether it agrees.
  */
 public class AcceptRejectMaybeTemplate implements SemanticResponseTemplate {
 
@@ -46,4 +49,3 @@ public class AcceptRejectMaybeTemplate implements SemanticResponseTemplate {
     }
 
 }
-

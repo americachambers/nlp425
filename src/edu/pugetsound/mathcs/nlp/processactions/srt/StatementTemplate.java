@@ -16,9 +16,10 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.StatementNonOpinionTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  * A template for constructing a general statement.
- * This will directly call for either a nonopinionated statement or an opinionated one, so this class
- * should only be used when you don't know which to pick.
+ * This will directly call for either a nonopinionated statement or an opinionated one, so this
+ * class should only be used when you don't know which to pick.
  */
 public class StatementTemplate implements SemanticResponseTemplate {
 
@@ -34,4 +35,3 @@ public class StatementTemplate implements SemanticResponseTemplate {
     }
 
 }
-

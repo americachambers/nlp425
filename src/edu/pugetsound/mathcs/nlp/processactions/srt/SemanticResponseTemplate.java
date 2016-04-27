@@ -22,9 +22,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author Thomas Gagne & Jon Sims
  * The interface for all response templates.
  * All templates need to be able to take in an utterance and return a String response.
+ * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  */
 public interface SemanticResponseTemplate {
 
@@ -33,7 +34,7 @@ public interface SemanticResponseTemplate {
         try {
             String filePath = Controller.getBasePath() + ("src/edu/pugetsound/mathcs/nlp/processactions/srt/responses.json"
                 .replace("/", System.getProperty("file.separator")));
-            JSONObject responsesJson = ((JSONObject) 
+            JSONObject responsesJson = ((JSONObject)
                     parser.parse(
                         new FileReader(filePath)));
             Set<String> responsesTemplates = responsesJson.keySet();
@@ -73,6 +74,5 @@ public interface SemanticResponseTemplate {
      * @return A string response. In early versions, this might be an AMR response.
      */
     public String constructResponseFromTemplate(Conversation convo);
-    
-}
 
+}

@@ -11,9 +11,15 @@ __pycache__
 *~
 
 /bin/
-/lib/
-lincoln.json
+
+/lib/*
 !/lib/requests/
+/lib/requests/*}
+!/lib/requests/requests/
+~/lib/requests/requests/*.class
+#!/lib/requests/*
+
+lincoln.json
 
 /resources/swb1_dialogact_annot/scrubbed
 
