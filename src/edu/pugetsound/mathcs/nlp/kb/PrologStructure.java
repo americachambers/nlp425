@@ -1,7 +1,5 @@
 package edu.pugetsound.mathcs.nlp.kb;
 
-import java.util.Arrays;
-
 /**
  * Represents a Prolog term or predicate
  * @author alchambers
