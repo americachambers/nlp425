@@ -9,6 +9,7 @@ import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.mdp.HyperVariables;
 import edu.pugetsound.mathcs.nlp.mdp.QLearner;
+import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
 import edu.pugetsound.mathcs.nlp.mdp.Action;
 
 /**
@@ -90,8 +91,7 @@ public class Controller {
 		Action action = mdp.train(conversation);
 
 		// Process the action and produce a response for the user
-		//String response = ActionProcessor.generateResponse(conversation, action.getDATag());
-		String response = "Error: Unable to generate response";
+		String response = ActionProcessor.generateResponse(conversation, action.getDATag());
 		Utterance agentUtt = analyzer.analyze(response, conversation);
 		conversation.addUtterance(agentUtt);
 		respondToUser(agentUtt);
