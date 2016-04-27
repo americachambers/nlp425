@@ -40,6 +40,11 @@ public class QLearnerTest {
 
     @Test
     public void test(){
+        Conversation conversation = new Conversation();
+        Utterance utterance1 = new Utterance("Hello");
+        Utterance utterance2 =
+
+
         while(true) {
             Action action = mdp.train(conversation);
         }
