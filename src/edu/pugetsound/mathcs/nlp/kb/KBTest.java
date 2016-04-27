@@ -36,7 +36,8 @@ public class KBTest{
 
 	@Test
 	public void prologException(){
-		KBController kb = new KBController("faultyProlog.pl");
+		KBController kb = new KBController();
+		kb.updateEnvironment("faultyProlog.pl");
 		PrologStructure p = new PrologStructure(2);
 		List<PrologStructure> preds = new ArrayList<PrologStructure>();
 		preds.add(p);

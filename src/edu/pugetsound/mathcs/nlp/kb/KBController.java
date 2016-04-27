@@ -3,6 +3,10 @@ package edu.pugetsound.mathcs.nlp.kb;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import gnu.prolog.term.AtomTerm;
 import gnu.prolog.term.CompoundTerm;
 import gnu.prolog.term.Term;
@@ -27,15 +31,9 @@ public class KBController{
    // env.runInitialization(interpreter); //necessary?
   }
 
-  public KBController(String filename){
-    env = new Environment();
-    env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
-//    interpreter = env.createInterpreter();
-//    env.runInitialization(interpreter);
-  }
 
   //takes in new filename to use as main Prolog file
-  private void updateEnvironment(String filename){
+  public void updateEnvironment(String filename){
 	  env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
   }
   
@@ -105,6 +103,35 @@ public class KBController{
 	  	}
 	  return true;
   }
+
+
+  private void writeToDB(String filename, List<PrologStructure> structs) {
+    File file = new File(filename);
+    FileOutputStream strm = null;
+    try {
+      strm = new FileOutputStream(filename);
+    }
+    catch (IOException e) {
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+    }
+
+    for (PrologStructure ps : structs) {
+      try {
+        String s = ps.toString();
+        byte[] sbytes = s.getBytes();
+        stream.write(sbytes);
+        stream.flush();
+      }
+      catch (IOException e) {
+        System.out.println(e.getMessage());
+        e.printStackTrace();
+      }
+    }
+    stream.close();
+  }
+
+
 //  /**
 //   * Processes wh-questions to Prolog Database (this does not work yet)
 //   * @param struct prolog predicate being queried
