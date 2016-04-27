@@ -30,10 +30,15 @@ public class KBController{
   public KBController(String filename){
     env = new Environment();
     env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
-    interpreter = env.createInterpreter();
-    env.runInitialization(interpreter);
+//    interpreter = env.createInterpreter();
+//    env.runInitialization(interpreter);
   }
 
+  //takes in new filename to use as main Prolog file
+  private void updateEnvironment(String filename){
+	  env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
+  }
+  
 /**
 * User called yes/no query method
 * @param structs   list of predicates being queried
@@ -45,7 +50,6 @@ public class KBController{
 	  
 	  //Interpreter interpret = env.createInterpreter();
 
-<<<<<<< HEAD
 	  for(PrologStructure struct : structs){
 		  try{
 			  int rc = runQuery(env.createInterpreter(), struct.getName(),struct.getArguments());
@@ -59,25 +63,6 @@ public class KBController{
 		  }
 	  }
   	return true;
-=======
-    String pred = struct.getName();
-    int arity = struct.getArity();
-    String[] args = new String[arity];
-    for(int i=0;i<arity;i++){
-        args[i]=struct.getArgument(i);
-    }
-    try{
-      int rc = runQuery(interpret, pred,args);
-      if (rc == PrologCode.SUCCESS || rc == PrologCode.SUCCESS_LAST){
-        return true;
-      }
-      return false;
-    }
-    catch(PrologException e){
-      //TODO properly catch this
-    }
-    return false;
->>>>>>> 1aeb463f13b429c04c9c3024807407469faa876d
   }
 
   //method handling queries internally using a specific interpreter (picking which file to query)
@@ -123,6 +108,7 @@ public class KBController{
 	  return true;
   }
   
+  
 //  /**
 //   * Processes wh-questions to Prolog Database (this does not work yet)
 //   * @param struct prolog predicate being queried
@@ -148,12 +134,13 @@ public class KBController{
 	  KBController kb = new KBController();
 	  PrologStructure p = new PrologStructure(2);
 	  List<PrologStructure> preds = new ArrayList<PrologStructure>();
-	  preds.add(p);
 	  p.setName("isA");
 	  p.addArgument("fluffy",0);
 	  p.addArgument("cat",1);
-	  System.out.println("Answer: "+ kb.assertNew(preds));
-	  System.out.println("Answer: " + kb.yesNo(preds));
+	  preds.add(p);
+
+//	  System.out.println("Answer: "+ kb.assertNew(preds));
+//	  System.out.println("Answer: " + kb.yesNo(preds));
   }
   
 }

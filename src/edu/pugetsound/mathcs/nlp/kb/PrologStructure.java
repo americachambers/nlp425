@@ -119,10 +119,20 @@ public class PrologStructure {
 	 * Returns a string representation
 	 */
 	public String toString(){
-		if(isTerm()){
-			return name;
+		String toReturn = "";
+		toReturn += name+"(";
+		for(int i=0;i<arguments.length;i++){
+			toReturn += arguments[i];
+			if(i!=arguments.length-1){
+				toReturn +=",";
+			}
 		}
-		return name + Arrays.toString(arguments);
+		toReturn += ").";
+		return toReturn;
+//		if(isTerm()){
+//			return name;
+//		}
+//		return name + Arrays.toString(arguments);
 	}
 	
 	private boolean validIndex(int index){
