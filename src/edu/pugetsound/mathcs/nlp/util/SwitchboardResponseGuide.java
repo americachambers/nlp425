@@ -1,4 +1,4 @@
-package edu.pugetsound.mathcs.nlp.processactions;
+package edu.pugetsound.mathcs.nlp.util;
 
 import java.util.Arrays;
 import java.util.TreeSet;
@@ -15,12 +15,11 @@ import java.io.FileReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.FileNotFoundException;
-
 
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.controller.Controller;
+import edu.pugetsound.mathcs.nlp.processactions.MappingGenerator;
 
 import edu.pugetsound.mathcs.nlp.lang.*;
 import edu.pugetsound.mathcs.nlp.features.*;
@@ -29,7 +28,7 @@ import edu.pugetsound.mathcs.nlp.features.*;
 public class SwitchboardResponseGuide{
 
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws IOException {
 
         TextAnalyzer ta = new TextAnalyzer();
         Conversation convo = new Conversation();
