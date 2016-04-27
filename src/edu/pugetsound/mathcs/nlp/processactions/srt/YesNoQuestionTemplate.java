@@ -15,9 +15,10 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  * A template for posing a yes-no question to the user.
- * To form a question, this template will first try to find something the user said to ask about, but
- * if it finds nothing it'll ask a general question about whatever.
+ * To form a question, this template will first try to find something the user said to ask about,
+ * but if it finds nothing it'll ask a general question about whatever.
  */
 public class YesNoQuestionTemplate implements SemanticResponseTemplate {
 
@@ -27,4 +28,3 @@ public class YesNoQuestionTemplate implements SemanticResponseTemplate {
     }
 
 }
-

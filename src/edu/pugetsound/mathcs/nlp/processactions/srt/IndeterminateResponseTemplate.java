@@ -14,13 +14,15 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
- * A template for constructing a response where the computer expresses that it does not know something.
+ * @version 04/26/16
+ * A template for constructing a response where the computer expresses that it does not know
+ * something.
  * Example responses include "I don't know." or "I'm not really sure."
  */
 public class IndeterminateResponseTemplate implements SemanticResponseTemplate {
 
-    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
-
+    private HashMap<AMR, String[]> outputs =
+        SemanticResponseTemplate.responses.get(this.getClass().getName());
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {
@@ -31,4 +33,3 @@ public class IndeterminateResponseTemplate implements SemanticResponseTemplate {
     }
 
 }
-

@@ -19,8 +19,10 @@ import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
 
 /**
  * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  * A template for answering yes-no questions posed by the user.
- * This class will call the knowledge base to determine the answer, then return the appropriate answer.x
+ * This class will call the knowledge base to determine the answer, then return the
+ * appropriate answer.
  */
 public class YesNoAnswerTemplate implements SemanticResponseTemplate {
 
@@ -38,4 +40,3 @@ public class YesNoAnswerTemplate implements SemanticResponseTemplate {
     }
 
 }
-

@@ -47,8 +47,6 @@ public class KBController{
   public boolean yesNo(List<PrologStructure> structs){
     //TODO eventually add code to pick which interpreter to use (for now only query cat file)
 	 // env = interpreter.getEnvironment();
-	  
-	  //Interpreter interpret = env.createInterpreter();
 
 	  for(PrologStructure struct : structs){
 		  try{
@@ -89,7 +87,7 @@ public class KBController{
     int rc = asserter.execute(interpreter,true,terms);
     return rc;//returns whether successful
   }
-  
+
   public boolean assertNew(List<PrologStructure> structs){
     //TODO eventually add code to pick which interpreter to use (for now only cat file)
 	 // Interpreter interpret = interpreter;
@@ -107,8 +105,6 @@ public class KBController{
 	  	}
 	  return true;
   }
-  
-  
 //  /**
 //   * Processes wh-questions to Prolog Database (this does not work yet)
 //   * @param struct prolog predicate being queried
@@ -117,7 +113,7 @@ public class KBController{
 //  public List<PrologStructure> query(PrologStructure struct){
 //	  return queryHelp(env.createInterpreter(),struct.getName(),struct.getArguments());
 //  }
-//  
+//
 //  //helper for wh-questions
 //  private static List<PrologStructure> queryHelp(Interpreter interpreter, String pred, String[] queryArgs){
 //	  Term[] terms = new Term[queryArgs.length];
@@ -128,7 +124,7 @@ public class KBController{
 //	   // int rc = interpreter.runOnce(goalTerm);
 //	  return null;
 //  }
-  
+
   //tester code for debugging knowledge assertion (when it works, should return true, true)
   public static void main(String[] args){
 	  KBController kb = new KBController();
@@ -142,5 +138,5 @@ public class KBController{
 //	  System.out.println("Answer: "+ kb.assertNew(preds));
 //	  System.out.println("Answer: " + kb.yesNo(preds));
   }
-  
+
 }
