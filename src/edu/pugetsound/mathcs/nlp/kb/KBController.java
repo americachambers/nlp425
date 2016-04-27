@@ -3,6 +3,10 @@ package edu.pugetsound.mathcs.nlp.kb;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import gnu.prolog.term.AtomTerm;
 import gnu.prolog.term.CompoundTerm;
 import gnu.prolog.term.Term;
@@ -99,6 +103,35 @@ public class KBController{
 	  	}
 	  return true;
   }
+
+
+  private void writeToDB(String filename, List<PrologStructure> structs) {
+    File file = new File(filename);
+    FileOutputStream strm = null;
+    try {
+      strm = new FileOutputStream(filename);
+    }
+    catch (IOException e) {
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+    }
+
+    for (PrologStructure ps : structs) {
+      try {
+        String s = ps.toString();
+        byte[] sbytes = s.getBytes();
+        stream.write(sbytes);
+        stream.flush();
+      }
+      catch (IOException e) {
+        System.out.println(e.getMessage());
+        e.printStackTrace();
+      }
+    }
+    stream.close();
+  }
+
+
 //  /**
 //   * Processes wh-questions to Prolog Database (this does not work yet)
 //   * @param struct prolog predicate being queried
