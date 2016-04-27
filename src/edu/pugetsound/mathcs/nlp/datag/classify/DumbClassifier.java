@@ -45,15 +45,4 @@ public class DumbClassifier implements Classifier {
 		return tags[randIndex];
 	}
 	
-	private DialogueActTag randomTagExcluding(DialogueActTag... tags) {
-		
-		List<DialogueActTag> tagList = new LinkedList<DialogueActTag>(Arrays.asList(DialogueActTag.values()));
-		
-		for(DialogueActTag tag : tags)
-			tagList.remove(tag);
-		
-		return randomTag(tagList.toArray(new DialogueActTag[tagList.size()]));
-
-	}
-	
 }

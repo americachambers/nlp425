@@ -8,7 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Iterator;
-import java.util.List;
 
 import cc.mallet.pipe.iterator.LineIterator;
 import cc.mallet.types.Instance;
@@ -56,7 +55,6 @@ public class MalletClassifier implements Classifier {
 	
 	private String utteranceToString(Utterance u) {
 		String string = "";
-		List<Token> tokens = u.tokens;
 		
 		for(Token token : u.tokens) {
 			string += token.token + " ";

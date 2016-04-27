@@ -12,6 +12,7 @@ import java.util.Scanner;
  * A map from token strings to a unique index
  * The index associated with the token string is used to maintain
  * correct input vector construction between training and classification
+ * @author Creavesjohnson
  *
  */
 class TokenIndexMap {

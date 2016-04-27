@@ -1,7 +1,7 @@
 package edu.pugetsound.mathcs.nlp.datag;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SwitchboardParserTest {
-
 	
 	private File switchboardFile = null;
 	
