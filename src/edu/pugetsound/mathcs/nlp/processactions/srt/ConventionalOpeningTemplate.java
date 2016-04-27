@@ -14,6 +14,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  * A template for constructing a response which greets the user.
  * Example responses include "How's it going?" or "What's up?"
  * Note that this does not say "Hi", which is reserved for GreetingTemplate
@@ -23,8 +24,8 @@ public class ConventionalOpeningTemplate implements SemanticResponseTemplate {
     // Conventional opening can also involve saying your name
     // We might want to add that.
 
-    private HashMap<AMR, String[]> outputs = SemanticResponseTemplate.responses.get(this.getClass().getName());
-
+    private HashMap<AMR, String[]> outputs =
+        SemanticResponseTemplate.responses.get(this.getClass().getName());
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {
@@ -35,4 +36,3 @@ public class ConventionalOpeningTemplate implements SemanticResponseTemplate {
     }
 
 }
-

@@ -14,6 +14,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  * A template for constructing a response which reformulates or summarizes what the user said.
  * If the user said "Me, Jack, and Jill all drove to the bar", a response might be
  * "Ok, you all went to the bar."
@@ -31,4 +32,3 @@ public class ReformulateTemplate implements SemanticResponseTemplate {
     }
 
 }
-

@@ -6,8 +6,8 @@ import edu.pugetsound.mathcs.nlp.lang.SemanticRelation;
 import java.util.HashMap;
 
 /**
- * Represents an AMR node with missing node value and missing pointers through semantic relations
- * @author Thomas Gagne
+ * Represents an AMR node with a missing node value and missing pointers through semantic relations
+ * @author Thomas Gagne & Jon Sims
  */
 public class AMRTemplate {
 
