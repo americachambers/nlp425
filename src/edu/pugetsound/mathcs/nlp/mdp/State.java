@@ -10,10 +10,10 @@ public class State {
     DialogueActTag DATag2;
     //ArrayList<Action> possActs;
 
-    public State(DialogueActTag DATag1, DialogueActTag DATag2, int id ) {
+    public State(DialogueActTag DATag1, DialogueActTag DATag2) {
         this.DATag1 = DATag1;
         this.DATag2 = DATag2;
-        this.id = id;
+        //this.id = id;
     }
 
     public DialogueActTag getEarlyDATag() {
@@ -37,9 +37,9 @@ public class State {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
+//        if (this == obj) {
+//            return true;
+//        }
         if (obj == null) {
             return false;
         }
@@ -54,6 +54,10 @@ public class State {
             return false;
         }
         return true;
+    }
+    
+    public String toString(){
+        return "<"+DATag1.toString()+", "+DATag2.toString()+">";
     }
 
 }

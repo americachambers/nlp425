@@ -17,7 +17,8 @@ import java.util.Scanner;
 
 public class QLearner {
 
-    private ArrayList<State> states;
+    private HashMap<State,Integer> states;
+    private HashMap<Integer,State> ids;
     private ArrayList<Action> actions;
     private double[][] q_table;
     private double GAMMA;
@@ -30,7 +31,7 @@ public class QLearner {
     private double maxAPrime;
     private double alpha;
 
-    private final byte DEBUG_MODE = 0; //DEBUG_MODE is 1 when we want to print debug information
+    private final boolean DEBUG_MODE = false; //DEBUG_MODE is 1 when we want to print debug information
 
     /**
      * Constructs the original QLearner: defines the states and actions that are possible, and initializes the QTable based on those states and actions.
@@ -38,7 +39,8 @@ public class QLearner {
      */
     public QLearner(HyperVariables h) {
         //create states and actions
-        states = new ArrayList<>();
+        states = new HashMap<>();
+        ids = new HashMap<>();
         actions = new ArrayList<>();
         int id = 0;
 
@@ -49,17 +51,21 @@ public class QLearner {
         }
         
         //starting with the null state, adds all states to the state Arraylist
-//        this.states.add(new State(null,0));
         id = 0;
+        for(DialogueActTag dialogueActTag : DialogueActTag.values()) {
+                this.states.put(new State(DialogueActTag.NULL,dialogueActTag),id);
+                this.ids.put(id,new State(DialogueActTag.NULL,dialogueActTag));
+                id++;
+            }
         for(DialogueActTag dialogueActTag : DialogueActTag.values()){
-            for(DialogueActTag dialogueActTag2 : DialogueActTag.values())
-            {
-                this.states.add(new State(dialogueActTag,dialogueActTag2,id));
+            for(DialogueActTag dialogueActTag2 : DialogueActTag.values()) {
+                this.states.put(new State(dialogueActTag,dialogueActTag2),id);
+                this.ids.put(id,new State(dialogueActTag,dialogueActTag2));
                 id++;
             }
         }
-        
 
+        //check if state and actions have been created
         if (states.size() < 1 || actions.size() < 1) {
             throw new IllegalArgumentException();
         }
@@ -73,30 +79,41 @@ public class QLearner {
 
     public Action train(Conversation conversation) {
 
+        
         double alpha = (double) ANNEAL / (double) EXPLORE; //this is the alpha value, it goes down as ANNEAL goes down
+        if(DEBUG_MODE){
+            System.out.println("Anneal val: "+ANNEAL);
+            System.out.println("Explore val: "+EXPLORE);
+            System.out.println("alpha val(anneal/explore): "+alpha);
+            
+        }
         List<Utterance> utterances = conversation.getConversation();
-        DialogueActTag mostRecentDAtag = utterances.get(utterances.size() - 1).daTag;
-
         DialogueActTag olderDAtag;
         //CHANGE THIS, ITS BROKEN
-        if(utterances.size() >= 3) {
-            olderDAtag = utterances.get(utterances.size() - 3).daTag;
-        }else{
+        if(utterances.size() == 0){
+            return new Action(ResponseTag.GREETING, -1);
+        }else if(utterances.size() == 2){
             olderDAtag = DialogueActTag.NULL;
+        }else{
+            olderDAtag = utterances.get(utterances.size() - 3).daTag;
         }
-
+        DialogueActTag mostRecentDAtag = utterances.get(utterances.size() - 1).daTag;
         int stateIndex = 0;
 
         //search through states and determine which state we are in.
-        for (int i = 0; i < states.size() - 1; i++) {
-
-            if (states.get(i).equals(new State(olderDAtag,mostRecentDAtag,-1))) {
-                stateIndex = i;
-            }
+        stateIndex = states.get(new State(olderDAtag,mostRecentDAtag));
+        if(DEBUG_MODE){
+            System.out.println("current state index: "+stateIndex);
+            System.out.println("state it represents: "+new State(olderDAtag,mostRecentDAtag));
         }
 
         //this updates the Q(s,a) where s is the previous state and a is the previous action
         //this must be done in order to sync reward functionality
+        if(DEBUG_MODE){
+            System.out.println("Updating previous states");
+            
+        }
+        
         if(mostRecentDAtag != null){
             //last state, last action, aprime, alpha reward;
             updateQTable(lState,lAction,maxAPrime,this.alpha,lReward);
@@ -159,7 +176,7 @@ public class QLearner {
     private int rateActionChoice(int state, int choice) {
         Scanner in = new Scanner(System.in);
         int r = -1;
-        System.out.println("I am in state <" + states.get(state).DATag1+","+states.get(state).DATag2 + "> and will respond with a " + actions.get(choice).DATag);
+        System.out.println("I am in state <" + ids.get(state).DATag1+","+ids.get(state).DATag2 + "> and will respond with a " + actions.get(choice).DATag);
         System.out.println("On a scale of 1-5, how accurate is this response?");
        
         try{
