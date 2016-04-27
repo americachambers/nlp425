@@ -31,15 +31,9 @@ public class KBController{
    // env.runInitialization(interpreter); //necessary?
   }
 
-  public KBController(String filename){
-    env = new Environment();
-    env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
-//    interpreter = env.createInterpreter();
-//    env.runInitialization(interpreter);
-  }
 
   //takes in new filename to use as main Prolog file
-  private void updateEnvironment(String filename){
+  public void updateEnvironment(String filename){
 	  env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
   }
   
