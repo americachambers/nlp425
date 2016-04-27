@@ -61,6 +61,8 @@ public interface SemanticResponseTemplate {
             System.out.println("Read error with responses.json file");
             System.out.println(ie);
         }
+
+        System.out.println(((HashMap<AMR, String[]>)values().toArray()[0]).keySet().toArray()[0]);
     }};
 
     /**
