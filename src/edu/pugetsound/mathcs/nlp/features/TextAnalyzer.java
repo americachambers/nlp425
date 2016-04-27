@@ -1,5 +1,8 @@
 package edu.pugetsound.mathcs.nlp.features;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -8,6 +11,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import edu.pugetsound.mathcs.nlp.lang.*;
+import edu.pugetsound.mathcs.nlp.controller.Controller;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 
@@ -35,56 +39,70 @@ public class TextAnalyzer {
 	 * Certain annotators require other annotators to be loaded first. 
 	 * So the order of the annotators in this list is actually important.
 	 */
-	private static final String ANNOTATORS = 
+	protected static final String ANNOTATORS = 
 			"tokenize, ssplit, pos, lemma, parse, natlog, ner, dcoref";
 
 	/**
 	 * Runs all annotators on a piece of text
 	 */
-	private StanfordCoreNLP pipeline;	
+	protected StanfordCoreNLP pipeline;	
 
 	/**
 	 * Maps slang to standardized English forms
 	 */
-	private HashMap<String, String> standardizedForms;
+	protected HashMap<String, String> standardizedForms;
 
 	/**
 	 * Maps greetings and closing expressions to the respective
 	 * dialogue act tags 
 	 */
-	private HashMap<String, DialogueActTag> greetClose;	
+	protected HashMap<String, DialogueActTag> greetClose;	
 
 	/**
 	 * A semantic analyzer to translate from utterances to first-order representation
 	 */
-	private SemanticAnalyzer semAnalyzer;
-		
+	protected SemanticAnalyzer semAnalyzer;
+
 	/**
 	 * An anaphora analyzer
 	 */
-	private AnaphoraAnalyzer anaphoraAnalyzer;
-	
+	protected AnaphoraAnalyzer anaphoraAnalyzer;
+
 	/**
 	 * Classifies utterance by dialogue act
 	 */
-	private DAClassifier dialogueClassifier;
-	
-	
+	protected DAClassifier dialogueClassifier;
+
+	/**
+	 * An absolute path to the top level nlp425 directory
+	 */
+	protected String basePath;
+
+
+
 	/**
 	 * Creates a new TextAnalyzer
 	 */
-	public TextAnalyzer(){
+	public TextAnalyzer(String basePath){
+		this.basePath = basePath;
+
 		Properties props = new Properties();		
 		props.setProperty("annotators", ANNOTATORS);
 		pipeline = new StanfordCoreNLP(props);			
-		
-		//TODO: Haven't actually added anything to these hashes yet!
+
 		standardizedForms = new HashMap<String, String>();
 		greetClose = new HashMap<String, DialogueActTag>();		
+		HashReader reader = new HashReader();
+		reader.populateGreeting();
+		reader.populateStandardForms();		
 
 		semAnalyzer = new SemanticAnalyzer();
 		anaphoraAnalyzer = new AnaphoraAnalyzer();
-		dialogueClassifier = new DAClassifier();
+		dialogueClassifier = new DAClassifier(DAClassifier.Mode.DUMB_DECISION_TREE);
+	}
+
+	public TextAnalyzer() throws IOException {
+		this(Controller.getBasePath());
 	}
 
 
@@ -106,19 +124,23 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException();
 		}
 
-		// Checks for a standardized form TODO: Refactor this into its own class
-		if(standardizedForms.containsKey(input)){
-			input = standardizedForms.get(input);
-		}
+		// Strip ending punctuation
+		String stripped = input.replaceAll("\\p{Punct}*$", "");
 
+		// Checks for a standardized form
+		if(standardizedForms.containsKey(stripped)){
+			input = standardizedForms.get(stripped);
+			stripped = input.replaceAll("\\p{Punct}*$", "");
+		}
+		
 		// Create the utterance
 		Utterance h = new Utterance(input);		
 		storePunctuation(h, input);
-		
+
 		// Annotate document with all tools registered with the pipeline
 		Annotation document = new Annotation(input);		
 		pipeline.annotate(document);
-		
+
 		List<CoreMap> sentences = document.get(SentencesAnnotation.class);		
 		if(sentences.size() == 0){
 			return h;
@@ -127,23 +149,24 @@ public class TextAnalyzer {
 
 		// Compute basic syntactic features
 		storeTokens(h, sentence);
-
-		if(greetClose.containsKey(input)){
-			h.daTag = greetClose.get(input);
+		
+		if(greetClose.containsKey(stripped)){
+			h.daTag = greetClose.get(stripped);
 			return h;
 		}		
 
 		// Certain dialogue acts do not need deep semantic and anaphora analysis		
 		h.daTag = dialogueClassifier.classify(h, conversation);
 
-		AMR[] temp = AMR.convertTextToAMR(input);
-		if (temp != null && temp.length > 0)
-			h.amr = temp[0];
+//		AMR[] temp = AMR.convertTextToAMR(input);
+//		if (temp != null && temp.length > 0){
+//			h.amr = temp[0];
+//		}
 
 		// Compute parse tree features
 		storeParseTrees(h, sentence);
 		storeParseFeatures(h);
-		
+
 		anaphoraAnalyzer.analyze(h, conversation, pipeline);
 		try {
 			semAnalyzer.analyze(h, conversation);
@@ -151,22 +174,14 @@ public class TextAnalyzer {
 			System.out.println("Error with semantic analysis");
 			System.out.println(e);
 		}
-				
+
 		return h;		
 	}	
 
 	/*------------------------------------------------------------------
-	 * 						Protected Methods
-	 *------------------------------------------------------------------*/
-
-	
-	
-	
-	
-	/*------------------------------------------------------------------
 	 * 						Private Auxiliary Methods
 	 *------------------------------------------------------------------*/
-	
+
 	/**
 	 * Determine if dialogue act tag is simple enough that further processing (e.g. semantic
 	 * and anaphoric) is not necessary 
@@ -178,7 +193,7 @@ public class TextAnalyzer {
 				h.daTag == DialogueActTag.COMMENT ||
 				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION;								
 	}
-	
+
 	/**
 	 * Tokenizes the input. Tokens are delimited by space
 	 * @param h Utterance to store tokens
@@ -198,7 +213,7 @@ public class TextAnalyzer {
 		}
 	}
 
-	
+
 	/**
 	 * Sets the ending punctuation mark
 	 * @param h The utterance
@@ -220,7 +235,7 @@ public class TextAnalyzer {
 			h.punct = Punctuation.UNKNOWN;
 		}
 	}
-	
+
 	/**
 	 * Stores the constituency and dependency parse trees
 	 * 
@@ -229,15 +244,15 @@ public class TextAnalyzer {
 		// Get the constituency parse tree and its root 
 		h.constituencyParse = sentence.get(TreeAnnotation.class);
 		h.rootConstituency = h.constituencyParse.firstChild().label().value();		
-		
+
 		// Get the dependency parse tree and its root
 		SemanticGraph tree = 
 				sentence.get(CollapsedCCProcessedDependenciesAnnotation.class);			
 		h.dependencyParse = tree;
 		h.rootDependency = tree.getFirstRoot().word();
 	}
-	
-	
+
+
 	/**
 	 * The wrapper method for extracting grammatical relations from 
 	 * the dependency parse tree
@@ -284,14 +299,13 @@ public class TextAnalyzer {
 					h.subjects.add(w.word());
 				}								
 			}
-			
+
 			// Recurse regardless
 			for(IndexedWord w : childrenWithReltn){
 				extractGrammaticalRelations(tree, w, h);
 			}
 		}
 	}
-
 
 	/**
 	 * Matches any of the following 32 symbol characters:
@@ -306,22 +320,93 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * A nested class that reads in from file and populates the respective hashes
+	 * @author alchambers
+	 *
+	 */
+	class HashReader{
+		/**
+		 * Populates the hash of standardized forms
+		 */
+		public void populateStandardForms(){
+			try{
+				BufferedReader input = new BufferedReader(new FileReader(basePath + "models/phrases/slang.txt"));
+				String line = input.readLine();
+				while(line != null){
+					int sep = line.indexOf("\t");
+					if(sep != -1){
+						standardizedForms.put(line.substring(0, sep), line.substring(sep+1));						
+					}
+					line = input.readLine();			
+				}
+				input.close();
+			}
+			catch(IOException e){
+				System.out.println(e);
+			}
+		}
+		/**
+		 * Populates the greeting and closing hash
+		 */
+		public void populateGreeting(){
+			try{								
+				readTextFile(new BufferedReader(new FileReader(basePath + "models/phrases/closing.txt")), DialogueActTag.CONVENTIONAL_CLOSING);
+				readTextFile(new BufferedReader(new FileReader(basePath + "models/phrases/greeting.txt")), DialogueActTag.CONVENTIONAL_OPENING);				
+			}
+			catch(IOException e){
+				System.out.println(e);
+			}
+		}
+
+		/**
+		 * Reads lines from a text file and adds them to the greetClose hash with the 
+		 * corresponding dialogue act tag
+		 * @param input A text file 
+		 * @param tag Corresponding dialogue act tag 
+		 */
+		private void readTextFile(BufferedReader input, DialogueActTag tag){
+			try{
+				String line = input.readLine();
+				while(line != null){
+					greetClose.put(line, tag);
+					line = input.readLine();
+				}
+				input.close();
+			}
+			catch(IOException e){
+				System.out.println(e);
+			}
+
+		}
+	}
+
+
+
+	/**
 	 * Run this method to inspect the features computed for a given typed
 	 * piece of text.
 	 * @param args
 	 */
 	public static void main(String[] args){
-		Scanner scan = new Scanner(System.in);
-		TextAnalyzer analyzer = new TextAnalyzer();
-		Conversation convo = new Conversation();
+		String path = "";
 		
+		// Attempt to get the path 
+		try{
+			path = Controller.getBasePath(System.getProperty("user.dir"), System.getProperty("file.separator"));
+		}
+		catch(IOException e){			
+			System.exit(-1);
+		}
+		Scanner scan = new Scanner(System.in);
+		TextAnalyzer analyzer = new TextAnalyzer(path);
+		Conversation convo = new Conversation();
 		while(true){			
 			System.out.print("Enter a line of text: ");
 			String line = scan.nextLine();			
 			Utterance utt = analyzer.analyze(line, convo);	
 			convo.addUtterance(utt);
 			System.out.println(utt);			
-		}		
+		}			
 	}
 
 }

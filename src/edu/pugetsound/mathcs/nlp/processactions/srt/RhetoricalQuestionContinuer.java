@@ -14,13 +14,14 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  * A template for constructing a response to a user's rhetorical question or statement.
  * Example responses include "Is that right?" or "Oh, really?"
  */
 public class RhetoricalQuestionContinuer implements SemanticResponseTemplate {
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("RhetoricalQuestionContinuer");
-
+    private HashMap<AMR, String[]> outputs =
+        SemanticResponseTemplate.responses.get(this.getClass().getName());
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {
@@ -31,4 +32,3 @@ public class RhetoricalQuestionContinuer implements SemanticResponseTemplate {
     }
 
 }
-

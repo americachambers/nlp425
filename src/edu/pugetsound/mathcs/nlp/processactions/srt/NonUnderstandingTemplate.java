@@ -12,10 +12,16 @@ import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
+/**
+ * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
+ * A template for constructing a response which mostly agrees with what the user said.
+ * Responses include "I guess so" or "Something like that."
+ */
 public class NonUnderstandingTemplate implements SemanticResponseTemplate {
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("NonUnderstandingTemplate");
-
+    private HashMap<AMR, String[]> outputs =
+        SemanticResponseTemplate.responses.get(this.getClass().getName());
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {
@@ -26,4 +32,3 @@ public class NonUnderstandingTemplate implements SemanticResponseTemplate {
     }
 
 }
-

@@ -14,13 +14,15 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  * The catch-all class for constructing questions.
- * This class will attempt to ask a question about something the user said, and if failing at that will
- * attempt to ask a question about basically anything.
+ * This class will attempt to ask a question about something the user said, and if failing at that
+ * will attempt to ask a question about basically anything.
  */
 public class QuestionTemplate implements SemanticResponseTemplate {
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("QuestionTemplate");
+    private HashMap<AMR, String[]> outputs =
+        SemanticResponseTemplate.responses.get(this.getClass().getName());
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {
@@ -31,4 +33,3 @@ public class QuestionTemplate implements SemanticResponseTemplate {
     }
 
 }
-

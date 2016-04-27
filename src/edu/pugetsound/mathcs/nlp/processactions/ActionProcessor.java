@@ -1,12 +1,14 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
 import java.util.HashMap;
+import java.io.IOException;
 import java.lang.ProcessBuilder;
 
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
 import edu.pugetsound.mathcs.nlp.processactions.srt.*;
+import edu.pugetsound.mathcs.nlp.controller.Controller;
 
 import edu.pugetsound.mathcs.nlp.lang.*;
 import edu.pugetsound.mathcs.nlp.features.*;
@@ -14,14 +16,16 @@ import edu.pugetsound.mathcs.nlp.features.*;
 /**
  * The main response generator of the Process Actions step
  * This class should only be used to access the method generateResponse(...);
+ * Every method of this class is static
  * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  */
 public class ActionProcessor {
 
-    private static final HashMap<ResponseTag, SemanticResponseTemplate> responseTagToSRT =
+    private static final HashMap<ResponseTag, SemanticResponseTemplate> RESPONSE_TAG_TO_SRT =
         new HashMap<ResponseTag, SemanticResponseTemplate>() {{
-            // Instantiate HashMap's values
-            
+            // Instantiate the HashMap's values
+
             put(ResponseTag.STATEMENT, new StatementTemplate());
             put(ResponseTag.NARRATIVE_DESCRIPTIVE, new StatementNonOpinionTemplate());
             put(ResponseTag.VIEWPOINT, new StatementOpinionTemplate());
@@ -54,7 +58,7 @@ public class ActionProcessor {
             put(ResponseTag.QUESTION_WH, new WhQuestionTemplate());
             put(ResponseTag.GREETING, new GreetingTemplate());
         }};
-            
+
     /**
      * Wrapper function that converts an utterance to a conversation
      * For backwards compatability only; use the one that takes a conversation preferably!
@@ -66,14 +70,15 @@ public class ActionProcessor {
         return generateResponse(convo, responseDATag);
     }
 
-
     /**
      * Takes in a conversation and a DA tag for what type of statement to respond from the MDP
      * Returns a string corresponding to the generated response
+     * @param convo The conversation thus far, so we can use local info to generate the response
+     * @param responseTag The type of response we should respond with. Ex: YesNoAnswer
      * @return A string representation of the response. In early versions, this might be an AMR
      */
     public static String generateResponse(Conversation convo, ResponseTag responseTag) {
-        SemanticResponseTemplate responseGenerator = responseTagToSRT.get(responseTag);        
+        SemanticResponseTemplate responseGenerator = RESPONSE_TAG_TO_SRT.get(responseTag);
         if(responseGenerator != null) {
             // Use the given daTag to determine what type of response to generate
             try {
@@ -84,17 +89,23 @@ public class ActionProcessor {
             return "Sorry, I didn't understand that.";
         }
 
-        // Should probably throw an excetion here
+        // Should probably throw an exception here
         return "Error: Response could not be generated, bad extendedDA tag";
     }
 
-    public static void main(String[] args){
+    /**
+     * Generates a list of responses to an inputted conversation.
+     * @param args A list of Strings should be given, each being 1 line of user input in the convo
+     */
+    public static void main(String[] args) throws IOException {
         TextAnalyzer ta = new TextAnalyzer();
         Conversation convo = new Conversation();
-        for (String a: args)
+        for (String a: args) {
             convo.addUtterance(ta.analyze(a,convo));
-        for (Utterance utt: convo.getConversation())
+        }
+        for (Utterance utt: convo.getConversation()){
             System.out.println(generateResponse(utt, ResponseTag.GREETING));
+        }
     }
 
 }

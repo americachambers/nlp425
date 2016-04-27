@@ -47,8 +47,9 @@ import edu.stanford.nlp.process.DocumentPreprocessor;
  *Usage: java -cp ClasspathToJars edu.pugetsound.mathcs.nlp.processactions.ResponseGenerator args inputFile.txt outputFile.txt
  *
  *  inputFile.txt: The exact path to the file to be used as input
- *  outputFile.txt: The name of the file to be writen to as output, within the processactions/srt folder. 
- *      Defaults to responses.json. If file exists, it is read from and responses are added to it.\n"
+ *  outputFile.txt: The name of the file to be writen to as output, within the processactions/srt
+ * folder.
+ * Defaults to responses.json. If file exists, it is read from and responses are added to it.\n"
  *  Args:
  *    -h, --help: Display this message
  *
@@ -75,14 +76,15 @@ public class ResponseGenerator {
         return sentences.toArray(utts);
     }
 
-    private static int saveUtterancesWithAnalysis(String[] utterances, String outfileName) {
+    private static int saveUtterancesWithAnalysis(String[] utterances, String outfileName) throws IOException{
         Conversation tempConvo;
         ArrayList<Utterance> convoList = new ArrayList<Utterance>();
         PyString[] tokens;
         TextAnalyzer ta = new TextAnalyzer();
         HashMap<DialogueActTag, String> daTagToTemplate = MappingGenerator.hardcodedMap;
         PythonInterpreter python = new PythonInterpreter();
-        python.execfile("../scripts/responseTemplater.py");            
+        python.execfile("../scripts/responseTemplater.py");
+        python.set("fn", new PyString(outfileName));
         for (int p=0; p<utterances.length; p++) {
             try {
                 verifyLists(python);
@@ -98,7 +100,7 @@ public class ResponseGenerator {
                 Utterance currentUtt = ta.analyze(utterances[p], tempConvo);
 
                 //currentUtt needs to be totally filled out with data at this point, or else thrown away
-                if (currentUtt.daTag == null || currentUtt.amr == null || currentUtt.tokens == null || currentUtt.tokens.size() == 0) 
+                if (currentUtt.daTag == null || currentUtt.amr == null || currentUtt.tokens == null || currentUtt.tokens.size() == 0)
                     throw new Exception("There is some issue with current utterance:\n"
                         + "datag:"+currentUtt.daTag
                         + "\namr:" + currentUtt.amr
@@ -132,7 +134,6 @@ public class ResponseGenerator {
         python.exec("tokensLen = len(tokens)");
         int tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
         System.out.println("Now writing "+tokensLen+"/"+utterances.length+" results to output file at "+outfileName);
-        python.set("fn", new PyString(outfileName));
         python.exec("main(fn)");
 
         return tokensLen;
@@ -146,7 +147,7 @@ public class ResponseGenerator {
         int amrLen = ((PyInteger) python.get("amrLen")).asInt();
         python.exec("daTagsLen = len(DATags)");
         int daTagsLen = ((PyInteger) python.get("daTagsLen")).asInt();
-        
+
         if (tokensLen != amrLen)
             if (tokensLen > amrLen) {
                 python.exec("utterances = utterances[:amrLen]");
@@ -186,15 +187,15 @@ public class ResponseGenerator {
                 +"processactions/srt folder. Defaults to responses.json. If file exists, it is read "
                 +"from and responses are added to it.\n"
                 +"Args:\n\t-h, --help: Display this message" );
-        } 
+        }
         else if (args.size() > 2 || args.size() == 0){
             System.out.println("Error with arguments: need one or two. You provided "+args.size());
-        } 
+        }
         else {
             File inputFile = new File(args.get(0));
             if(!inputFile.exists() || inputFile.isDirectory()) {
                 System.out.println("Error with first arg: not a valid file");
-            } 
+            }
             else {
                 if (args.size() == 1)
                     args.add("responses.json");
@@ -213,14 +214,14 @@ public class ResponseGenerator {
                     }
 
                 } catch(FileNotFoundException ex) {
-                    System.out.println("Error: Unable to open file");    
-                    ex.printStackTrace();            
+                    System.out.println("Error: Unable to open file");
+                    ex.printStackTrace();
                 } catch (IOException e) {
                     System.out.println("Error: IOException");
                     e.printStackTrace();
-                } 
+                }
             }
         }
-    }       
+    }
 
 }

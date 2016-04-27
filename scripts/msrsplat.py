@@ -5,8 +5,14 @@ group for performing linguistic analyses, such as parsing and POS tagging.
 """
 
 import json
-import sys
-sys.path.append("../scripts")
+import sys, os
+
+cwd = os.getcwd()
+while cwd[-6:] != "nlp425":
+  cwd = cwd[:-1]
+sys.path.append(cwd[-7].join([cwd, 'lib']))
+sys.path.append(cwd[-7].join([cwd, 'scripts']))
+
 import requests
 
 class Client:
@@ -32,7 +38,7 @@ class Client:
 
     def languages(self):
         """Get the list of supported languages, identified by their two letter ISO code (e.g. 'en' for 'English')
-        
+
         Returns:
             List of strings of language codes"""
         url = self.serviceUrl() + "/Languages"
@@ -91,13 +97,13 @@ def main(utterance, analysers = ["AMR"], strRes=True):
     c = Client("D348B4FB-0B53-4E8A-8862-91E668EBCE17", protocol="http:", verify=False)
 
     lang = "en"
-    if strRes:    
+    if strRes:
       return json.dumps(c.analyze(lang, analysers, utterance))
     return c.analyze(lang, analysers, utterance)
 
 if __name__ == '__main__' and len(sys.argv) > 1:
   if any([arg in ['-h','--help'] for arg in sys.argv]):
-        print('''Usage: 
+        print('''Usage:
             \n  python msrsplat.py args sentence
             \n\nArgs:
             \n  sentence: a sentence to be analyzed in English, enclosed by double-quotes

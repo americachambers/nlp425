@@ -14,13 +14,15 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  * A template for constructing a non-opinionated response to something the user said.
- * This template should be used for answering non-yes-no questions and for making general statements.
+ * This template should be used for answering non-yes-no questions and for making general
+ * statements.
  */
 public class StatementNonOpinionTemplate implements SemanticResponseTemplate {
 
-    private static final HashMap<AMR, String[]> outputs = SemanticResponseTemplate.getResponses("StatementNonOpinionTemplate");
-
+    private HashMap<AMR, String[]> outputs =
+        SemanticResponseTemplate.responses.get(this.getClass().getName());
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {
@@ -31,4 +33,3 @@ public class StatementNonOpinionTemplate implements SemanticResponseTemplate {
     }
 
 }
-

@@ -15,9 +15,10 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
+ * @version 04/26/16
  * A template for constructing wh-questions.
- * This class will first attempt to ask something about what the user said, but if it fails to do so
- * it will try to ask a general question about whatever.
+ * This class will first attempt to ask something about what the user said, but if it fails to do
+ * so it will try to ask a general question about whatever.
  */
 public class WhQuestionTemplate implements SemanticResponseTemplate {
 
@@ -28,4 +29,3 @@ public class WhQuestionTemplate implements SemanticResponseTemplate {
     }
 
 }
-
