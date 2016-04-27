@@ -3,6 +3,10 @@ package edu.pugetsound.mathcs.nlp.kb;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import gnu.prolog.term.AtomTerm;
 import gnu.prolog.term.CompoundTerm;
 import gnu.prolog.term.Term;
@@ -27,6 +31,12 @@ public class KBController{
    // env.runInitialization(interpreter); //necessary?
   }
 
+
+  //takes in new filename to use as main Prolog file
+  public void updateEnvironment(String filename){
+	  env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
+  }
+  
 /**
 * User called yes/no query method
 * @param structs   list of predicates being queried
@@ -36,7 +46,6 @@ public class KBController{
     //TODO eventually add code to pick which interpreter to use (for now only query cat file)
 	 // env = interpreter.getEnvironment();
 
-	  //Interpreter interpret = env.createInterpreter();
 	  for(PrologStructure struct : structs){
 		  try{
 			  int rc = runQuery(env.createInterpreter(), struct.getName(),struct.getArguments());
@@ -95,6 +104,34 @@ public class KBController{
 	  return true;
   }
 
+
+  private void writeToDB(String filename, List<PrologStructure> structs) {
+    File file = new File(filename);
+    FileOutputStream strm = null;
+    try {
+      strm = new FileOutputStream(filename);
+    }
+    catch (IOException e) {
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+    }
+
+    for (PrologStructure ps : structs) {
+      try {
+        String s = ps.toString();
+        byte[] sbytes = s.getBytes();
+        stream.write(sbytes);
+        stream.flush();
+      }
+      catch (IOException e) {
+        System.out.println(e.getMessage());
+        e.printStackTrace();
+      }
+    }
+    stream.close();
+  }
+
+
 //  /**
 //   * Processes wh-questions to Prolog Database (this does not work yet)
 //   * @param struct prolog predicate being queried
@@ -120,12 +157,13 @@ public class KBController{
 	  KBController kb = new KBController();
 	  PrologStructure p = new PrologStructure(2);
 	  List<PrologStructure> preds = new ArrayList<PrologStructure>();
-	  preds.add(p);
 	  p.setName("isA");
 	  p.addArgument("fluffy",0);
 	  p.addArgument("cat",1);
-	  System.out.println("Answer: "+ kb.assertNew(preds));
-	  System.out.println("Answer: " + kb.yesNo(preds));
+	  preds.add(p);
+
+//	  System.out.println("Answer: "+ kb.assertNew(preds));
+//	  System.out.println("Answer: " + kb.yesNo(preds));
   }
 
 }
