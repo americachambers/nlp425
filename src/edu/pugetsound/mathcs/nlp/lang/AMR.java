@@ -19,7 +19,7 @@ import org.json.simple.parser.JSONParser;
 
 import edu.pugetsound.mathcs.nlp.lang.Token;
 import edu.pugetsound.mathcs.nlp.lang.SemanticRelation;
-import edu.pugetsound.mathcs.nlp.controller.Controller;
+import edu.pugetsound.mathcs.nlp.util.PathFormat;
 
 /**
  * Represents a filled-in AMR
@@ -144,14 +144,8 @@ public class AMR {
      */
     public static AMR[] convertTextToAMR(String text) {
         String scriptPath;
-        try {
-            String delimiter = System.getProperty("file.separator");
-            scriptPath = Controller.getBasePath() + "scripts" + delimiter +
-                "msrsplat.py";
-        } catch (IOException e ) {
-            System.out.println(e);
-            return null;
-        }
+        String delimiter = System.getProperty("file.separator");
+        scriptPath = PathFormat.absolutePathFromRoot("scripts/msrsplat.py").replace("/", delimiter);
         PythonInterpreter python = new PythonInterpreter();
         python.execfile(scriptPath);
         python.set("text", new PyString(text));
@@ -180,7 +174,8 @@ public class AMR {
             System.out.println("position: " + pe.getPosition());
             System.out.println(pe);
         } catch(Exception e) {
-            System.out.println(e);
+            System.out.println("ERROR: Microsoft msrsplat tool could not be reached for AMR conversion.");
+            return null;
         }
         return null;
     }
