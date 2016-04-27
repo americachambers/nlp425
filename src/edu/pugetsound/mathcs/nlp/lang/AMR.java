@@ -174,6 +174,7 @@ public class AMR {
                 System.out.println(amrStrs.get(i));
                 System.out.println(AMR.parseAMRString(amrStrs.get(i).toString()));
                 amrs[i] = AMR.parseAMRString(amrStrs.get(i).toString());
+                System.out.println("AMR found: \n"+amrs[i]);
             }
             return amrs;
         } catch(ParseException pe) {
@@ -229,9 +230,10 @@ public class AMR {
         text = text.toLowerCase();
 
         // Force some extra spaces in there to help parsing
-        text = text.replace(")", " )");
-        text = text.replace("(", "( ");
-        text = text.replace(":", " :");
+        text = text.replace(")", " )")
+            .replace("(", "( ")
+            .toLowerCase()
+            .replace(":", " :");
 
         // Current state; denotes the last significant symbol encountered.
         // ":" indicates we should start processing the relation name
