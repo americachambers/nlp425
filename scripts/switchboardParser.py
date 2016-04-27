@@ -30,37 +30,42 @@ daTagLabels = ["q", "s", "b", "f", "a", "*",
     "no", "ny", "o", "oo", "qh", "qo", 
     "qr", "qrr", "qw", "qy", "sd", "sv"]
 
-getUtteranceNum = re.compile("\s+utt\d+")
-getAgentAndNum = re.compile("[AB]\.\d+\s+")
-getDALabel = re.compile("^.{1,6}\s{5,}")
-getUtt = re.compile("\s+.+$")
-
+getUttInfo = re.compile("\s+")
+currentLine = ['','']
 
 f = open("models/responses/swb_parsed.csv", 'w')
-
-for folder in os.listdir("resources/swb1_dialogact_annot"):
-    for uttFile in os.listdir("resources/swb1_dialogact_annot/"+folder):
+for folder in os.listdir("resources/swb1_dialogact_annot/scrubbed"):
+    for uttFile in os.listdir("resources/swb1_dialogact_annot/scrubbed/"+folder):
         if '.utt' in uttFile:
-            with open('/'.join(["resources/swb1_dialogact_annot",folder,uttFile]), 'r') as uF:
+            with open('/'.join(["resources/swb1_dialogact_annot/scrubbed",folder,uttFile]), 'r') as uF:
                 lastSpeaker = None
-                started = False
                 for line in uF:
-                    if '===========================' in line:
-                        started = True
-                    if started and len(line) > 2:
+                    if len(line) > 2:
                         try:
-                            thisDALabel = getDALabel.match(line).string.strip()
-                            thisAgent, convoNum = getDALabel.match(line).string.strip().split('.')
-                            thisAgent = thisAgent == "A"
-                            convoNum = int(convoNum)
-                            thisUttNum = int(getDALabel.match(line).string.replace("utt","").replace(":",""))
-                            if thisUttNum > 1 or thisAgent==lastSpeaker or daTag == "%": 
-                                pass
-                            elif thisDALabel is in daTagLabels and '@' not in line and thisAgent!=lastSpeaker and thisUttNum == 1:
-                                f.write(','.join([thisDALabel,line.split("utt"+str(thisUttNum)+":")[-1].replace(","," ")]) +"\n") 
-                            else:
-                                f.write("\n") 
-                        except Exception:
+                            thisDALabel,thisAgentNum,thisUttNum,thisUtt = [x.strip() for x in getUttInfo.split(line if line[0]!=' ' else line.strip(), maxsplit=3)]
+                            if len(thisUtt.strip()) > 1:
+                                thisAgent, convoNum = thisAgentNum.split('.')
+                                thisAgent = thisAgent == "A"
+                                convoNum = int(convoNum)
+                                thisUttNum = int(thisUttNum[3:])
+                                if thisUttNum > 1 and thisAgent==lastSpeaker:
+                                    if (thisDALabel == currentLine[0] or thisDALabel == '%') and thisUtt[0].islower():
+                                        currentLine[1] += " "+thisUtt
+                                    elif thisDALabel in daTagLabels and '@' not in line:
+                                        currentLine = [thisDALabel, thisUtt]
+                                elif thisAgent!=lastSpeaker and thisUttNum == 1:
+                                    if "" not in currentLine:
+                                        f.write(','.join([x.replace(","," ") for x in currentLine]) +"\n") 
+                                    if thisDALabel in daTagLabels and '@' not in line:
+                                        lastSpeaker = thisAgent
+                                        currentLine = [thisDALabel, thisUtt]
+                                    else:
+                                        f.write("\n")
+                                        lastSpeaker = None
+                                        currentLine = ["",""]
+                                else:
+                                    f.write("\n") 
+                        except Exception as e:
                             pass
 
-
+f.close()

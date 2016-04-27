@@ -146,8 +146,7 @@ public class AMR {
         String scriptPath;
         try {
             String delimiter = System.getProperty("file.separator");
-            scriptPath = Controller.getBasePath() + delimiter + "scripts" + delimiter +
-                "msrsplat.py";
+            scriptPath = Controller.getBasePath() + "scripts" + delimiter + "msrsplat.py";
         } catch (IOException e ) {
             System.out.println(e);
             return null;
