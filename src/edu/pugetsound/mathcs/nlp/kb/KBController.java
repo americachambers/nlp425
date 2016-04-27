@@ -27,13 +27,6 @@ public class KBController{
    // env.runInitialization(interpreter); //necessary?
   }
 
-  public KBController(String filename){
-    env = new Environment();
-    env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
-    interpreter = env.createInterpreter();
-    env.runInitialization(interpreter);
-  }
-
 /**
 * User called yes/no query method
 * @param structs   list of predicates being queried
@@ -44,8 +37,6 @@ public class KBController{
 	 // env = interpreter.getEnvironment();
 	  
 	  //Interpreter interpret = env.createInterpreter();
-
-<<<<<<< HEAD
 	  for(PrologStructure struct : structs){
 		  try{
 			  int rc = runQuery(env.createInterpreter(), struct.getName(),struct.getArguments());
@@ -59,25 +50,6 @@ public class KBController{
 		  }
 	  }
   	return true;
-=======
-    String pred = struct.getName();
-    int arity = struct.getArity();
-    String[] args = new String[arity];
-    for(int i=0;i<arity;i++){
-        args[i]=struct.getArgument(i);
-    }
-    try{
-      int rc = runQuery(interpret, pred,args);
-      if (rc == PrologCode.SUCCESS || rc == PrologCode.SUCCESS_LAST){
-        return true;
-      }
-      return false;
-    }
-    catch(PrologException e){
-      //TODO properly catch this
-    }
-    return false;
->>>>>>> 1aeb463f13b429c04c9c3024807407469faa876d
   }
 
   //method handling queries internally using a specific interpreter (picking which file to query)
