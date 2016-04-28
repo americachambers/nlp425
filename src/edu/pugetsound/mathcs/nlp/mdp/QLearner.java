@@ -91,7 +91,7 @@ public class QLearner {
         DialogueActTag olderDAtag;
         //CHANGE THIS, ITS BROKEN
         if(utterances.size() == 0){
-            return new Action(ResponseTag.GREETING, -1);
+            return new Action(ResponseTag.CONVENTIONAL_OPENING, -1);
         }else if(utterances.size() == 2){
             olderDAtag = DialogueActTag.NULL;
         }else{
