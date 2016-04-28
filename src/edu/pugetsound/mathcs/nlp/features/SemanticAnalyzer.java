@@ -3,6 +3,7 @@ package edu.pugetsound.mathcs.nlp.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
 import edu.pugetsound.mathcs.nlp.lang.*;
 import edu.stanford.nlp.trees.CollinsHeadFinder;
@@ -45,11 +46,9 @@ public class SemanticAnalyzer {
 	private CollinsHeadFinder headFinder;
 
 	/**
-	 * Dear lord...this is getting more complicated by the second...now I need a factory
-	 * for making trees...
+	 * A factory for constructing parse trees
 	 */
 	LabeledScoredTreeFactory factory;
-
 
 	/**
 	 * Constructs a new semantic analyzer
@@ -73,8 +72,8 @@ public class SemanticAnalyzer {
 	public void analyze(Utterance utt, Conversation convo){
 		counter = 0;
 		current = utt;		
-
-		if(utt.rootConstituency.equals("SQ")){
+	
+		if(utt.rootConstituency.equals("SQ") || utt.daTag == DialogueActTag.QUESTION_YES_NO){
 			utt.firstOrderRep = processYesNoQuestion();
 		}
 		else if(utt.rootConstituency.equals("SBARQ")){
@@ -100,8 +99,8 @@ public class SemanticAnalyzer {
 	 * @return The first-order logical representation
 	 */
 	private List<PrologStructure> processYesNoQuestion(){
-		String utt = current.utterance;
-		if(utt.startsWith("Does") ||  utt.startsWith("Do") || utt.startsWith("Did")){
+		String utt = current.utterance;		
+		if(utt.startsWith("Does") ||  utt.startsWith("Do") || utt.startsWith("Did")){			
 			current.constituencyParse.getChild(0).removeChild(0);
 			current.constituencyParse.getChild(0).setValue("S");
 			return processStatement();
@@ -109,21 +108,31 @@ public class SemanticAnalyzer {
 		else if(utt.startsWith("Am") || utt.startsWith("Is") || utt.startsWith("Are") ||
 				utt.startsWith("Was") || utt.startsWith("Were")){
 			
+			/*
+			 * Identifies predicate nominatives and predicate adjectives, e.g.
+			 * "Is Fluffy a cat?"
+			 * "Is Fluffy white?"
+			 */
 			if(label(current.constituencyParse.getChild(0).getChild(1)).equals("NP") &&
-					label(current.constituencyParse.getChild(0).getChild(2)).equals("NP")){
-
+					(label(current.constituencyParse.getChild(0).getChild(2)).equals("NP") ||
+							label(current.constituencyParse.getChild(0).getChild(2)).equals("ADJP"))){
 				Tree copula = current.constituencyParse.getChild(0).removeChild(0);				
+
+				// After removing the copula, the predicate nominative phrase is child 1
 				Tree nounPhrase = current.constituencyParse.getChild(0).removeChild(1);
 				List<Tree> children = new ArrayList<Tree>();
 				children.add(copula);
 				children.add(nounPhrase);
 				
+				// Creates a verbphrase
 				Tree verbPhrase = factory.newTreeNode(current.constituencyParse.label(), children);
 				verbPhrase.setValue("VP");
+				
 				current.constituencyParse.getChild(0).addChild(1, verbPhrase);				
-				current.constituencyParse.getChild(0).setValue("S");				
+				current.constituencyParse.getChild(0).setValue("S");
+				
 				return processStatement();
-			}
+			}			
 		}
 		return new ArrayList<PrologStructure>();
 	}
@@ -198,12 +207,6 @@ public class SemanticAnalyzer {
 				String var = getVariable();			
 				return makeBinaryPredicateList("isA", var, verb+"Event"); 			
 			}
-		}
-
-		else if(hasSingleLeafChild(node)){
-			System.out.println("Catch all case for node with single leaf child: " + node);
-			String leaf = label(node.getChild(0));
-			return makeTerm(leaf);			
 		}
 
 		// Has a single non-leaf child -- e.g. NP --> NN				
