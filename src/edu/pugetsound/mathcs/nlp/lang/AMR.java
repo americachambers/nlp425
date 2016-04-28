@@ -115,17 +115,34 @@ public class AMR {
             return amrString;
         }
 
+        // Sometimes, AMRs can point to themselves
+        // Ex: Msrsplat's parsing of "Ok, then did you have anything you wanted to say?"
+        ArrayList<AMR> alreadyAdded = new ArrayList<AMR>();
+        return toStringRecurse(alreadyAdded);
+    }
+
+    // Helper method to toString()
+    private String toStringRecurse(ArrayList<AMR> alreadyAdded) {
         String stringForm = "(" + nodeValue[0] + " / " + nodeValue[1];
 
         // Use a DFT to print out the AMR graph
         for(SemanticRelation sr : SemanticRelation.values()) {
             if(semanticRelations.containsKey(sr) && semanticRelations.get(sr) != null) {
-                stringForm += " :" + sr.toString() + " " + semanticRelations.get(sr).toString();
+                stringForm += " :" + sr.toString() + " ";
+                AMR nextAMR = semanticRelations.get(sr);
+
+                if(alreadyAdded.contains(nextAMR)) {
+                    stringForm += nextAMR.nodeValue[0];
+                } else {
+                    alreadyAdded.add(nextAMR);
+                    stringForm += nextAMR.toStringRecurse(alreadyAdded);
+                }
             }
         }
 
         stringForm += ")";
         return stringForm;
+
     }
 
     /**
@@ -472,9 +489,9 @@ public class AMR {
      */
     public static void main(String args[]) {
         for (String s: args) {
-            //System.out.println(AMR.convertTextToAMR(s));
-            AMR result = parseAMRString(s);
-            System.out.println(result.toString());
+            System.out.println(AMR.convertTextToAMR(s));
+            //AMR result = parseAMRString(s);
+            //System.out.println(result.toString());
 
         }
     }
