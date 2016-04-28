@@ -27,10 +27,15 @@ public class AssessmentAppreciationTemplate implements SemanticResponseTemplate 
     public String constructResponseFromTemplate(Conversation convo) {
         Random rand = new Random();
         Utterance utterance = convo.getLastUtterance();
+        AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
+        String result = amr.convertAMRToText(outputs.get(amr));
+        // Lop off the last character, a space
+        result = result.substring(0, result.length() - 1);
+
         if(rand.nextBoolean()) {
-            return ((String) outputs.keySet().toArray()[rand.nextInt(outputs.size())]) + ".";
+            return result + ".";
         } else {
-            return ((String) outputs.keySet().toArray()[rand.nextInt(outputs.size())]) + "!";
+            return result + "!";
         }
     }
 
