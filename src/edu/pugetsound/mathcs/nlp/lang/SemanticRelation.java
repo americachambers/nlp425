@@ -46,6 +46,9 @@ public enum SemanticRelation {
     // prep_under,
     // prep_with, prep_without,
 
+    // Adding in these preparations since they're in responses.json
+    prep_with("prep-with"), prep_for("prep-for"), prep_into("prep-into"), prep_about("prep-about"),
+
     // Some conjunctions are also not well-covered under the list of non-core roles.
     // AMR also likes to avoid these, but sometimes we have no good alternative.
     // We lack any conjunctions outside the list of non-core roles for now, due to ambiguity.
@@ -81,8 +84,8 @@ public enum SemanticRelation {
     op1_of("op1-of"), op2_of("op2-of"), op3_of("op3-of"), op4_of("op4-of"), op5_of("op5-of"),
     op6_of("op6-of"), op7_of("op7-of"), op8_of("op8-of"), op9_of("op9-of"), op10_of("op10-of"),
 
-    // Not sure what this is for, but msrsplat uses it sometimes
-    lf_measure("lf-measure");
+    // Not sure what these are for, but msrsplat uses them sometimes
+    lf_measure("lf-measure"), lf_dadj("lf-dadj"), lf_classifier("lf-classifier");
 
     private String label;
 

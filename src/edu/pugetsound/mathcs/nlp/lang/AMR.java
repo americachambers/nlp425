@@ -313,9 +313,16 @@ public class AMR {
                         cur_charseq = "";
                         last_word = "";
 
+                    } else if(state == '/') {
+                        // The string must be considering cur_amr and cur_amr must not have nodeValue[1]
+                        cur_amr.nodeValue[1] = cur_charseq;
+                        cur_amr.nodeType = AMRType.string;
+                        cur_charseq = "";
+                        state = '\0';
                     } else {
                         if(Logger.debug()) {
                             System.out.println("Error: String without a relation!");
+                            System.out.println("Offending AMR: " + text);
                         }
                         return null;
                     }
@@ -465,9 +472,9 @@ public class AMR {
      */
     public static void main(String args[]) {
         for (String s: args) {
-            System.out.println(AMR.convertTextToAMR(s));
-            //AMR result = parseAMRString(s);
-            //System.out.println(result.toString());
+            //System.out.println(AMR.convertTextToAMR(s));
+            AMR result = parseAMRString(s);
+            System.out.println(result.toString());
 
         }
     }
