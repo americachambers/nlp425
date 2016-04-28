@@ -172,11 +172,15 @@ public class AMR {
             String temp;
             AMR[] amrs = new AMR[amrStrs.size()];
             for (int i=0; i<amrs.length; i++) {
+                temp = amrStrs.get(i).toString();
+                if (temp == null || temp.length() < 2 )
+                    //throw new ParseException("MSR_SPLAT AMR String doesn't parse properly", 0);
+                    throw new ParseException(ParseException.ERROR_UNEXPECTED_EXCEPTION);
                 if(Logger.debug()) {
                     System.out.println(amrStrs.get(i));
                     System.out.println(AMR.parseAMRString(amrStrs.get(i).toString()));
                 }
-                amrs[i] = AMR.parseAMRString(amrStrs.get(i).toString());
+                amrs[i] = AMR.parseAMRString(temp);
             }
             return amrs;
         } catch(ParseException pe) {
