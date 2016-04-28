@@ -65,6 +65,7 @@ public class ActionProcessor {
     		case YES_NO_ANSWER :
     			Utterance utterance = convo.getLastUtterance();
     			if(utterance != null){
+    				System.out.println(utterance.firstOrderRep);
     				if(kb.yesNo(utterance.firstOrderRep)){
     					return "Yes";
     				}
