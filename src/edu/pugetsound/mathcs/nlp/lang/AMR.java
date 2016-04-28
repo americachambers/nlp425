@@ -240,7 +240,7 @@ public class AMR {
         // Force some extra spaces in there for parsing and convert to lower case for simplicity
         text = text.replace(")", " )")
             .replace("(", "( ")
-            .replace(":", " :");
+            .replace(":", " :")
             .toLowerCase();
 
         // Current state; denotes the last significant symbol encountered.
