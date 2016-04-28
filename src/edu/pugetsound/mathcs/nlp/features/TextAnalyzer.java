@@ -112,6 +112,11 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException();
 		}
 
+		/*
+		 * The order in which the analysis is done is extremely important! Certain analyzers
+		 * require/use the output of other analyzers 
+		 */
+		
 		// Strip ending punctuation
 		String stripped = input.replaceAll("\\p{Punct}*$", "");
 
