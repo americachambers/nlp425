@@ -91,7 +91,7 @@ public class TextAnalyzer {
 
 		semAnalyzer = new SemanticAnalyzer();
 		anaphoraAnalyzer = new AnaphoraAnalyzer();
-		dialogueClassifier = new DAClassifier(DAClassifier.Mode.DUMB_DECISION_TREE);
+		dialogueClassifier = new DAClassifier(DAClassifier.Mode.DUMB_NAIVE_BAYES);
 	}
 
 	/**
