@@ -3,6 +3,10 @@ package edu.pugetsound.mathcs.nlp.kb;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import gnu.prolog.term.AtomTerm;
 import gnu.prolog.term.CompoundTerm;
 import gnu.prolog.term.Term;
@@ -16,17 +20,25 @@ import gnu.prolog.vm.buildins.database.Predicate_assertz;
 public class KBController{
   private Environment env;
   //private Interpreter interpreter;
-
+  private String prologFile;
+  
   /**
    * Constructs controller to knowledge base
    */
-  public KBController(){
+  public KBController(String filename){
+	  prologFile = filename;
 	env = new Environment();
-    env.ensureLoaded(AtomTerm.get(KBController.class.getResource("knowledge/cats.pl").getFile()));
+    env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
    // Interpreter interpreter = env.createInterpreter();
    // env.runInitialization(interpreter); //necessary?
   }
 
+
+  //takes in new filename to use as main Prolog file
+  public void updateEnvironment(String filename){
+	  env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
+  }
+  
 /**
 * User called yes/no query method
 * @param structs   list of predicates being queried
@@ -36,7 +48,6 @@ public class KBController{
     //TODO eventually add code to pick which interpreter to use (for now only query cat file)
 	 // env = interpreter.getEnvironment();
 
-	  //Interpreter interpret = env.createInterpreter();
 	  for(PrologStructure struct : structs){
 		  try{
 			  int rc = runQuery(env.createInterpreter(), struct.getName(),struct.getArguments());
@@ -95,6 +106,35 @@ public class KBController{
 	  return true;
   }
 
+
+  private void writeToDB(String filename, List<PrologStructure> structs) {
+    File file = new File(filename);
+    FileOutputStream strm = null;
+    try {
+      strm = new FileOutputStream(filename);
+    }
+    catch (IOException e) {
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+    }
+
+    for (PrologStructure ps : structs) {
+      try {
+        String s = ps.toString();
+        byte[] sbytes = s.getBytes();
+        strm.write(sbytes);
+        strm.flush();
+
+    
+      }
+      catch (IOException e) {
+        System.out.println(e.getMessage());
+        e.printStackTrace();
+      }
+    }
+  }
+
+
 //  /**
 //   * Processes wh-questions to Prolog Database (this does not work yet)
 //   * @param struct prolog predicate being queried
@@ -117,15 +157,20 @@ public class KBController{
 
   //tester code for debugging knowledge assertion (when it works, should return true, true)
   public static void main(String[] args){
-	  KBController kb = new KBController();
+	  String filename = "knowledge/cats.pl";
+	  KBController kb = new KBController(filename);
+	  
 	  PrologStructure p = new PrologStructure(2);
 	  List<PrologStructure> preds = new ArrayList<PrologStructure>();
-	  preds.add(p);
 	  p.setName("isA");
-	  p.addArgument("fluffy",0);
+	  p.addArgument("spot",0);
 	  p.addArgument("cat",1);
-	  System.out.println("Answer: "+ kb.assertNew(preds));
-	  System.out.println("Answer: " + kb.yesNo(preds));
+	  preds.add(p);
+	  
+	  kb.writeToDB(filename, preds);
+//
+//	  System.out.println("Answer: "+ kb.assertNew(preds));
+//	  System.out.println("Answer: " + kb.yesNo(preds));
   }
 
 }
