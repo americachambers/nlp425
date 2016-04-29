@@ -28,7 +28,7 @@ public class RepeatPhraseTemplate implements SemanticResponseTemplate {
     // We need to make sure to only output named entities though, so we don't say "There."
 
     private HashMap<AMR, String[]> outputs =
-        SemanticResponseTemplate.responses.get(this.getClass().getName());
+        SemanticResponseTemplate.responses.get(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1));
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {

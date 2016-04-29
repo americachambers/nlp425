@@ -10,11 +10,12 @@ import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.mdp.HyperVariables;
 import edu.pugetsound.mathcs.nlp.mdp.QLearner;
 import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
+import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
 import edu.pugetsound.mathcs.nlp.mdp.Action;
 
 /**
  * This class contains the main input/output loop. 
- * @author alchambers
+ * @author alchambers, kstern
  */
 public class Controller {
 	protected static final String INITIAL_GREETING = "Hello.";  
@@ -43,7 +44,7 @@ public class Controller {
 	protected static PrintStream out;
 		
 	/**
-	 * Setups the necessary tools for the conversational agent
+	 * Sets up the necessary tools for the conversational agent
 	 */
 	protected static void setup(InputStream in, PrintStream outStream){
 		out = outStream;
@@ -69,16 +70,18 @@ public class Controller {
 	 */
 	protected static void initiateGreeting(){
 		out.println();
-		Utterance utt = analyzer.analyze(INITIAL_GREETING, conversation);
-		conversation.addUtterance(utt);
-		respondToUser(utt);
+		Action action = mdp.train(conversation);
+		String response = ActionProcessor.generateResponse(conversation, action.getDATag());
+		Utterance agentUtt = analyzer.analyze(response, conversation);
+		conversation.addUtterance(agentUtt);
+		respondToUser(agentUtt);
 	}
 
 	
 	/**
 	 * Runs a single interaction with the human
 	 */
-	private static void run(){
+	private static boolean run(){
 		// Read the human's typed input
 		out.print("> ");
 		String line = input.nextLine();
@@ -95,6 +98,12 @@ public class Controller {
 		Utterance agentUtt = analyzer.analyze(response, conversation);
 		conversation.addUtterance(agentUtt);
 		respondToUser(agentUtt);
+		
+        ResponseTag eDAT = action.getDATag();
+		if(eDAT.equals(ResponseTag.CONVENTIONAL_CLOSING)){
+			return false;
+		}
+        return true;		
 	}
 
 	/**
@@ -104,8 +113,9 @@ public class Controller {
 	public static void main(String[] args){		
 		setup(System.in, System.out);				
 		initiateGreeting();
-		while(true){
-			run();
+		boolean typing = true;
+		while(typing){
+			typing = run();
 		}
 	}	
 }

@@ -20,13 +20,15 @@ import gnu.prolog.vm.buildins.database.Predicate_assertz;
 public class KBController{
   private Environment env;
   //private Interpreter interpreter;
-
+  private String prologFile;
+  
   /**
    * Constructs controller to knowledge base
    */
-  public KBController(){
+  public KBController(String filename){
+	  prologFile = filename;
 	env = new Environment();
-    env.ensureLoaded(AtomTerm.get(KBController.class.getResource("knowledge/cats.pl").getFile()));
+    env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
    // Interpreter interpreter = env.createInterpreter();
    // env.runInitialization(interpreter); //necessary?
   }
@@ -120,15 +122,16 @@ public class KBController{
       try {
         String s = ps.toString();
         byte[] sbytes = s.getBytes();
-        stream.write(sbytes);
-        stream.flush();
+        strm.write(sbytes);
+        strm.flush();
+
+    
       }
       catch (IOException e) {
         System.out.println(e.getMessage());
         e.printStackTrace();
       }
     }
-    stream.close();
   }
 
 
@@ -154,14 +157,18 @@ public class KBController{
 
   //tester code for debugging knowledge assertion (when it works, should return true, true)
   public static void main(String[] args){
-	  KBController kb = new KBController();
+	  String filename = "knowledge/cats.pl";
+	  KBController kb = new KBController(filename);
+	  
 	  PrologStructure p = new PrologStructure(2);
 	  List<PrologStructure> preds = new ArrayList<PrologStructure>();
 	  p.setName("isA");
-	  p.addArgument("fluffy",0);
+	  p.addArgument("spot",0);
 	  p.addArgument("cat",1);
 	  preds.add(p);
-
+	  
+	  kb.writeToDB(filename, preds);
+//
 //	  System.out.println("Answer: "+ kb.assertNew(preds));
 //	  System.out.println("Answer: " + kb.yesNo(preds));
   }

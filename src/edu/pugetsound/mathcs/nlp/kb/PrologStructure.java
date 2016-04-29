@@ -10,18 +10,18 @@ public class PrologStructure {
 	 * The name of the term or predicate
 	 */
 	private String name;
-	
+
 	/**
 	 * If a predicate, this holds the arguments
 	 */
 	private String[] arguments;
-		
+
 	/**
 	 * The arity
 	 */
 	private int arity;
-	
-	
+
+
 	/**
 	 * Constructs a Prolog term or predicate
 	 * @param parity The parity of the predicate or zero for a term
@@ -35,8 +35,8 @@ public class PrologStructure {
 		name = null;
 		arguments = (arity == 0) ? null : new String[arity];
 	}
-	
-	
+
+
 	/**
 	 * Set the name of the predicate or term
 	 * @param name
@@ -45,7 +45,7 @@ public class PrologStructure {
 		this.name = name;
 	}
 
-	
+
 	public boolean isSet(int index) throws IllegalArgumentException, IllegalStateException {
 		if(isTerm()){
 			throw new IllegalStateException();
@@ -55,7 +55,7 @@ public class PrologStructure {
 		}		
 		return arguments[index] != null;		
 	}
-	
+
 	/**
 	 * Add an argument to the predicate
 	 * @param arg Predicate argument
@@ -72,7 +72,7 @@ public class PrologStructure {
 		}
 		arguments[index] = arg;
 	}
-	
+
 	/**
 	 * Returns the arity
 	 * @return zero for a term, a positive integer for a predicate 
@@ -80,7 +80,7 @@ public class PrologStructure {
 	public int getArity(){
 		return arity;
 	}	
-	
+
 	/**
 	 * Returns the name of the predicate
 	 * @return The name of the predicate
@@ -88,7 +88,7 @@ public class PrologStructure {
 	public String getName(){
 		return name;
 	}
-	
+
 	/**
 	 * Returns the specified argument
 	 * @return The specified argument
@@ -104,7 +104,7 @@ public class PrologStructure {
 		}
 		return arguments[index];
 	}
-	
+
 	/**
 	 * Returns entire argument list
 	 * @return list of arguments for predicate or null if term
@@ -112,31 +112,31 @@ public class PrologStructure {
 	public String[] getArguments() {		
 		return arguments;
 	}
-	
+
 	/**
 	 * Returns a string representation
 	 */
 	public String toString(){
-		String toReturn = "";
-		toReturn += name+"(";
-		for(int i=0;i<arguments.length;i++){
+		if(isTerm()){
+			return name;
+		}
+		
+		// Construct string representing predicate
+		String toReturn = name + "(";
+		for(int i = 0; i < arguments.length; i++){
 			toReturn += arguments[i];
-			if(i!=arguments.length-1){
-				toReturn +=",";
+			if(i != arguments.length-1){
+				toReturn += ",";
 			}
 		}
 		toReturn += ").";
 		return toReturn;
-//		if(isTerm()){
-//			return name;
-//		}
-//		return name + Arrays.toString(arguments);
 	}
-	
+
 	private boolean validIndex(int index){
 		return index >= 0 && index < arity;
 	}
-	
+
 	private boolean isTerm(){
 		return arity == 0;
 	}
