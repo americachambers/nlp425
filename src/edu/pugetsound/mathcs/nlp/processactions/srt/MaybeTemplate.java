@@ -10,6 +10,7 @@ import edu.pugetsound.mathcs.nlp.lang.Conversation;
 
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
+import edu.pugetsound.mathcs.nlp.processactions.AMRParser;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
@@ -29,7 +30,7 @@ public class MaybeTemplate implements SemanticResponseTemplate {
         Random rand = new Random();
         Utterance utterance = convo.getLastUtterance();
         AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
-        return amr.convertAMRToText(outputs.get(amr));
+        return AMRParser.convertAMRToText(amr, outputs.get(amr));
     }
 
 }

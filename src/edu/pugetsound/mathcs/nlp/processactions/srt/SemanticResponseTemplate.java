@@ -6,6 +6,7 @@ import edu.pugetsound.mathcs.nlp.lang.Conversation;
 
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
+import edu.pugetsound.mathcs.nlp.processactions.AMRParser;
 import edu.pugetsound.mathcs.nlp.util.PathFormat;
 
 
@@ -42,7 +43,7 @@ public interface SemanticResponseTemplate {
                 JSONObject responseTemplateJson = ((JSONObject) responsesJson.get(responseTemplate));
                 for (Object o: responseTemplateJson.keySet() ) {
                     String keyStr = (String) o;
-                    AMR key = AMR.parseAMRString(keyStr);
+                    AMR key = AMRParser.parseAMRString(keyStr);
                     JSONArray valueJson = (JSONArray) responseTemplateJson.get(o);
                     String[] value = new String[valueJson.size()];
                     for (int i=0; i<value.length; i++)

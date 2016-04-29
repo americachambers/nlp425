@@ -15,6 +15,7 @@ import edu.pugetsound.mathcs.nlp.util.PathFormat;
 import edu.pugetsound.mathcs.nlp.controller.Controller;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
+import edu.pugetsound.mathcs.nlp.processactions.AMRParser;
 
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
@@ -35,18 +36,18 @@ import edu.stanford.nlp.util.CoreMap;
  * This is the main class responsible for constructing Utterance objects.
  * @author alchambers
  */
-public class TextAnalyzer {		
+public class TextAnalyzer {
 	/**
-	 * Certain annotators require other annotators to be loaded first. 
+	 * Certain annotators require other annotators to be loaded first.
 	 * So the order of the annotators in this list is actually important.
 	 */
-	protected static final String ANNOTATORS = 
+	protected static final String ANNOTATORS =
 			"tokenize, ssplit, pos, lemma, parse, natlog, ner, dcoref";
 
 	/**
 	 * Runs all annotators on a piece of text
 	 */
-	protected StanfordCoreNLP pipeline;	
+	protected StanfordCoreNLP pipeline;
 
 	/**
 	 * Maps slang to standardized English forms
@@ -55,9 +56,9 @@ public class TextAnalyzer {
 
 	/**
 	 * Maps greetings and closing expressions to the respective
-	 * dialogue act tags 
+	 * dialogue act tags
 	 */
-	protected HashMap<String, DialogueActTag> greetClose;	
+	protected HashMap<String, DialogueActTag> greetClose;
 
 	/**
 	 * A semantic analyzer to translate from utterances to first-order representation
@@ -79,15 +80,15 @@ public class TextAnalyzer {
 	 * Creates a new TextAnalyzer
 	 */
 	public TextAnalyzer(){
-		Properties props = new Properties();		
+		Properties props = new Properties();
 		props.setProperty("annotators", ANNOTATORS);
-		pipeline = new StanfordCoreNLP(props);			
+		pipeline = new StanfordCoreNLP(props);
 
 		standardizedForms = new HashMap<String, String>();
-		greetClose = new HashMap<String, DialogueActTag>();		
+		greetClose = new HashMap<String, DialogueActTag>();
 		HashReader reader = new HashReader();
 		reader.populateGreeting();
-		reader.populateStandardForms();		
+		reader.populateStandardForms();
 
 		semAnalyzer = new SemanticAnalyzer();
 		anaphoraAnalyzer = new AnaphoraAnalyzer();
@@ -96,18 +97,18 @@ public class TextAnalyzer {
 
 	/**
 	 * Computes syntactic, semantic, and pragmatic features of a piece of text
-	 * 
-	 * @param input a piece of text  
-	 * @return an Utterance object that encapsulates all syntactic, 
-	 * 		   semantic, and pragmatic features of the input 
-	 * 
+	 *
+	 * @param input a piece of text
+	 * @return an Utterance object that encapsulates all syntactic,
+	 * 		   semantic, and pragmatic features of the input
+	 *
 	 * <br>
 	 * <b>Preconditions:</b>
 	 * <ul>
 	 * 	<li>The input contains a single sentence.</li>
 	 * </ul>
 	 */
-	public Utterance analyze(String input, Conversation conversation) throws IllegalArgumentException {	
+	public Utterance analyze(String input, Conversation conversation) throws IllegalArgumentException {
 		if(input == null || conversation == null){
 			throw new IllegalArgumentException();
 		}
@@ -120,16 +121,16 @@ public class TextAnalyzer {
 			input = standardizedForms.get(stripped);
 			stripped = input.replaceAll("\\p{Punct}*$", "");
 		}
-		
+
 		// Create the utterance
-		Utterance h = new Utterance(input);		
+		Utterance h = new Utterance(input);
 		storePunctuation(h, input);
 
 		// Annotate document with all tools registered with the pipeline
-		Annotation document = new Annotation(input);		
+		Annotation document = new Annotation(input);
 		pipeline.annotate(document);
 
-		List<CoreMap> sentences = document.get(SentencesAnnotation.class);		
+		List<CoreMap> sentences = document.get(SentencesAnnotation.class);
 		if(sentences.size() == 0){
 			return h;
 		}
@@ -137,16 +138,16 @@ public class TextAnalyzer {
 
 		// Compute basic syntactic features
 		storeTokens(h, sentence);
-		
+
 		if(greetClose.containsKey(stripped)){
 			h.daTag = greetClose.get(stripped);
 			return h;
-		}		
+		}
 
-		// Certain dialogue acts do not need deep semantic and anaphora analysis		
+		// Certain dialogue acts do not need deep semantic and anaphora analysis
 		h.daTag = dialogueClassifier.classify(h, conversation);
 
-		AMR[] temp = AMR.convertTextToAMR(input);
+		AMR[] temp = AMRParser.convertTextToAMR(input);
 		if (temp != null && temp.length > 0){
 			h.amr = temp[0];
 		}
@@ -163,8 +164,8 @@ public class TextAnalyzer {
 			System.out.println(e);
 		}
 
-		return h;		
-	}	
+		return h;
+	}
 
 	/*------------------------------------------------------------------
 	 * 						Private Auxiliary Methods
@@ -172,14 +173,14 @@ public class TextAnalyzer {
 
 	/**
 	 * Determine if dialogue act tag is simple enough that further processing (e.g. semantic
-	 * and anaphoric) is not necessary 
+	 * and anaphoric) is not necessary
 	 */
 	private boolean canShortCircuit(Utterance h){
 		return h.daTag == DialogueActTag.BACKCHANNEL ||
 				h.daTag == DialogueActTag.SIGNAL_NON_UNDERSTANDING ||
 				h.daTag == DialogueActTag.AGREEMENTS ||
 				h.daTag == DialogueActTag.COMMENT ||
-				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION;								
+				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION;
 	}
 
 	/**
@@ -187,16 +188,16 @@ public class TextAnalyzer {
 	 * @param h Utterance to store tokens
 	 * @param sentence The sentence
 	 */
-	private void storeTokens(Utterance h, CoreMap sentence){		
-		List<CoreLabel> tokens = sentence.get(TokensAnnotation.class);					
-		for(CoreLabel token : tokens){				
-			if(!isSymbol(token.word())){										
+	private void storeTokens(Utterance h, CoreMap sentence){
+		List<CoreLabel> tokens = sentence.get(TokensAnnotation.class);
+		for(CoreLabel token : tokens){
+			if(!isSymbol(token.word())){
 				Token t = new Token(token.word());
 				t.beginPosition = token.beginPosition();
-				t.endPosition = token.endPosition();					
-				t.pos = token.get(PartOfSpeechAnnotation.class);					
+				t.endPosition = token.endPosition();
+				t.pos = token.get(PartOfSpeechAnnotation.class);
 				t.entityTag = token.getString(NamedEntityTagAnnotation.class);
-				h.tokens.add(t);				
+				h.tokens.add(t);
 			}
 		}
 	}
@@ -226,35 +227,35 @@ public class TextAnalyzer {
 
 	/**
 	 * Stores the constituency and dependency parse trees
-	 * 
+	 *
 	 */
 	private void storeParseTrees(Utterance h, CoreMap sentence){
-		// Get the constituency parse tree and its root 
+		// Get the constituency parse tree and its root
 		h.constituencyParse = sentence.get(TreeAnnotation.class);
-		h.rootConstituency = h.constituencyParse.firstChild().label().value();		
+		h.rootConstituency = h.constituencyParse.firstChild().label().value();
 
 		// Get the dependency parse tree and its root
-		SemanticGraph tree = 
-				sentence.get(CollapsedCCProcessedDependenciesAnnotation.class);			
+		SemanticGraph tree =
+				sentence.get(CollapsedCCProcessedDependenciesAnnotation.class);
 		h.dependencyParse = tree;
 		h.rootDependency = tree.getFirstRoot().word();
 	}
 
 
 	/**
-	 * The wrapper method for extracting grammatical relations from 
+	 * The wrapper method for extracting grammatical relations from
 	 * the dependency parse tree
 	 */
 	private void storeParseFeatures(Utterance h){
 		SemanticGraph tree = h.dependencyParse;
-		IndexedWord root = tree.getFirstRoot();		
+		IndexedWord root = tree.getFirstRoot();
 		extractGrammaticalRelations(tree, root, h);
 	}
 
 
 	/**
 	 * A recursive method that traverses the dependency parse tree searching
-	 * for certain grammatical relations 
+	 * for certain grammatical relations
 	 * @param tree A dependency parse tree
 	 * @param node A node in the parse tree
 	 * @param h The utterance itself
@@ -278,14 +279,14 @@ public class TextAnalyzer {
 			else if(rel.getShortName().equals("dobj")){
 				for(IndexedWord w : childrenWithReltn){
 					h.directObjects.add(w.word());
-				}				
+				}
 			}
 
 			else if(rel.getShortName().equals("nsubjpass")){
 				h.isPassive = true;
-				for(IndexedWord w : childrenWithReltn){					
+				for(IndexedWord w : childrenWithReltn){
 					h.subjects.add(w.word());
-				}								
+				}
 			}
 
 			// Recurse regardless
@@ -297,9 +298,9 @@ public class TextAnalyzer {
 
 	/**
 	 * Matches any of the following 32 symbol characters:
-	 * 
+	 *
 	 * 			!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
-	 * 
+	 *
 	 * @param token a string
 	 * @return true if string is a symbol and false otherwise
 	 */
@@ -323,9 +324,9 @@ public class TextAnalyzer {
 				while(line != null){
 					int sep = line.indexOf("\t");
 					if(sep != -1){
-						standardizedForms.put(line.substring(0, sep), line.substring(sep+1));						
+						standardizedForms.put(line.substring(0, sep), line.substring(sep+1));
 					}
-					line = input.readLine();			
+					line = input.readLine();
 				}
 				input.close();
 			}
@@ -337,9 +338,9 @@ public class TextAnalyzer {
 		 * Populates the greeting and closing hash
 		 */
 		public void populateGreeting(){
-			try{										
+			try{
 				readTextFile(new BufferedReader(new FileReader(PathFormat.absolutePathFromRoot("models/phrases/closing.txt"))), DialogueActTag.CONVENTIONAL_CLOSING);
-				readTextFile(new BufferedReader(new FileReader(PathFormat.absolutePathFromRoot("models/phrases/greeting.txt"))), DialogueActTag.CONVENTIONAL_OPENING);				
+				readTextFile(new BufferedReader(new FileReader(PathFormat.absolutePathFromRoot("models/phrases/greeting.txt"))), DialogueActTag.CONVENTIONAL_OPENING);
 			}
 			catch(IOException e){
 				System.out.println(e);
@@ -347,10 +348,10 @@ public class TextAnalyzer {
 		}
 
 		/**
-		 * Reads lines from a text file and adds them to the greetClose hash with the 
+		 * Reads lines from a text file and adds them to the greetClose hash with the
 		 * corresponding dialogue act tag
-		 * @param input A text file 
-		 * @param tag Corresponding dialogue act tag 
+		 * @param input A text file
+		 * @param tag Corresponding dialogue act tag
 		 */
 		private void readTextFile(BufferedReader input, DialogueActTag tag){
 			try{
@@ -379,13 +380,13 @@ public class TextAnalyzer {
 		Scanner scan = new Scanner(System.in);
 		TextAnalyzer analyzer = new TextAnalyzer();
 		Conversation convo = new Conversation();
-		while(true){			
+		while(true){
 			System.out.print("Enter a line of text: ");
-			String line = scan.nextLine();			
-			Utterance utt = analyzer.analyze(line, convo);	
+			String line = scan.nextLine();
+			Utterance utt = analyzer.analyze(line, convo);
 			convo.addUtterance(utt);
-			System.out.println(utt);			
-		}			
+			System.out.println(utt);
+		}
 	}
 
 }

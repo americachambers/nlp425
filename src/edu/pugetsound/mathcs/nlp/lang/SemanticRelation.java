@@ -1,5 +1,9 @@
 package edu.pugetsound.mathcs.nlp.lang;
 
+import edu.pugetsound.mathcs.nlp.util.Logger;
+
+import java.util.HashMap;
+
 /**
  * A list of most of the semantic roles in AMR
  * Current list (used below) is version 1.2.2, updated as of September 18, 2015
@@ -89,6 +93,19 @@ public enum SemanticRelation {
 
     private String label;
 
+    /**
+     * A mapping from SemanticRelation labels to the corresponding object
+     * Ex: "arg-0" -> SemanticRelation.arg_0
+     */
+    /*
+    public static final HashMap<String, SemanticRelation> NAME_TO_RELATION =
+    new HashMap<String, SemanticRelation>() {{
+            for(SemanticRelation sr : SemanticRelation.values()) {
+                put(sr.getLabel().substring(1), sr);
+            }
+        }};
+    */
+
     SemanticRelation(String label) {
         this.label = label;
     }
@@ -100,5 +117,26 @@ public enum SemanticRelation {
      */
     public String getLabel() {
         return ":" + label;
+    }
+
+    /**
+     * Returns the SemanticRelation object with the given label
+     * Ex: SemanticRelation.getByLabel(":arg-0") -> SemanticRelation.arg_0
+     * You can include or exclude the ':' at the start
+     * @param label The string label
+     */
+    public static SemanticRelation getByLabel(String label) {
+        try {
+            // valueOf maps string names to SemanticRelations
+            return SemanticRelation.valueOf(label
+                                            .replace("-", "_")
+                                            .replace(":", ""));
+        } catch(IllegalArgumentException|NullPointerException e) {
+            if(Logger.debug()) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
     }
 }
