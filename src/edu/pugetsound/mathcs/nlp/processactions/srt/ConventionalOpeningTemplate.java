@@ -25,7 +25,7 @@ public class ConventionalOpeningTemplate implements SemanticResponseTemplate {
     // We might want to add that.
 
     private HashMap<AMR, String[]> outputs =
-        SemanticResponseTemplate.responses.get(this.getClass().getName());
+        SemanticResponseTemplate.responses.get(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1));
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {

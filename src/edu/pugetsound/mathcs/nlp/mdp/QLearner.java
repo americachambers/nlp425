@@ -31,7 +31,7 @@ public class QLearner {
     private double maxAPrime;
     private double alpha;
 
-    private final byte DEBUG_MODE = 0; //DEBUG_MODE is 1 when we want to print debug information
+    private final boolean DEBUG_MODE = false; //DEBUG_MODE is 1 when we want to print debug information
 
     /**
      * Constructs the original QLearner: defines the states and actions that are possible, and initializes the QTable based on those states and actions.
@@ -79,27 +79,39 @@ public class QLearner {
 
     public Action train(Conversation conversation) {
 
+        
         double alpha = (double) ANNEAL / (double) EXPLORE; //this is the alpha value, it goes down as ANNEAL goes down
+        if(DEBUG_MODE){
+            System.out.println("Anneal val: "+ANNEAL);
+            System.out.println("Explore val: "+EXPLORE);
+            System.out.println("alpha val(anneal/explore): "+alpha);
+        }
         List<Utterance> utterances = conversation.getConversation();
-        DialogueActTag mostRecentDAtag = utterances.get(utterances.size() - 1).daTag;
-
         DialogueActTag olderDAtag;
         //CHANGE THIS, ITS BROKEN
         if(utterances.size() == 0){
-            return new Action(ResponseTag.GREETING, -1);
+            return new Action(ResponseTag.CONVENTIONAL_OPENING, -1);
         }else if(utterances.size() == 2){
             olderDAtag = DialogueActTag.NULL;
         }else{
             olderDAtag = utterances.get(utterances.size() - 3).daTag;
         }
-
+        DialogueActTag mostRecentDAtag = utterances.get(utterances.size() - 1).daTag;
         int stateIndex = 0;
 
         //search through states and determine which state we are in.
         stateIndex = states.get(new State(olderDAtag,mostRecentDAtag));
+        if(DEBUG_MODE){
+            System.out.println("current state index: "+stateIndex);
+            System.out.println("state it represents: "+new State(olderDAtag,mostRecentDAtag));
+        }
 
         //this updates the Q(s,a) where s is the previous state and a is the previous action
         //this must be done in order to sync reward functionality
+        if(DEBUG_MODE){
+            System.out.println("Updating previous states");
+        }
+        
         if(mostRecentDAtag != null){
             //last state, last action, aprime, alpha reward;
             updateQTable(lState,lAction,maxAPrime,this.alpha,lReward);
@@ -194,7 +206,16 @@ public class QLearner {
         }
         return maxAPrime;
     }
-    
+
+
+    public boolean saveToFile(){
+        return false;
+    }
+
+    private boolean readFromFile(){
+        return false;
+    }
+
     private void updateQTable(int state, int action, double aPrime, double alpha, int reward){
                 q_table[state][action] = 
                 q_table[state][action] + 

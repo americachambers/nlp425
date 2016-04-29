@@ -30,13 +30,11 @@ public class YesNoAnswerTemplate implements SemanticResponseTemplate {
     public String constructResponseFromTemplate(Conversation convo) {
         KBController kb = new KBController();
         Utterance utterance = convo.getLastUtterance();
-        for(PrologStructure ps : utterance.firstOrderRep) {
-            if(!kb.yesNo(ps)) {
-                return new NoTemplate().constructResponseFromTemplate(convo);
-            }
+        if(kb.yesNo(utterance.firstOrderRep)) {
+            return new NoTemplate().constructResponseFromTemplate(convo);
+        } else {
+            return new YesTemplate().constructResponseFromTemplate(convo);
         }
-
-        return new YesTemplate().constructResponseFromTemplate(convo);
     }
 
 }

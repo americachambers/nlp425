@@ -112,6 +112,11 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException();
 		}
 
+		/*
+		 * The order in which the analysis is done is extremely important! Certain analyzers
+		 * require/use the output of other analyzers 
+		 */
+		
 		// Strip ending punctuation
 		String stripped = input.replaceAll("\\p{Punct}*$", "");
 
@@ -146,10 +151,10 @@ public class TextAnalyzer {
 		// Certain dialogue acts do not need deep semantic and anaphora analysis		
 		h.daTag = dialogueClassifier.classify(h, conversation);
 
-		AMR[] temp = AMR.convertTextToAMR(input);
-		if (temp != null && temp.length > 0){
-			h.amr = temp[0];
-		}
+//		AMR[] temp = AMR.convertTextToAMR(input);
+//		if (temp != null && temp.length > 0){
+//			h.amr = temp[0];
+//		}
 
 		// Compute parse tree features
 		storeParseTrees(h, sentence);

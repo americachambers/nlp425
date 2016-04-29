@@ -6,7 +6,7 @@ import edu.pugetsound.mathcs.nlp.lang.Conversation;
 
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
-import edu.pugetsound.mathcs.nlp.controller.Controller;
+import edu.pugetsound.mathcs.nlp.util.PathFormat;
 
 
 //Requires Simple Json: https://code.google.com/archive/p/json-simple/
@@ -32,8 +32,7 @@ public interface SemanticResponseTemplate {
     public static HashMap<String, HashMap<AMR, String[]>> responses = new HashMap<String, HashMap<AMR, String[]>>() {{
         JSONParser parser = new JSONParser();
         try {
-            String filePath = Controller.getBasePath() + ("src/edu/pugetsound/mathcs/nlp/processactions/srt/responses.json"
-                .replace("/", System.getProperty("file.separator")));
+            String filePath = PathFormat.absolutePathFromRoot("src/edu/pugetsound/mathcs/nlp/processactions/srt/responses.json");
             JSONObject responsesJson = ((JSONObject)
                     parser.parse(
                         new FileReader(filePath)));
@@ -62,6 +61,8 @@ public interface SemanticResponseTemplate {
             System.out.println("Read error with responses.json file");
             System.out.println(ie);
         }
+
+        System.out.println(((HashMap<AMR, String[]>)values().toArray()[0]).keySet().toArray()[0]);
     }};
 
     /**
