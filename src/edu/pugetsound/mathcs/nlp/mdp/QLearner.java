@@ -87,7 +87,7 @@ public class QLearner {
     public Action train(Conversation conversation) {
 
         double alpha = (double) ANNEAL / (double) EXPLORE; //this is the alpha value, it goes down as ANNEAL goes down
-<<<<<<< HEAD
+
         if (Logger.debug()) {
             System.out.println("Anneal val: " + ANNEAL);
             System.out.println("Explore val: " + EXPLORE);
@@ -99,21 +99,9 @@ public class QLearner {
         DialogueActTag olderDAtag;
         //CHANGE THIS, ITS BROKEN
         if (utterances.size() == 0) {
-            return new Action(ResponseTag.GREETING, -1);
-        } else if (utterances.size() == 2) {
-=======
-        if(DEBUG_MODE){
-            System.out.println("Anneal val: "+ANNEAL);
-            System.out.println("Explore val: "+EXPLORE);
-            System.out.println("alpha val(anneal/explore): "+alpha);
-        }
-        List<Utterance> utterances = conversation.getConversation();
-        DialogueActTag olderDAtag;
-        //CHANGE THIS, ITS BROKEN
-        if(utterances.size() == 0){
             return new Action(ResponseTag.CONVENTIONAL_OPENING, -1);
-        }else if(utterances.size() == 2){
->>>>>>> 7e40adf9986e2cd50f14a859a2f0e398ac388eb0
+        } else if (utterances.size() == 2) {
+
             olderDAtag = DialogueActTag.NULL;
         } else {
             olderDAtag = utterances.get(utterances.size() - 3).daTag;
@@ -132,10 +120,7 @@ public class QLearner {
         //this must be done in order to sync reward functionality
         if (Logger.debug()) {
             System.out.println("Updating previous states");
-<<<<<<< HEAD
 
-=======
->>>>>>> 7e40adf9986e2cd50f14a859a2f0e398ac388eb0
         }
 
         if (mostRecentDAtag != null) {
@@ -233,13 +218,13 @@ public class QLearner {
         return maxAPrime;
     }
 
-<<<<<<< HEAD
+
     private void updateQTable(int state, int action, double aPrime, double alpha, int reward) {
         q_table[state][action]
                 = q_table[state][action]
                 + (alpha) * (((double) reward
                 + (GAMMA * aPrime)) - q_table[state][action]);
-=======
+    }
 
     public boolean saveToFile(){
         return false;
@@ -249,11 +234,5 @@ public class QLearner {
         return false;
     }
 
-    private void updateQTable(int state, int action, double aPrime, double alpha, int reward){
-                q_table[state][action] = 
-                q_table[state][action] + 
-                (alpha) * (((double) reward + 
-                (GAMMA * aPrime)) - q_table[state][action]);
->>>>>>> 7e40adf9986e2cd50f14a859a2f0e398ac388eb0
-    }
+
 }
