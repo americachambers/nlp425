@@ -20,6 +20,16 @@ import edu.pugetsound.mathcs.nlp.mdp.Action;
 public class Controller {
 	protected static final String INITIAL_GREETING = "Hello.";  
 	
+	/**
+	 * TODO: In the future, have a time detect the focus of the conversation. There should be
+	 * a module between the process actions team and the kb team that logs statistics about 
+	 * how many hits/misses we've gotten from a particular knowledge base, controlls which kbs
+	 * to query, and shifts the central kb based on focus
+	 */
+	protected static final String KNOWLEDGE_BASE_PATH = "/src/edu/pugetsound/mathcs/nlp/kb/knowledge/cats.pl";
+	
+	
+	
 	protected static Conversation conversation;		
 	protected static Scanner input;
 	protected static TextAnalyzer analyzer;
@@ -111,7 +121,7 @@ public class Controller {
 	 * TODO: Add description of any command line arguments
 	 */
 	public static void main(String[] args){		
-		setup(System.in, System.out);				
+		setup(System.in, System.out);		
 		initiateGreeting();
 		boolean typing = true;
 		while(typing){
