@@ -35,7 +35,7 @@ class SwitchboardParser {
 	private static final char CARAT = '^';
 	private static final String CLOSE_PARENTHESIS = ")";
 	private static final String AT = "@";
-	private static final String SPACES = "[ ]+";
+	private static final String SPACES = "[\\s]+";
 
 	private Map<DialogueActTag, List<DialogueAct>> tagToActs;
 	private Map<String, Integer> tokenToIndex;
@@ -232,6 +232,7 @@ class SwitchboardParser {
 
 	}
 
+	// Split string into tokens based on whitespace and make sure everything's lowercase
 	private List<String> tokenizeUtterance(String utterance) {
 		List<String> tokens = new LinkedList<String>();
 

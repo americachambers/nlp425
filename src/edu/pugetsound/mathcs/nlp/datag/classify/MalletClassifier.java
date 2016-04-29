@@ -14,18 +14,18 @@ import cc.mallet.types.Instance;
 import cc.mallet.types.Labeling;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
+import edu.pugetsound.mathcs.nlp.lang.Punctuation;
 import edu.pugetsound.mathcs.nlp.lang.Token;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 
 public class MalletClassifier implements Classifier {
 
 	private final cc.mallet.classify.Classifier CLASSIFIER;
-	// TODO: Access these from Punctuation enum!
-	private final String[] PUNCTUATION = {".", "!", "?", "..."};
 	
 	public MalletClassifier(String filepath) throws
 		FileNotFoundException, IOException, ClassNotFoundException {
 		
+		// Load the serialized classifier from the given path
 		File inputFile = new File(filepath);
 		FileInputStream fileStream = new FileInputStream(inputFile);
 		ObjectInputStream objectStream = new ObjectInputStream(fileStream);
@@ -39,7 +39,7 @@ public class MalletClassifier implements Classifier {
 	@Override
 	public DialogueActTag classify(Utterance u, Conversation c) {
 		
-		String utterance = utteranceToString(u);
+		String utterance = utteranceToString(u).toLowerCase();
 		
 		Reader inputReader = new StringReader(utterance);
 		LineIterator input = new LineIterator(inputReader, "(.*)$", 1, 0, 0);
@@ -53,6 +53,7 @@ public class MalletClassifier implements Classifier {
 		return null;
 	}
 	
+	// Construct a space-separated, String representation of the utterance
 	private String utteranceToString(Utterance u) {
 		String string = "";
 		
@@ -60,14 +61,15 @@ public class MalletClassifier implements Classifier {
 			string += token.token + " ";
 		}
 		
-		// TODO: Use Puncutation enum!
-		for(String suffix : PUNCTUATION) {
-			if(u.utterance.endsWith(suffix)) {
+		// Add punctuation token to the end
+		for(Punctuation suffix : Punctuation.values()) {
+			if(u.utterance.endsWith(suffix.toString())) {
 				string += suffix + " ";
 				break;
 			}
 		}
 		
+		// Chop off the trailing space
 		string = string.substring(0, string.length()-1) + "\n";
 
 		return string;
