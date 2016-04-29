@@ -26,7 +26,7 @@ import edu.pugetsound.mathcs.nlp.util.PathFormat;
 public class ActionProcessor {
 
 	
-	private static KBController kb = new KBController(PathFormat.absolutePathFromRoot("src/edu/pugetsound/mathcs/nlp/kb/knowledge/cats.pl"));
+	private static KBController kb = new KBController("knowledge/cats.pl");
  
     /**
      * Wrapper function that converts an utterance to a conversation
