@@ -45,7 +45,7 @@ public class QLearner {
         states = new HashMap<>();
         ids = new HashMap<>();
         actions = new ArrayList<>();
-        Random r = new Random();
+        r = new Random();
         int id = 0;
 
         //adds all possible actions to the actions arraylist
