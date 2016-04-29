@@ -14,6 +14,7 @@ import edu.pugetsound.mathcs.nlp.lang.*;
 import edu.pugetsound.mathcs.nlp.features.*;
 import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.util.Logger;
+import edu.pugetsound.mathcs.nlp.util.PathFormat;
 
 /**
  * The main response generator of the Process Actions step
@@ -24,7 +25,8 @@ import edu.pugetsound.mathcs.nlp.util.Logger;
  */
 public class ActionProcessor {
 
-	private static KBController kb = new KBController();
+	
+	private static KBController kb = new KBController(PathFormat.absolutePathFromRoot("src/edu/pugetsound/mathcs/nlp/kb/knowledge/cats.pl"));
  
     /**
      * Wrapper function that converts an utterance to a conversation
@@ -45,7 +47,7 @@ public class ActionProcessor {
      * @return A string representation of the response. In early versions, this might be an AMR
      */
     public static String generateResponse(Conversation convo, ResponseTag responseTag) {
-    	
+
     	switch(responseTag){
     		case CONVENTIONAL_OPENING : 
     			return "Hello";
