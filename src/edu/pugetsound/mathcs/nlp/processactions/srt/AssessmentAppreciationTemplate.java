@@ -19,7 +19,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  * A template for constructing a positive response to what the user said.
  * Example response include "That's great." or "Neat!"
  */
-public class AssessmentAppreciationTemplate implements SemanticResponseTemplate {
+public class AssessmentAppreciationTemplate extends SemanticResponseTemplate {
 
     private HashMap<AMR, String[]> outputs =
         SemanticResponseTemplate.responses.get(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1));

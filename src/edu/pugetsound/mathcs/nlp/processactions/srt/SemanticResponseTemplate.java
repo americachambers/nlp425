@@ -21,14 +21,19 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.Random;
 
 /**
- * The interface for all response templates.
+ * The abstract class every response template should extend
  * All templates need to be able to take in an utterance and return a String response.
  * @author Thomas Gagne & Jon Sims
  * @version 04/26/16
  */
-public interface SemanticResponseTemplate {
+public abstract class SemanticResponseTemplate {
+
+    // A list of all possible default outputs
+    private HashMap<AMR, String[]> outputs =
+        SemanticResponseTemplate.responses.get(this.getClass().getSimpleName());
 
     public static HashMap<String, HashMap<AMR, String[]>> responses = new HashMap<String, HashMap<AMR, String[]>>() {{
         JSONParser parser = new JSONParser();
@@ -73,6 +78,11 @@ public interface SemanticResponseTemplate {
      * @param utterance The utteranec corresponding to the user's input.
      * @return A string response. In early versions, this might be an AMR response.
      */
-    public String constructResponseFromTemplate(Conversation convo);
+    public String constructResponseFromTemplate(Conversation convo) {
+        Random rand = new Random();
+        Utterance utterance = convo.getLastUtterance();
+        AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
+        return AMRParser.convertAMRToText(amr, outputs.get(amr));
+    }
 
 }

@@ -21,7 +21,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
  * This class will first attempt to ask something about what the user said, but if it fails to do
  * so it will try to ask a general question about whatever.
  */
-public class WhQuestionTemplate implements SemanticResponseTemplate {
+public class WhQuestionTemplate extends SemanticResponseTemplate {
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {

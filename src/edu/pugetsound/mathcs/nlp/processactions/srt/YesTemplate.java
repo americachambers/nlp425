@@ -18,17 +18,4 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  * @version 04/26/16
  * A template for constructing a "yes" response to a user's yes-no question.
  */
-public class YesTemplate implements SemanticResponseTemplate {
-
-    private HashMap<AMR, String[]> outputs =
-        SemanticResponseTemplate.responses.get(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1));
-
-    @Override
-    public String constructResponseFromTemplate(Conversation convo) {
-        Random rand = new Random();
-        Utterance utterance = convo.getLastUtterance();
-        AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
-        return AMRParser.convertAMRToText(amr, outputs.get(amr));
-    }
-
-}
+public class YesTemplate extends SemanticResponseTemplate {}

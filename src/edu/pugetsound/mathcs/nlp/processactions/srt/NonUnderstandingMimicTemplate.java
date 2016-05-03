@@ -21,20 +21,4 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  * part it did not understand by referencing something in the user's input.
  * For example, if the user says "I enjoy gooflagggin" this would return "Gooflagggin?"
  */
-public class NonUnderstandingMimicTemplate implements SemanticResponseTemplate {
-
-    // This template is like the RepeatPhraseTemplate, but adds a question mark to the end,
-    // to signal confusion
-
-    private HashMap<AMR, String[]> outputs =
-        SemanticResponseTemplate.responses.get(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1));
-
-    @Override
-    public String constructResponseFromTemplate(Conversation convo) {
-        Random rand = new Random();
-        Utterance utterance = convo.getLastUtterance();
-        AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
-        return AMRParser.convertAMRToText(amr, outputs.get(amr));
-    }
-
-}
+public class NonUnderstandingMimicTemplate extends SemanticResponseTemplate {}

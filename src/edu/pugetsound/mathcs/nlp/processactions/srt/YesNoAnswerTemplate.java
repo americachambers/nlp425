@@ -25,7 +25,7 @@ import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
  * This class will call the knowledge base to determine the answer, then return the
  * appropriate answer.
  */
-public class YesNoAnswerTemplate implements SemanticResponseTemplate {
+public class YesNoAnswerTemplate extends SemanticResponseTemplate {
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {

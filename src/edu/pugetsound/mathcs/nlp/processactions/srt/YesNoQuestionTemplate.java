@@ -21,7 +21,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
  * To form a question, this template will first try to find something the user said to ask about,
  * but if it finds nothing it'll ask a general question about whatever.
  */
-public class YesNoQuestionTemplate implements SemanticResponseTemplate {
+public class YesNoQuestionTemplate extends SemanticResponseTemplate {
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {

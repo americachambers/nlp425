@@ -22,7 +22,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
  * returns something similar to a rhetorical or incredulous response.
  * An example is: INPUT: "I ate the whole cat." OUTPUT: "You ate the whole cat?"
  */
-public class DeclarativeQuestionTemplate implements SemanticResponseTemplate {
+public class DeclarativeQuestionTemplate extends SemanticResponseTemplate {
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {

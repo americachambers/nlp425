@@ -20,17 +20,4 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  * This should be used for answering questions about what the computer thinks about something,
  * and for general statements involving opinions.
  */
-public class StatementOpinionTemplate implements SemanticResponseTemplate {
-
-    private HashMap<AMR, String[]> outputs =
-        SemanticResponseTemplate.responses.get(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1));
-
-    @Override
-    public String constructResponseFromTemplate(Conversation convo) {
-        Random rand = new Random();
-        Utterance utterance = convo.getLastUtterance();
-        AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
-        return AMRParser.convertAMRToText(amr, outputs.get(amr));
-    }
-
-}
+public class StatementOpinionTemplate extends SemanticResponseTemplate {}

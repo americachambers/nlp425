@@ -21,23 +21,4 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  * "Go ahead", as in to start speaking. Currently, this is all this template does, but it might
  * become more advanced.
  */
-public class ActionDirectiveTemplate implements SemanticResponseTemplate {
-
-    // The action directive tag corresponds to anytime you tell the other person to do something
-    // It's typically in the corpus when people say "Go ahead" or "No, you go first".
-    // It's also used for changing the subject, such as "Let's talk about X".
-    // How about we use something like "Go ahead" when its appropriate, and try to change the
-    // subject otherwise
-
-    private HashMap<AMR, String[]> outputs =
-        SemanticResponseTemplate.responses.get(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1));
-
-    @Override
-    public String constructResponseFromTemplate(Conversation convo) {
-        Random rand = new Random();
-        Utterance utterance = convo.getLastUtterance();
-        AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
-        return AMRParser.convertAMRToText(amr, outputs.get(amr));
-    }
-
-}
+public class ActionDirectiveTemplate extends SemanticResponseTemplate {}

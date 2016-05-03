@@ -28,7 +28,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.MaybeTemplate;
  * whether the computer agrees with the user; this one is less direct and can also be unsure
  * whether it agrees.
  */
-public class AcceptRejectMaybeTemplate implements SemanticResponseTemplate {
+public class AcceptRejectMaybeTemplate extends SemanticResponseTemplate {
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {

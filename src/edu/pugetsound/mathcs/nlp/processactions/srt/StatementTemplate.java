@@ -22,7 +22,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.StatementNonOpinionTemplate;
  * This will directly call for either a nonopinionated statement or an opinionated one, so this
  * class should only be used when you don't know which to pick.
  */
-public class StatementTemplate implements SemanticResponseTemplate {
+public class StatementTemplate extends SemanticResponseTemplate {
 
     @Override
     public String constructResponseFromTemplate(Conversation convo) {

@@ -23,21 +23,4 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  * This class should do some checking to see what kind of response should be returned given the
  * directive.
  */
-public class CommitTemplate implements SemanticResponseTemplate {
-
-    // The CommitTemplate is like "I'll try to remember that", "I'll look into that", etc.
-    // Hardcoding might be ok, but we might also need to look at what they're saying to pick
-    // between outputs
-
-    private HashMap<AMR, String[]> outputs =
-        SemanticResponseTemplate.responses.get(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1));
-
-    @Override
-    public String constructResponseFromTemplate(Conversation convo) {
-        Random rand = new Random();
-        Utterance utterance = convo.getLastUtterance();
-        AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
-        return AMRParser.convertAMRToText(amr, outputs.get(amr));
-    }
-
-}
+public class CommitTemplate extends SemanticResponseTemplate {}
