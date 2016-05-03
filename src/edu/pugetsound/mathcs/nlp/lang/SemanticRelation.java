@@ -41,17 +41,16 @@ public enum SemanticRelation {
     // Note that we lack any prep-X roles for the time being, due to ambiguity
     // For an example, a partial list is given as following:
     //
-    // prep_against, prep_along_with, prep_amid, prep_among, prep_as, prep_at,
-    // prep_by,
-    // prep_for, prep_from,
-    // prep_in, prep_in_addition_to, prep_into,
-    // prep_on, prep_on_behalf_of, prep_out_of,
-    // prep_to, prep_toward,
-    // prep_under,
-    // prep_with, prep_without,
+    prep_against("prep-against"), prep_along_with("prep-along-with"), prep_amid("prep-amid"),
+    prep_among("prep-among"), prep_as("prep-as"), prep_at("prep-at"),prep_by("prep-by"),
+    prep_for("prep-for"), prep_from("prep-for"), prep_in("prep-in"),
+    prep_in_addition_to("prep-in-addition-to"), prep_into("prep-into"),prep_on("prep-on"),
+    prep_on_behalf_of("prep-on-behalf-of"), prep_out_of("prep-out-of"), prep_to("prep-to"),
+    prep_toward("prep-toward"), prep_under("prep-under"), prep_with("prep-with"),
+    prep_without("prep-without"), prep_about("prep-about"),
 
     // Adding in these preparations since they're in responses.json
-    prep_with("prep-with"), prep_for("prep-for"), prep_into("prep-into"), prep_about("prep-about"),
+    //prep_with("prep-with"), prep_for("prep-for"), prep_into("prep-into"), prep_about("prep-about"),
 
     // Some conjunctions are also not well-covered under the list of non-core roles.
     // AMR also likes to avoid these, but sometimes we have no good alternative.
