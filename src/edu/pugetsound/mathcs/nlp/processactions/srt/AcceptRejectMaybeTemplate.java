@@ -31,22 +31,22 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.MaybeTemplate;
 public class AcceptRejectMaybeTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Conversation convo) {
+    public String constructDumbResponse(Conversation convo) {
         Random rand = new Random();
         Utterance utterance = convo.getLastUtterance();
         switch(rand.nextInt(4)) {
         case 0:
-            return new AcceptTemplate().constructResponseFromTemplate(convo);
+            return new AcceptTemplate().constructDumbResponse(convo);
         case 1:
-            return new AcceptPartTemplate().constructResponseFromTemplate(convo);
+            return new AcceptPartTemplate().constructDumbResponse(convo);
         case 2:
-            return new RejectTemplate().constructResponseFromTemplate(convo);
+            return new RejectTemplate().constructDumbResponse(convo);
         case 3:
-            return new RejectPartTemplate().constructResponseFromTemplate(convo);
+            return new RejectPartTemplate().constructDumbResponse(convo);
         }
 
         // Else
-        return new MaybeTemplate().constructResponseFromTemplate(convo);
+        return new MaybeTemplate().constructDumbResponse(convo);
     }
 
 }

@@ -22,13 +22,13 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.DisagreementTemplate;
 public class AgreementDisagreementTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Conversation convo) {
+    public String constructDumbResponse(Conversation convo) {
         Random rand = new Random();
         Utterance utterance = convo.getLastUtterance();
         if(rand.nextBoolean()) {
-            return new AgreementTemplate().constructResponseFromTemplate(convo);
+            return new AgreementTemplate().constructDumbResponse(convo);
         } else {
-            return new DisagreementTemplate().constructResponseFromTemplate(convo);
+            return new DisagreementTemplate().constructDumbResponse(convo);
         }
     }
 

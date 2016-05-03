@@ -72,17 +72,31 @@ public abstract class SemanticResponseTemplate {
     /**
      * @author Thomas Gagne & Jon Sims
      * Returns a response to a user's utterance in string form.
-     * Since interfaces in Java can't have static methods, this method must be called on an object.
-     * For inline expressions, new MyTemplate().constructResponseFromTemplate(utt); works well
+     * The dumb response generator chooses from a list of preconstructed responses.
      *
-     * @param utterance The utteranec corresponding to the user's input.
-     * @return A string response. In early versions, this might be an AMR response.
+     * @param convo The conversation thus far.
+     * @return A string response.
      */
-    public String constructResponseFromTemplate(Conversation convo) {
+    public String constructDumbResponse(Conversation convo) {
         Random rand = new Random();
         Utterance utterance = convo.getLastUtterance();
         AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
         return AMRParser.convertAMRToText(amr, outputs.get(amr));
+    }
+
+    /**
+     * @author Thomas Gagne & Jon Sims
+     * Returns a response to a user's utterance in string form.
+     * The smart response generator will attempt to use information from the what the user said
+     * in order to create a unique response.
+     * Unless this method is overridden, it will return a response from the dumb generator.
+     * Most response templates are simple and therefore won't override this method.
+     *
+     * @param convo The conversation thus far.
+     * @return A string response.
+     */
+    public String constructSmartResponse(Conversation convo) {
+        return constructDumbResponse(convo);
     }
 
 }

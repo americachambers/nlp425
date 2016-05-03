@@ -24,8 +24,8 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
 public class YesNoQuestionTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Conversation convo) {
-        return new QuestionTemplate().constructResponseFromTemplate(convo);
+    public String constructDumbResponse(Conversation convo) {
+        return new QuestionTemplate().constructDumbResponse(convo);
     }
 
 }

@@ -85,7 +85,7 @@ public class ActionProcessor {
         if(responseGenerator != null) {
             // Use the given daTag to determine what type of response to generate
             try {
-                String response = responseGenerator.constructResponseFromTemplate(convo);
+                String response = responseGenerator.constructDumbResponse(convo);
                 if(response == null) {
                     return "Not goooood";
                 } else {

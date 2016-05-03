@@ -28,13 +28,13 @@ import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
 public class YesNoAnswerTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Conversation convo) {
+    public String constructDumbResponse(Conversation convo) {
         KBController kb = new KBController();
         Utterance utterance = convo.getLastUtterance();
         if(kb.yesNo(utterance.firstOrderRep)) {
-            return new NoTemplate().constructResponseFromTemplate(convo);
+            return new NoTemplate().constructDumbResponse(convo);
         } else {
-            return new YesTemplate().constructResponseFromTemplate(convo);
+            return new YesTemplate().constructDumbResponse(convo);
         }
     }
 

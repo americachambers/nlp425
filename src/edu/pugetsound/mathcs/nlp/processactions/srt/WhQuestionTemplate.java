@@ -24,9 +24,9 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
 public class WhQuestionTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Conversation convo) {
+    public String constructDumbResponse(Conversation convo) {
         Utterance utterance = convo.getLastUtterance();
-        return new QuestionTemplate().constructResponseFromTemplate(convo);
+        return new QuestionTemplate().constructDumbResponse(convo);
     }
 
 }

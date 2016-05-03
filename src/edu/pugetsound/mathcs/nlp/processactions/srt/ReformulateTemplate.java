@@ -23,7 +23,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 public class ReformulateTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Conversation convo) {
+    public String constructDumbResponse(Conversation convo) {
         Utterance utterance = convo.getLastUtterance();
         if(utterance.utterance != null) {
             return utterance.utterance;

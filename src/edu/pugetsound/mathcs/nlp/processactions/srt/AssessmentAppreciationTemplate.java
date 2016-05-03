@@ -25,7 +25,7 @@ public class AssessmentAppreciationTemplate extends SemanticResponseTemplate {
         SemanticResponseTemplate.responses.get(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1));
 
     @Override
-    public String constructResponseFromTemplate(Conversation convo) {
+    public String constructDumbResponse(Conversation convo) {
         Random rand = new Random();
         Utterance utterance = convo.getLastUtterance();
         AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];

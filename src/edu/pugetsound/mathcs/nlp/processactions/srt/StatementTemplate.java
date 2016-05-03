@@ -25,13 +25,13 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.StatementNonOpinionTemplate;
 public class StatementTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Conversation convo) {
+    public String constructDumbResponse(Conversation convo) {
         Random rand = new Random();
         Utterance utterance = convo.getLastUtterance();
         if(rand.nextBoolean()) {
-            return new StatementOpinionTemplate().constructResponseFromTemplate(convo);
+            return new StatementOpinionTemplate().constructDumbResponse(convo);
         } else {
-            return new StatementNonOpinionTemplate().constructResponseFromTemplate(convo);
+            return new StatementNonOpinionTemplate().constructDumbResponse(convo);
         }
     }
 
