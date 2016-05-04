@@ -1,17 +1,17 @@
 package edu.pugetsound.mathcs.nlp.controller;
 
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.Scanner;
-
 import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.mdp.Action;
 import edu.pugetsound.mathcs.nlp.mdp.HyperVariables;
 import edu.pugetsound.mathcs.nlp.mdp.QLearner;
 import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
 import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
-import edu.pugetsound.mathcs.nlp.mdp.Action;
+
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.Scanner;
 
 /**
  * This class contains the main input/output loop. 
@@ -19,6 +19,14 @@ import edu.pugetsound.mathcs.nlp.mdp.Action;
  */
 public class Controller {
 	protected static final String INITIAL_GREETING = "Hello.";  
+	
+	/**
+	 * TODO: In the future, have a team detect the focus of the conversation. There should be
+	 * a module between the process actions team and the kb team that logs statistics about 
+	 * how many hits/misses we've gotten from a particular knowledge base, controls which kbs
+	 * to query, and shifts the central kb based on focus
+	 */
+	protected static final String KNOWLEDGE_BASE_PATH = "/src/edu/pugetsound/mathcs/nlp/kb/knowledge/cats.pl";
 	
 	protected static Conversation conversation;		
 	protected static Scanner input;
@@ -52,7 +60,7 @@ public class Controller {
 		analyzer = new TextAnalyzer();
 		input = new Scanner(in);
 		hyperVariables = new HyperVariables(GAMMA, EXPLORE);
-		mdp = new QLearner(hyperVariables);
+		mdp = new QLearner(hyperVariables,true);
 	}
 
 	/**
@@ -107,15 +115,23 @@ public class Controller {
 	}
 
 	/**
+	 * Saves the state from the conversation 
+	 */
+	private static void saveState(){
+		mdp.saveToFile();
+	}
+	
+	/**
 	 * Main controller for the conversational agent. 
 	 * TODO: Add description of any command line arguments
 	 */
 	public static void main(String[] args){		
-		setup(System.in, System.out);				
+		setup(System.in, System.out);		
 		initiateGreeting();
 		boolean typing = true;
 		while(typing){
 			typing = run();
 		}
+		saveState();
 	}	
 }

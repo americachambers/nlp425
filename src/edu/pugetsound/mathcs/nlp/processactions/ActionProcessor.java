@@ -1,19 +1,11 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
-import java.util.HashMap;
-import java.io.IOException;
-import java.lang.ProcessBuilder;
-
-import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
-import edu.pugetsound.mathcs.nlp.lang.Utterance;
-import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
-import edu.pugetsound.mathcs.nlp.processactions.srt.*;
-import edu.pugetsound.mathcs.nlp.controller.Controller;
-
-import edu.pugetsound.mathcs.nlp.lang.*;
-import edu.pugetsound.mathcs.nlp.features.*;
+import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
 import edu.pugetsound.mathcs.nlp.kb.KBController;
-import edu.pugetsound.mathcs.nlp.util.Logger;
+import edu.pugetsound.mathcs.nlp.lang.Conversation;
+import edu.pugetsound.mathcs.nlp.lang.Utterance;
+
+import java.io.IOException;
 
 /**
  * The main response generator of the Process Actions step
@@ -23,8 +15,8 @@ import edu.pugetsound.mathcs.nlp.util.Logger;
  * @version 04/26/16
  */
 public class ActionProcessor {
-
-	private static KBController kb = new KBController();
+	
+	private static KBController kb = new KBController("knowledge/cats.pl");
  
     /**
      * Wrapper function that converts an utterance to a conversation
@@ -45,7 +37,8 @@ public class ActionProcessor {
      * @return A string representation of the response. In early versions, this might be an AMR
      */
     public static String generateResponse(Conversation convo, ResponseTag responseTag) {
-    	
+		Utterance utterance = convo.getLastUtterance();
+
     	switch(responseTag){
     		case CONVENTIONAL_OPENING : 
     			return "Hello";
@@ -62,8 +55,15 @@ public class ActionProcessor {
     		case WELCOME :
     			return "You're welcome";
     		
+    		case BACKCHANNEL :
+    			return "uh huh";
+    			
+    		case REPEAT_PHRASE :
+    			if(utterance != null){
+    				return utterance.utterance;
+    			}
+    			break;
     		case YES_NO_ANSWER :
-    			Utterance utterance = convo.getLastUtterance();
     			if(utterance != null && utterance.firstOrderRep != null){
     				System.out.println(utterance.firstOrderRep);
     				if(kb.yesNo(utterance.firstOrderRep)){
@@ -76,6 +76,7 @@ public class ActionProcessor {
     		default:
     			return "Statement";
     	}
+    	return "Statement";
     }
 
     /**
