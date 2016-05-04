@@ -32,3 +32,6 @@ lincoln.json
 .gitconfig
 /nbproject/private/
 /build/
+
+# qlearner config file
+/models/qlearner
