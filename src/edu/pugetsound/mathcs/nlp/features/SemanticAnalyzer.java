@@ -252,7 +252,7 @@ public class SemanticAnalyzer {
 		else if(pattern3(node) && !analyzer.isCopula(label(node.getChild(1).headTerminal(headFinder)))){
 			PrologStructure child0 = depthFirstSearch(node.getChild(0)).get(0); // IsA(X,noun) or Term
 			List<PrologStructure> child1 = depthFirstSearch(node.getChild(1)); // IsA(E, verbEvent)
-			assert child1.size() > 0;
+			//assert child1.size() > 0;
 
 			// Agent(E, X)
 			// TODO: Can't guarantee that the first predicate in the VP clause has E as the first term
