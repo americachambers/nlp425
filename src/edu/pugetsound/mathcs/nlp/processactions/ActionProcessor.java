@@ -47,6 +47,7 @@ public class ActionProcessor {
      * @return A string representation of the response. In early versions, this might be an AMR
      */
     public static String generateResponse(Conversation convo, ResponseTag responseTag) {
+		Utterance utterance = convo.getLastUtterance();
 
     	switch(responseTag){
     		case CONVENTIONAL_OPENING : 
@@ -64,8 +65,15 @@ public class ActionProcessor {
     		case WELCOME :
     			return "You're welcome";
     		
+    		case BACKCHANNEL :
+    			return "uh huh";
+    			
+    		case REPEAT_PHRASE :
+    			if(utterance != null){
+    				return utterance.utterance;
+    			}
+    			break;
     		case YES_NO_ANSWER :
-    			Utterance utterance = convo.getLastUtterance();
     			if(utterance != null && utterance.firstOrderRep != null){
     				System.out.println(utterance.firstOrderRep);
     				if(kb.yesNo(utterance.firstOrderRep)){
@@ -78,6 +86,7 @@ public class ActionProcessor {
     		default:
     			return "Statement";
     	}
+    	return "Statement";
     }
 
     /**
