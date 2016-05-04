@@ -4,12 +4,8 @@ package edu.pugetsound.mathcs.nlp.mdp;
  * Created by dgwilliams on 4/18/2016.
  */
 
-import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
-import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
-
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,7 +47,7 @@ public class QLearnerTest {
     @Before
     public void setUp(){
         hyperVariables = new HyperVariables(GAMMA, EXPLORE);
-        mdp = new QLearner(hyperVariables);
+        mdp = new QLearner(hyperVariables,false);
     }
 
     @Test

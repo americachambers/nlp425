@@ -1,20 +1,11 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
-import java.util.HashMap;
-import java.io.IOException;
-import java.lang.ProcessBuilder;
-
-import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
-import edu.pugetsound.mathcs.nlp.lang.Utterance;
-import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
-import edu.pugetsound.mathcs.nlp.processactions.srt.*;
-import edu.pugetsound.mathcs.nlp.controller.Controller;
-
-import edu.pugetsound.mathcs.nlp.lang.*;
-import edu.pugetsound.mathcs.nlp.features.*;
+import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
 import edu.pugetsound.mathcs.nlp.kb.KBController;
-import edu.pugetsound.mathcs.nlp.util.Logger;
-import edu.pugetsound.mathcs.nlp.util.PathFormat;
+import edu.pugetsound.mathcs.nlp.lang.Conversation;
+import edu.pugetsound.mathcs.nlp.lang.Utterance;
+
+import java.io.IOException;
 
 /**
  * The main response generator of the Process Actions step
@@ -24,7 +15,6 @@ import edu.pugetsound.mathcs.nlp.util.PathFormat;
  * @version 04/26/16
  */
 public class ActionProcessor {
-
 	
 	private static KBController kb = new KBController("knowledge/cats.pl");
  

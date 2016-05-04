@@ -1,17 +1,8 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
-import java.util.Random;
-import java.util.HashMap;
-import java.util.List;
-
-
-import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
-
-import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
-import edu.pugetsound.mathcs.nlp.lang.AMR;
-import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
-import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
+import edu.pugetsound.mathcs.nlp.lang.Utterance;
 
 /**
  * @author Thomas Gagne & Jon Sims
@@ -20,6 +11,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
  * This class will first attempt to ask something about what the user said, but if it fails to do
  * so it will try to ask a general question about whatever.
  */
+
 public class WhQuestionTemplate implements SemanticResponseTemplate {
 
     @Override
@@ -28,4 +20,25 @@ public class WhQuestionTemplate implements SemanticResponseTemplate {
         return new QuestionTemplate().constructResponseFromTemplate(convo);
     }
 
+    /**
+     * @author Thomas Gagne & Jon Sims
+     * @version 04/26/16
+     * A template for answering yes-no questions posed by the user.
+     * This class will call the knowledge base to determine the answer, then return the
+     * appropriate answer.
+     */
+    public static class YesNoAnswerTemplate implements SemanticResponseTemplate {
+
+        @Override
+        public String constructResponseFromTemplate(Conversation convo) {
+            KBController kb = new KBController();
+            Utterance utterance = convo.getLastUtterance();
+            if(kb.yesNo(utterance.firstOrderRep)) {
+                return new NoTemplate().constructResponseFromTemplate(convo);
+            } else {
+                return new YesTemplate().constructResponseFromTemplate(convo);
+            }
+        }
+
+    }
 }
