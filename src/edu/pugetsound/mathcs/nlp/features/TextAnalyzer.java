@@ -147,10 +147,13 @@ public class TextAnalyzer {
 			h.daTag = greetClose.get(stripped);
 			return h;
 		}		
-
+		
 		// Certain dialogue acts do not need deep semantic and anaphora analysis		
 		h.daTag = dialogueClassifier.classify(h, conversation);
-
+		if(canShortCircuit(h)){
+			return h;
+		}
+		
 //		AMR[] temp = AMR.convertTextToAMR(input);
 //		if (temp != null && temp.length > 0){
 //			h.amr = temp[0];
@@ -184,7 +187,10 @@ public class TextAnalyzer {
 				h.daTag == DialogueActTag.SIGNAL_NON_UNDERSTANDING ||
 				h.daTag == DialogueActTag.AGREEMENTS ||
 				h.daTag == DialogueActTag.COMMENT ||
-				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION;								
+				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION ||
+				h.daTag == DialogueActTag.THANKS ||
+				h.daTag == DialogueActTag.WELCOME ||
+				h.daTag == DialogueActTag.APOLOGY;		
 	}
 
 	/**
