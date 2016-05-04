@@ -5,12 +5,10 @@ import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
 import edu.pugetsound.mathcs.nlp.util.Logger;
+import edu.pugetsound.mathcs.nlp.util.PathFormat;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 /**
  * @author Zachary Cohan and Damon Williams
@@ -32,7 +30,10 @@ public class QLearner {
     private double alpha;
     protected Random r;
 
+    private static final String INPUT_PATH = PathFormat.absolutePathFromRoot("models/qlearner/qlearner");
+
     //private final boolean DEBUG_MODE = false; //DEBUG_MODE is 1 when we want to print debug information
+
     /**
      * Constructs the original QLearner: defines the states and actions that are
      * possible, and initializes the QTable based on those states and actions.
@@ -40,7 +41,7 @@ public class QLearner {
      * @param h - the {@link HyperVariables} class is the class which configures
      * the variables for the QLearner
      */
-    public QLearner(HyperVariables h) {
+    public QLearner(HyperVariables h, boolean readFromFile) {
         //create states and actions
         states = new HashMap<>();
         ids = new HashMap<>();
@@ -67,21 +68,23 @@ public class QLearner {
                     this.ids.put(id, new State(dialogueActTag, dialogueActTag2));
                     id++;
                 }
-
             }
         }
-
         //check if state and actions have been created
         //this shouldn't ever be triggered as of right now
         if (states.size() < 1 || actions.size() < 1) {
             throw new IllegalArgumentException();
         }
 
-        GAMMA = h.getGamma();
-        EXPLORE = h.getExplore();
-        ANNEAL = h.getExplore();
-
         q_table = new double[states.size()][actions.size()];
+
+        if (readFromFile) {
+            readFromFile();
+        }else {
+            GAMMA = h.getGamma();
+            EXPLORE = h.getExplore();
+            ANNEAL = h.getExplore();
+        }
     }
 
     public Action train(Conversation conversation) {
@@ -92,7 +95,6 @@ public class QLearner {
             System.out.println("Anneal val: " + ANNEAL);
             System.out.println("Explore val: " + EXPLORE);
             System.out.println("alpha val(anneal/explore): " + alpha);
-
         }
         List<Utterance> utterances = conversation.getConversation();
 
@@ -101,7 +103,6 @@ public class QLearner {
         if (utterances.size() == 0) {
             return new Action(ResponseTag.CONVENTIONAL_OPENING, -1);
         } else if (utterances.size() == 2) {
-
             olderDAtag = DialogueActTag.NULL;
         } else {
             olderDAtag = utterances.get(utterances.size() - 3).daTag;
@@ -135,7 +136,7 @@ public class QLearner {
         int e = r.nextInt(EXPLORE);//pick a random value between [0,1000)
         if (e < ANNEAL) {
             //if e is less than ANNEAL, we will explore
-            choice = r.nextInt(actions.size());//chooses random action 
+            choice = r.nextInt(actions.size());//chooses random action
             lReward = rateActionChoice(stateIndex, choice);
 
             maxAPrime = bestResponseValue(stateIndex);
@@ -227,11 +228,65 @@ public class QLearner {
     }
 
     public boolean saveToFile(){
-        return false;
+        File file = new File(INPUT_PATH);
+        FileWriter writer = null;
+
+        try {
+            writer = new FileWriter(file);
+            writer.append(String.valueOf(GAMMA)
+                    +","+ String.valueOf(ANNEAL)
+                    +","+ String.valueOf(EXPLORE));
+            for(int i = 0; i<q_table.length; i++){
+                writer.append("\n");
+                for(int j = 0; j< q_table[i].length; j++){
+                    if(j == q_table[i].length-1){
+                        writer.append(String.valueOf(q_table[i][j]));
+                    }else{
+                        writer.append(String.valueOf(q_table[i][j]) + ",");
+                    }
+                }
+            }
+        }catch(IOException e) {
+            System.err.println("Couldn't write to file");
+            e.printStackTrace();
+            return false;
+        }
+        try{
+            writer.flush();
+            writer.close();
+        }catch(IOException e){
+            System.out.println("error in QLearner - saveToFile()");
+            e.printStackTrace();
+        }
+        return true;
     }
 
     private boolean readFromFile(){
-        return false;
+        final String delimiter = ",";
+
+        try{
+            BufferedReader fileReader = new BufferedReader(new FileReader(INPUT_PATH));
+
+            //Read first line, which contains instance variables: GAMMA, ANNEAL, and EXPLORE
+            String line = fileReader.readLine();
+            String[] tokens = line.split(delimiter);
+            GAMMA = Double.parseDouble(tokens[0]);
+            ANNEAL = Integer.parseInt(tokens[1]);
+            EXPLORE = Integer.parseInt(tokens[2]);
+
+            for(int i = 0; i<q_table.length; i++){
+                line = fileReader.readLine();
+                tokens = line.split(delimiter);
+                for(int j=0; j< q_table[i].length; j++){
+                    q_table[i][j] = Double.parseDouble(tokens[j]);
+                }
+            }
+        }catch(IOException e){
+            System.err.println("Couldn't read from file");
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
 

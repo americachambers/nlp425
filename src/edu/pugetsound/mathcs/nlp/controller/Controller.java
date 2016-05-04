@@ -1,17 +1,17 @@
 package edu.pugetsound.mathcs.nlp.controller;
 
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.Scanner;
-
 import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.mdp.Action;
 import edu.pugetsound.mathcs.nlp.mdp.HyperVariables;
 import edu.pugetsound.mathcs.nlp.mdp.QLearner;
 import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
 import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
-import edu.pugetsound.mathcs.nlp.mdp.Action;
+
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.Scanner;
 
 /**
  * This class contains the main input/output loop. 
@@ -62,7 +62,7 @@ public class Controller {
 		analyzer = new TextAnalyzer();
 		input = new Scanner(in);
 		hyperVariables = new HyperVariables(GAMMA, EXPLORE);
-		mdp = new QLearner(hyperVariables);
+		mdp = new QLearner(hyperVariables,true);
 	}
 
 	/**
@@ -111,6 +111,7 @@ public class Controller {
 		
         ResponseTag eDAT = action.getDATag();
 		if(eDAT.equals(ResponseTag.CONVENTIONAL_CLOSING)){
+			mdp.saveToFile();
 			return false;
 		}
         return true;		
