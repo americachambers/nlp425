@@ -1,3 +1,8 @@
+entity(diomedes33).
+entity(fluffy).
+entity(nugget).
+entity(gadget).
+
 isA(fluffy,cat).
 isA(nugget,cat).
 isA(gadget,cat).
