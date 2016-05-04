@@ -39,7 +39,12 @@ public class MalletClassifier implements Classifier {
 	@Override
 	public DialogueActTag classify(Utterance u, Conversation c) {
 		
-		String utterance = utteranceToString(u).toLowerCase();
+		DialogueActTag prevTag = DialogueActTag.NULL;
+		
+		if(c.getConversation().size() > 0)
+			prevTag = c.getLastUtterance().daTag;
+		
+		String utterance = prevTag.name() + " " + utteranceToString(u).toLowerCase();
 		
 		Reader inputReader = new StringReader(utterance);
 		LineIterator input = new LineIterator(inputReader, "(.*)$", 1, 0, 0);

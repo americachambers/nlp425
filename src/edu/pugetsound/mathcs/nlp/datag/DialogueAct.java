@@ -11,19 +11,23 @@ import java.util.List;
  */
 class DialogueAct {
 
-	private DialogueActTag tag;
-	private List<String> words;
+	private final DialogueActTag tag;
+	private final DialogueActTag previousTag;
+	private final List<String> words;
 
 	/**
 	 * Constructs a DialogueAct
 	 * 
 	 * @param tag
 	 *            The DialogueActTag associated with the utterance
+	 * @param previousTag
+	 * 			  The DialogueActTag from the previous utterance
 	 * @param words
 	 *            A list of tokens from the utterance
 	 */
-	public DialogueAct(DialogueActTag tag, List<String> words) {
+	public DialogueAct(DialogueActTag tag, DialogueActTag previousTag, List<String> words) {
 		this.tag = tag;
+		this.previousTag = previousTag;
 		this.words = words;
 	}
 
@@ -44,6 +48,14 @@ class DialogueAct {
 	 */
 	public DialogueActTag getTag() {
 		return this.tag;
+	}
+	
+	/**
+	 * Accessor for previousTag
+	 * @return The DialogueActTag of the previous utterance
+	 */
+	public DialogueActTag getPreviousTag() {
+		return this.previousTag;
 	}
 
 	/**

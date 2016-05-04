@@ -13,6 +13,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import edu.pugetsound.mathcs.nlp.util.Logger;
+import edu.pugetsound.mathcs.nlp.util.PathFormat;
 
 /**
  * This object, on construction, parses scrubbed switchboard data into
@@ -35,11 +36,12 @@ class SwitchboardParser {
 	private static final char CARAT = '^';
 	private static final String CLOSE_PARENTHESIS = ")";
 	private static final String AT = "@";
-	private static final String SPACES = "[\\s]+";
+	private static final String SPACES = "[\\s\\.\\?]+";
 
-	private Map<DialogueActTag, List<DialogueAct>> tagToActs;
-	private Map<String, Integer> tokenToIndex;
-	private Set<String> tokenSet;
+	private final Map<DialogueActTag, List<DialogueAct>> tagToActs;
+	private final Map<String, Integer> tokenToIndex;
+	private final Map<String, Integer> tokenToCount;
+	private final Set<String> tokenSet;
 
 	/**
 	 * Constructs a parser which traverses the given directory recursively for
@@ -53,6 +55,7 @@ class SwitchboardParser {
 	public SwitchboardParser(File dataDirectory) throws FileNotFoundException {
 		tagToActs = new HashMap<DialogueActTag, List<DialogueAct>>();
 		tokenToIndex = new HashMap<String, Integer>();
+		tokenToCount = new HashMap<String, Integer>();
 		tokenSet = new LinkedHashSet<String>();
 
 		if (Logger.debug()) {
@@ -130,7 +133,7 @@ class SwitchboardParser {
 	 * @return A TokenIndexMap
 	 */
 	public TokenIndexMap getTokenIndexMap() {
-		return new TokenIndexMap(this.tokenToIndex);
+		return new TokenIndexMap(this.tokenToIndex, this.tokenToCount);
 	}
 
 	// Parses a single .utt file and stuffs the recognizable dialogue acts into
@@ -142,6 +145,8 @@ class SwitchboardParser {
 
 		Map<Character, DialogueAct> lastSpoken = new HashMap<Character, DialogueAct>();
 		Character prevSpeaker = null;
+		
+		DialogueActTag prevTag = DialogueActTag.NULL;
 
 		while (input.hasNextLine()) {
 			line = input.nextLine();
@@ -197,18 +202,19 @@ class SwitchboardParser {
 									putAct(lastSpoken.get(speaker));
 								}
 
-								DialogueAct newAct = new DialogueAct(tag, utteranceTokens);
+								DialogueAct newAct = new DialogueAct(tag, prevTag, utteranceTokens);
+								prevTag = tag;
 								lastSpoken.put(speaker, newAct);
 								prevSpeaker = speaker;
 							}
 
 						}
 					} catch (IllegalArgumentException e) {
-						if (Logger.debug()) {
-							System.err
-									.println("[DATAG] Could not parse switchboard line\n\tDue to: "
-											+ e.toString() + "\n\tFor line: \"" + line + "\"");
-						}
+//						if (Logger.debug()) {
+//							System.err
+//									.println("[DATAG] Could not parse switchboard line\n\tDue to: "
+//											+ e.toString() + "\n\tFor line: \"" + line + "\"");
+//						}
 					}
 
 				}
@@ -219,7 +225,7 @@ class SwitchboardParser {
 
 		input.close();
 	}
-
+	
 	// Recursively traverses a directory structure and parses .utt files
 	private void parseDir(File dir) throws FileNotFoundException {
 		File[] files = dir.listFiles();
@@ -239,9 +245,16 @@ class SwitchboardParser {
 		String[] split = utterance.split(SPACES);
 
 		for (String token : split) {
+			token = token.toLowerCase();
 			if (token.matches(TOKEN_REGEX)) {
 				tokens.add(token.toLowerCase());
 				this.tokenSet.add(token.toLowerCase());
+				
+				if(!tokenToCount.containsKey(token)) {
+					tokenToCount.put(token, 1);
+				} else {
+					tokenToCount.replace(token, tokenToCount.get(token) + 1);
+				}
 			}
 		}
 
