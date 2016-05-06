@@ -81,7 +81,7 @@ public class ActionProcessor {
      */
     public static String generateResponse(Conversation convo, ResponseTag responseTag) {
         SemanticResponseTemplate responseGenerator = RESPONSE_TAG_TO_SRT.get(responseTag);
-        //SemanticResponseTemplate responseGenerator = new StatementNonOpinionTemplate();
+        //SemanticResponseTemplate responseGenerator = new QuestionTemplate();
         if(responseGenerator != null) {
             // Use the given daTag to determine what type of response to generate
             try {

@@ -25,7 +25,6 @@ public class WhQuestionTemplate extends SemanticResponseTemplate {
 
     @Override
     public String constructDumbResponse(Conversation convo) {
-        Utterance utterance = convo.getLastUtterance();
         return new QuestionTemplate().constructDumbResponse(convo);
     }
 

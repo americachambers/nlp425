@@ -20,4 +20,18 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  * This class will attempt to ask a question about something the user said, and if failing at that
  * will attempt to ask a question about basically anything.
  */
-public class QuestionTemplate extends SemanticResponseTemplate {}
+public class QuestionTemplate extends SemanticResponseTemplate {
+
+    @Override
+    public String constructDumbResponse(Conversation convo) {
+        String result = super.constructDumbResponse(convo);
+        Random rand = new Random();
+
+        if(rand.nextBoolean()) {
+            return "What do you think about " + result + "?";
+        } else {
+            return "What are your thoughts on " + result + "?";
+        }
+    }
+
+}

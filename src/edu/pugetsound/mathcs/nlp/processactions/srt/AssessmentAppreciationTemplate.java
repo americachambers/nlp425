@@ -21,17 +21,13 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  */
 public class AssessmentAppreciationTemplate extends SemanticResponseTemplate {
 
-    private HashMap<AMR, String[]> outputs =
+    private HashMap<AMR, String[]> dumbOutputs =
         SemanticResponseTemplate.responses.get(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1));
 
     @Override
     public String constructDumbResponse(Conversation convo) {
         Random rand = new Random();
-        Utterance utterance = convo.getLastUtterance();
-        AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
-        String result = AMRParser.convertAMRToText(amr, outputs.get(amr));
-        // Lop off the last character, a space
-        result = result.substring(0, result.length() - 1);
+        String result = super.constructDumbResponse(convo);
 
         if(rand.nextBoolean()) {
             return result + ".";

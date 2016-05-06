@@ -27,7 +27,6 @@ public class StatementTemplate extends SemanticResponseTemplate {
     @Override
     public String constructDumbResponse(Conversation convo) {
         Random rand = new Random();
-        Utterance utterance = convo.getLastUtterance();
         if(rand.nextBoolean()) {
             return new StatementOpinionTemplate().constructDumbResponse(convo);
         } else {

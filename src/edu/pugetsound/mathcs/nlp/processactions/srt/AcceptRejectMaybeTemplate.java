@@ -33,7 +33,6 @@ public class AcceptRejectMaybeTemplate extends SemanticResponseTemplate {
     @Override
     public String constructDumbResponse(Conversation convo) {
         Random rand = new Random();
-        Utterance utterance = convo.getLastUtterance();
         switch(rand.nextInt(4)) {
         case 0:
             return new AcceptTemplate().constructDumbResponse(convo);
