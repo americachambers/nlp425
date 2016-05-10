@@ -48,7 +48,7 @@ public enum SemanticRelation {
     prep_on_behalf_of("prep-on-behalf-of"), prep_out_of("prep-out-of"), prep_to("prep-to"),
     prep_toward("prep-toward"), prep_under("prep-under"), prep_with("prep-with"),
     prep_without("prep-without"), prep_about("prep-about"), prep_of("prep-of"),
-    prep_since("prep-since"),
+    prep_since("prep-since"), prep_around("prep-around"), prep_like("prep-like"),
 
     // Adding in these preparations since they're in responses.json
     //prep_with("prep-with"), prep_for("prep-for"), prep_into("prep-into"), prep_about("prep-about"),
