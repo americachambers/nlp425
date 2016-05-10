@@ -1,6 +1,6 @@
 {
   "MaybeTemplate": ["Perhaps.", "Maybe."],
-  "DeclarativeQuestionTemplate": [],
+  "DeclarativeQuestionTemplate": ["Why?"],
   "OpenOptionTemplate": ["Ok, you can go first.", "You can go first."],
   "AnswerDispreferredTemplate": ["Let's talk about something else.", "Can we talk about something else?", "I don't really want to talk about it.", "I don't really want to talk about that."],
   "RhetoricalQuestionContinuer": ["Oh, really?", "You're kidding me.", "Is that right?", "Really?"],
