@@ -24,6 +24,8 @@ import edu.pugetsound.mathcs.nlp.util.Logger;
  */
 public class ActionProcessor {
 
+    private static final boolean DUMB_RESPONSES = true;
+
     private static final HashMap<ResponseTag, SemanticResponseTemplate> RESPONSE_TAG_TO_SRT =
         new HashMap<ResponseTag, SemanticResponseTemplate>() {{
             // Instantiate the HashMap's values
@@ -85,7 +87,13 @@ public class ActionProcessor {
         if(responseGenerator != null) {
             // Use the given daTag to determine what type of response to generate
             try {
-                String response = responseGenerator.constructDumbResponse(convo);
+                String response = null;
+                if(DUMB_RESPONSES) {
+                    response = responseGenerator.constructDumbResponse(convo);
+                } else {
+                    response = responseGenerator.constructSmartResponse(convo);
+                }
+
                 if(response == null) {
                     return "Not goooood";
                 } else {
