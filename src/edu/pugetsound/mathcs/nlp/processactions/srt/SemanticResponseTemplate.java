@@ -34,76 +34,14 @@ import java.util.Arrays;
  */
 public abstract class SemanticResponseTemplate {
 
-    // A list of all possible dumb responses
-    // Read in from SemanticResponseTemplate's allDumbResponses for each extending class
+    // A mapping from template names to a each template's list of dumb responses
+    // This mapping is read once by SemanticResponseTemplate and is shared by every
+    // extending template
+    private static HashMap<String, String[]> allDumbResponses = ResponseLoader.loadDumbResponses();
+
+    // A list of all possible dumb responses for this template
     private String[] dumbOutputs =
         SemanticResponseTemplate.allDumbResponses.get(this.getClass().getSimpleName());
-
-    // Read all the responses from dumbResponses.json and load them into a hashmap
-    // The hashmap maps template name to an array of responses
-    // The file is read once into SemanticResponseTemplate, each extending class takes the
-    // String[] is needs when it's constructed.
-    private static HashMap<String, String[]> allDumbResponses = new HashMap<String, String[]>() {{
-            JSONParser parser = new JSONParser();
-            try {
-                String filePath = PathFormat.absolutePathFromRoot("src/edu/pugetsound/mathcs/nlp/" +
-                                                                  "processactions/srt/dumbResponses.json");
-                JSONObject responsesJSON = (JSONObject) parser.parse(new FileReader(filePath));
-
-                // For each Template in dumbResponses.json, do put(template, template's responses array)
-                for(Object responseTemplate : responsesJSON.keySet()) {
-                    // Get responses array
-                    Object[] objRes = ((JSONArray)responsesJSON.get(responseTemplate)).toArray();
-                    // Convert to string array
-                    String[] responses = Arrays.copyOf(objRes, objRes.length, String[].class);
-                    put((String)responseTemplate, responses);
-                }
-
-            } catch(ParseException pe) {
-                if(Logger.debug()) {
-                    System.out.println("Parse error with responses.json file");
-                    System.out.println("position: " + pe.getPosition());
-                    pe.printStackTrace();
-                }
-            } catch(IOException ie) {
-                if(Logger.debug()) {
-                    System.out.println("Read error with responses.json file");
-                    ie.printStackTrace();
-                }
-            }
-        }};
-
-    public static HashMap<String, HashMap<AMR, String[]>> responses = new HashMap<String, HashMap<AMR, String[]>>() {{
-        JSONParser parser = new JSONParser();
-        try {
-            String filePath = PathFormat.absolutePathFromRoot("src/edu/pugetsound/mathcs/nlp/processactions/srt/responses.json");
-            JSONObject responsesJson = ((JSONObject) parser.parse(new FileReader(filePath)));
-            Set<String> responsesTemplates = responsesJson.keySet();
-            for (String responseTemplate: responsesTemplates) {
-                HashMap<AMR, String[]> responsesMapping = new HashMap<AMR, String[]>();
-                JSONObject responseTemplateJson = ((JSONObject) responsesJson.get(responseTemplate));
-                for (Object o: responseTemplateJson.keySet() ) {
-                    String keyStr = (String) o;
-                    AMR key = AMRParser.parseAMRString(keyStr);
-                    JSONArray valueJson = (JSONArray) responseTemplateJson.get(o);
-                    String[] value = new String[valueJson.size()];
-                    for (int i=0; i<value.length; i++)
-                        value[i] = valueJson.get(i).toString();
-                    responsesMapping.put(key, value);
-                }
-                put(responseTemplate, responsesMapping);
-            }
-        }
-        catch (ParseException pe) {
-            System.out.println("Parse error with responses.json file");
-            System.out.println("position: " + pe.getPosition());
-            System.out.println(pe);
-        }
-        catch (IOException ie) {
-            System.out.println("Read error with responses.json file");
-            System.out.println(ie);
-        }
-    }};
 
     /**
      * @author Thomas Gagne & Jon Sims

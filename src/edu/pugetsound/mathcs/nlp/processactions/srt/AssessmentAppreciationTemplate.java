@@ -21,9 +21,6 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  */
 public class AssessmentAppreciationTemplate extends SemanticResponseTemplate {
 
-    private HashMap<AMR, String[]> dumbOutputs =
-        SemanticResponseTemplate.responses.get(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1));
-
     @Override
     public String constructDumbResponse(Conversation convo) {
         Random rand = new Random();
