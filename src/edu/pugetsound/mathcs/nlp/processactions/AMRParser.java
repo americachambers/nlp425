@@ -76,10 +76,7 @@ public class AMRParser {
                 if (temp == null || temp.length() < 2 )
                     //throw new ParseException("MSR_SPLAT AMR String doesn't parse properly", 0);
                     throw new ParseException(ParseException.ERROR_UNEXPECTED_EXCEPTION);
-                if(Logger.debug()) {
-                    System.out.println(amrStrs.get(i));
-                    System.out.println(AMRParser.parseAMRString(amrStrs.get(i).toString()));
-                }
+
                 amrs[i] = AMRParser.parseAMRString(temp);
             }
             return amrs;
