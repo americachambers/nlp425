@@ -22,9 +22,9 @@ public class YesNoAnswerTemplate extends SemanticResponseTemplate {
         Utterance utterance = convo.getLastUtterance();
         if(utterance != null && utterance.firstOrderRep != null && kb != null) {
             if(kb.yesNo(utterance.firstOrderRep)) {
-                return new NoTemplate().constructDumbResponse(convo, kb);
-            } else {
                 return new YesTemplate().constructDumbResponse(convo, kb);
+            } else {
+                return new NoTemplate().constructDumbResponse(convo, kb);
             }
         } else {
             return "I don't know.";
