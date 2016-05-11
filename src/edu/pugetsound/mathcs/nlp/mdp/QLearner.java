@@ -281,7 +281,7 @@ public class QLearner {
                     q_table[i][j] = Double.parseDouble(tokens[j]);
                 }
             }
-        }catch(Exception e){
+        }catch(IOException e){
             System.err.println("Couldn't read from file");
             e.printStackTrace();
             return false;
