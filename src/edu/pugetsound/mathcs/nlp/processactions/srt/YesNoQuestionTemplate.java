@@ -3,7 +3,6 @@ package edu.pugetsound.mathcs.nlp.processactions.srt;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
-import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
@@ -16,7 +15,8 @@ public class YesNoQuestionTemplate extends SemanticResponseTemplate {
 
     @Override
     public String constructDumbResponse(Conversation convo, KBController kb) {
-        return new QuestionTemplate().constructDumbResponse(convo, kb);
+        String topic = super.constructDumbResponse(convo, kb);
+        return "Do you like " + topic + "?";
     }
 
 }

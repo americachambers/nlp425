@@ -18,13 +18,13 @@ public class QuestionTemplate extends SemanticResponseTemplate {
 
     @Override
     public String constructDumbResponse(Conversation convo, KBController kb) {
-        String result = super.constructDumbResponse(convo, kb);
+        String topic = super.constructDumbResponse(convo, kb);
         Random rand = new Random();
 
         if(rand.nextBoolean()) {
-            return "What do you think about " + result + "?";
+            return "What do you think about " + topic + "?";
         } else {
-            return "What are your thoughts on " + result + "?";
+            return "What are your thoughts on " + topic + "?";
         }
     }
 

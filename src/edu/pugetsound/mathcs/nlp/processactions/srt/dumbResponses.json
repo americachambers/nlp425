@@ -40,5 +40,5 @@
   "TagQuestionTemplate": ["Right."],
   "SympathyTemplate": ["Sorry.", "I'm sorry to hear that.", "I'm sorry.", "You have my sympathy."],
   "ThanksTemplate": ["Thanks!", "Thanks for that."],
-  "YesNoQuestionTemplate": []
+  "YesNoQuestionTemplate": ["cats", "dogs", "Tacoma", "UPS", "natural language processing"],
 }
