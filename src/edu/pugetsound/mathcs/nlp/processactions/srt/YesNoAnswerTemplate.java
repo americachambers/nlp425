@@ -1,20 +1,10 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
-import java.util.Random;
-import java.util.HashMap;
-import java.util.List;
-
-
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
-
-import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
-import edu.pugetsound.mathcs.nlp.lang.AMR;
-import edu.pugetsound.mathcs.nlp.processactions.AMRParser;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 import edu.pugetsound.mathcs.nlp.processactions.srt.YesTemplate;
 import edu.pugetsound.mathcs.nlp.processactions.srt.NoTemplate;
-import edu.pugetsound.mathcs.nlp.processactions.srt.IndeterminateResponseTemplate;
 import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
 
@@ -28,13 +18,16 @@ import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
 public class YesNoAnswerTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructDumbResponse(Conversation convo) {
-        KBController kb = new KBController();
+    public String constructDumbResponse(Conversation convo, KBController kb) {
         Utterance utterance = convo.getLastUtterance();
-        if(kb.yesNo(utterance.firstOrderRep)) {
-            return new NoTemplate().constructDumbResponse(convo);
+        if(utterance != null && utterance.firstOrderRep != null && kb != null) {
+            if(kb.yesNo(utterance.firstOrderRep)) {
+                return new NoTemplate().constructDumbResponse(convo, kb);
+            } else {
+                return new YesTemplate().constructDumbResponse(convo, kb);
+            }
         } else {
-            return new YesTemplate().constructDumbResponse(convo);
+            return "I don't know.";
         }
     }
 

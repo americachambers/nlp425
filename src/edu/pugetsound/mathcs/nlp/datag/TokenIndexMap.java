@@ -7,11 +7,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * A map from token strings to a unique index
  * The index associated with the token string is used to maintain
  * correct input vector construction between training and classification
+ * @author Creavesjohnson
  *
  */
 class TokenIndexMap {
@@ -19,14 +21,16 @@ class TokenIndexMap {
 	private static final String ENCODING = "UTF-8";
 
 	private final Map<String,Integer> tokenToIndex;
+	private final Map<String,Integer> tokenToCount;
 	private final int numTokens;
 	
 	/**
 	 * Constructs a TokenIndexMap from an existing Map<String,Integer>
 	 * @param tokenToIndex
 	 */
-	public TokenIndexMap(Map<String,Integer> tokenToIndex) {
+	public TokenIndexMap(Map<String,Integer> tokenToIndex, Map<String,Integer> tokenToCount) {
 		this.tokenToIndex = tokenToIndex;
+		this.tokenToCount = tokenToCount;
 		this.numTokens = this.tokenToIndex.size();
 	}
 	
@@ -48,6 +52,9 @@ class TokenIndexMap {
 		
 		input.close();
 		
+		//TODO NOT NULL
+		this.tokenToCount = null;
+		
 	}
 	
 	/**
@@ -57,6 +64,14 @@ class TokenIndexMap {
 	 */
 	public int indexForToken(String token) {
 		return this.tokenToIndex.containsKey(token) ? this.tokenToIndex.get(token) : -1;
+	}
+	
+	public int countForToken(String token) {
+		return this.tokenToCount.containsKey(token) ? this.tokenToCount.get(token) : 0;
+	}
+	
+	public Set<String> getTokens() {
+		return this.tokenToIndex.keySet();
 	}
 	
 	/**

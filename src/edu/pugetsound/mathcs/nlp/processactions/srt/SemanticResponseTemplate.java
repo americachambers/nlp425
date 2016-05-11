@@ -6,6 +6,8 @@ import edu.pugetsound.mathcs.nlp.lang.Conversation;
 
 import edu.pugetsound.mathcs.nlp.util.Logger;
 
+import edu.pugetsound.mathcs.nlp.kb.KBController;
+
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
 import edu.pugetsound.mathcs.nlp.processactions.AMRParser;
@@ -51,7 +53,7 @@ public abstract class SemanticResponseTemplate {
      * @param convo The conversation thus far.
      * @return A string response.
      */
-    public String constructDumbResponse(Conversation convo) {
+    public String constructDumbResponse(Conversation convo, KBController kb) {
         Random rand = new Random();
         //Utterance utterance = convo.getLastUtterance();
         //AMR amr = (AMR) dumbOutputs.keySet().toArray()[rand.nextInt(dumbOutputs.size())];
@@ -78,8 +80,8 @@ public abstract class SemanticResponseTemplate {
      * @param convo The conversation thus far.
      * @return A string response.
      */
-    public String constructSmartResponse(Conversation convo) {
-        return constructDumbResponse(convo);
+    public String constructSmartResponse(Conversation convo, KBController kb) {
+        return constructDumbResponse(convo, kb);
     }
 
 }

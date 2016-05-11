@@ -1,19 +1,16 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
 import java.util.HashMap;
-import java.io.IOException;
-import java.lang.ProcessBuilder;
 
-import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
+import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
+import edu.pugetsound.mathcs.nlp.kb.KBController;
+import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.util.Logger;
 import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
 import edu.pugetsound.mathcs.nlp.processactions.srt.*;
-import edu.pugetsound.mathcs.nlp.controller.Controller;
 
-import edu.pugetsound.mathcs.nlp.lang.*;
-import edu.pugetsound.mathcs.nlp.features.*;
-
-import edu.pugetsound.mathcs.nlp.util.Logger;
+import java.io.IOException;
 
 /**
  * The main response generator of the Process Actions step
@@ -64,38 +61,29 @@ public class ActionProcessor {
         }};
 
     /**
-     * Wrapper function that converts an utterance to a conversation
-     * For backwards compatability only; use the one that takes a conversation preferably!
-     * @return A string representation of the response. In early versions, this might be an AMR
-     */
-    public static String generateResponse(Utterance utterance, ResponseTag responseDATag) {
-        Conversation convo = new Conversation();
-        convo.addUtterance(utterance);
-        return generateResponse(convo, responseDATag);
-    }
-
-    /**
      * Takes in a conversation and a DA tag for what type of statement to respond from the MDP
      * Returns a string corresponding to the generated response
      * @param convo The conversation thus far, so we can use local info to generate the response
      * @param responseTag The type of response we should respond with. Ex: YesNoAnswer
      * @return A string representation of the response. In early versions, this might be an AMR
      */
-    public static String generateResponse(Conversation convo, ResponseTag responseTag) {
+    public static String generateResponse(Conversation convo, ResponseTag responseTag, KBController kb) {
         SemanticResponseTemplate responseGenerator = RESPONSE_TAG_TO_SRT.get(responseTag);
         //SemanticResponseTemplate responseGenerator = new QuestionTemplate();
         if(responseGenerator != null) {
-            // Use the given daTag to determine what type of response to generate
             try {
                 String response = null;
                 if(DUMB_RESPONSES) {
-                    response = responseGenerator.constructDumbResponse(convo);
+                    response = responseGenerator.constructDumbResponse(convo, kb);
                 } else {
-                    response = responseGenerator.constructSmartResponse(convo);
+                    response = responseGenerator.constructSmartResponse(convo, kb);
                 }
 
                 if(response == null) {
-                    return "Not goooood";
+                    if(Logger.debug()) {
+                        System.out.println("Fatal error in ActionProcessor: null response!");
+                    }
+                    return null;
                 } else {
                     System.out.println("Response: " + response);
                     return response;
@@ -106,11 +94,15 @@ public class ActionProcessor {
                     e.printStackTrace();
                 }
             }
-            return "Sorry, I didn't understand that.";
-        }
 
-        // Should probably throw an exception here
-        return "Error: Response could not be generated, bad extendedDA tag";
+            return "Sorry, I didn't understand that.";
+        } else {
+            if(Logger.debug()) {
+                System.out.println("Error: no response template found for: " + responseTag);
+            }
+
+            return null;
+        }
     }
 
     /**
@@ -118,13 +110,13 @@ public class ActionProcessor {
      * @param args A list of Strings should be given, each being 1 line of user input in the convo
      */
     public static void main(String[] args) throws IOException {
-        TextAnalyzer ta = new TextAnalyzer();
+        TextAnalyzer ta = new TextAnalyzer(null);
         Conversation convo = new Conversation();
         for (String a: args) {
             convo.addUtterance(ta.analyze(a,convo));
         }
         for (Utterance utt: convo.getConversation()){
-            System.out.println(generateResponse(utt, ResponseTag.GREETING));
+            // System.out.println(generateResponse(utt, ResponseTag.GREETING));
         }
     }
 

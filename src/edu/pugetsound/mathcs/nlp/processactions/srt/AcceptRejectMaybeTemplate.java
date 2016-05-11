@@ -1,16 +1,9 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
 import java.util.Random;
-import java.util.HashMap;
-import java.util.List;
 
-
-import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
-
-import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
-import edu.pugetsound.mathcs.nlp.lang.AMR;
-import edu.pugetsound.mathcs.nlp.processactions.AMRParser;
+import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 import edu.pugetsound.mathcs.nlp.processactions.srt.AcceptTemplate;
 import edu.pugetsound.mathcs.nlp.processactions.srt.AcceptPartTemplate;
@@ -31,21 +24,21 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.MaybeTemplate;
 public class AcceptRejectMaybeTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructDumbResponse(Conversation convo) {
+    public String constructDumbResponse(Conversation convo, KBController kb) {
         Random rand = new Random();
         switch(rand.nextInt(4)) {
         case 0:
-            return new AcceptTemplate().constructDumbResponse(convo);
+            return new AcceptTemplate().constructDumbResponse(convo, kb);
         case 1:
-            return new AcceptPartTemplate().constructDumbResponse(convo);
+            return new AcceptPartTemplate().constructDumbResponse(convo, kb);
         case 2:
-            return new RejectTemplate().constructDumbResponse(convo);
+            return new RejectTemplate().constructDumbResponse(convo, kb);
         case 3:
-            return new RejectPartTemplate().constructDumbResponse(convo);
+            return new RejectPartTemplate().constructDumbResponse(convo, kb);
         }
 
         // Else
-        return new MaybeTemplate().constructDumbResponse(convo);
+        return new MaybeTemplate().constructDumbResponse(convo, kb);
     }
 
 }

@@ -1,16 +1,8 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
-import java.util.Random;
-import java.util.HashMap;
-import java.util.List;
-
-
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
-
-import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
-import edu.pugetsound.mathcs.nlp.lang.AMR;
-import edu.pugetsound.mathcs.nlp.processactions.AMRParser;
+import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
@@ -23,7 +15,7 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 public class ReformulateTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructDumbResponse(Conversation convo) {
+    public String constructDumbResponse(Conversation convo, KBController kb) {
         Utterance utterance = convo.getLastUtterance();
         if(utterance.utterance != null) {
             return utterance.utterance;

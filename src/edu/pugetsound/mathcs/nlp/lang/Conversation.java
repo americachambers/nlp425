@@ -61,6 +61,9 @@ public class Conversation {
 	 * @return a list containing all utterances from the conversation so far 
 	 */
 	public Utterance getLastUtterance(){
+		if(conversation.size() == 0){
+			return null;
+		}
 		return conversation.get(conversation.size()-1);
 	}
 }
