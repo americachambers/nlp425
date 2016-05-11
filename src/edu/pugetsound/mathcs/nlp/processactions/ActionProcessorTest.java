@@ -29,7 +29,7 @@ public class ActionProcessorTest {
 
     @Before
     public void setUp() throws Exception {
-        analyzer = new TextAnalyzer();
+        analyzer = new TextAnalyzer(null);
         conversation = new Conversation();
         statement = "The cat ate the fish";
         question = "What are you doing?";
@@ -44,7 +44,7 @@ public class ActionProcessorTest {
         conversation = new Conversation();
         conversation.addUtterance(utt);
         for(ResponseTag datag : ResponseTag.values()) {
-            String response = ActionProcessor.generateResponse(conversation, datag);
+            String response = ActionProcessor.generateResponse(conversation, datag, null);
             assertNotNull("should not be null", response);
             assertFalse("failure - response should not be \"Error: Response could not be generated, bad extendedDaTag\"",
                         response.equals("Error: Response could not be generated, bad extendedDA tag"));
