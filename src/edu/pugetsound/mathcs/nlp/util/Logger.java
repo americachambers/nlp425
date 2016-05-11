@@ -10,6 +10,11 @@ public class Logger {
 	
 	private static final boolean DEBUG = true;
 	
+	/**
+	 * Get the debug state for printing
+	 * If TRUE, print debug messages
+	 * @return Whether or not to print debug messages
+	 */
 	public static boolean debug() {
 		return DEBUG;
 	}
