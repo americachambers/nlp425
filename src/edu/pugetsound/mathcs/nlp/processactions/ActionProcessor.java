@@ -28,36 +28,18 @@ public class ActionProcessor {
             // Instantiate the HashMap's values
 
             put(ResponseTag.STATEMENT, new StatementTemplate());
-            put(ResponseTag.NARRATIVE_DESCRIPTIVE, new StatementNonOpinionTemplate());
-            put(ResponseTag.VIEWPOINT, new StatementOpinionTemplate());
             put(ResponseTag.BACKCHANNEL, new BackchannelTemplate());
-            put(ResponseTag.AGREEMENT_DISAGREEMENT, new AgreementDisagreementTemplate());
-            put(ResponseTag.DECLARATIVE_QUESTION, new DeclarativeQuestionTemplate());
-            put(ResponseTag.TAG_QUESTION, new TagQuestionTemplate());
-            put(ResponseTag.ACTION_DIRECTIVE, new ActionDirectiveTemplate());
-            put(ResponseTag.ACCEPT_REJECT_MAYBE, new AcceptRejectMaybeTemplate());
             put(ResponseTag.REPEAT_PHRASE, new RepeatPhraseTemplate());
-            put(ResponseTag.ASSESSMENT_APPRECIATION, new AssessmentAppreciationTemplate());
-            put(ResponseTag.DOWNPLAYING_SYMPATHY, new DownplaySympathyTemplate());
-            put(ResponseTag.REFORMULATE_SUMMARIZE, new ReformulateTemplate());
-            put(ResponseTag.RHETORICAL_QUESTION_CONTINUER, new RhetoricalQuestionContinuer());
-            put(ResponseTag.ACKNOWLEDGE_ANSWER, new AcknowledgeAnswerTemplate());
             put(ResponseTag.SIGNAL_NON_UNDERSTANDING, new NonUnderstandingTemplate());
-            put(ResponseTag.SIGNAL_NON_UNDERSTANDING_MIMIC, new NonUnderstandingMimicTemplate());
             put(ResponseTag.SYMPATHETIC_COMMENT, new SympathyTemplate());
-            put(ResponseTag.COMMIT, new CommitTemplate());
             put(ResponseTag.APOLOGY, new ApologyTemplate());
             put(ResponseTag.CONVENTIONAL_CLOSING, new ConventionalClosingTemplate());
-            put(ResponseTag.EXCLAMATION, new ExclamationTemplate());
             put(ResponseTag.CONVENTIONAL_OPENING, new ConventionalOpeningTemplate());
             put(ResponseTag.THANKS, new ThanksTemplate());
             put(ResponseTag.WELCOME, new WelcomeTemplate());
-            put(ResponseTag.OPEN_OPTION, new OpenOptionTemplate());
             put(ResponseTag.YES_NO_ANSWER, new YesNoAnswerTemplate());
-            put(ResponseTag.QUESTION, new QuestionTemplate());
             put(ResponseTag.QUESTION_YES_NO, new YesNoQuestionTemplate());
             put(ResponseTag.QUESTION_WH, new WhQuestionTemplate());
-            put(ResponseTag.GREETING, new GreetingTemplate());
         }};
 
     /**
@@ -68,8 +50,8 @@ public class ActionProcessor {
      * @return A string representation of the response. In early versions, this might be an AMR
      */
     public static String generateResponse(Conversation convo, ResponseTag responseTag, KBController kb) {
-        SemanticResponseTemplate responseGenerator = RESPONSE_TAG_TO_SRT.get(responseTag);
-        //SemanticResponseTemplate responseGenerator = new QuestionTemplate();
+        //SemanticResponseTemplate responseGenerator = RESPONSE_TAG_TO_SRT.get(responseTag);
+        SemanticResponseTemplate responseGenerator = new YesNoAnswerTemplate();
         if(responseGenerator != null) {
             try {
                 String response = null;

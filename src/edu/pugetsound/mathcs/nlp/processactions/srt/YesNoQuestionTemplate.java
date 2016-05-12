@@ -1,5 +1,7 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
+import java.util.Random;
+
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
@@ -15,8 +17,27 @@ public class YesNoQuestionTemplate extends SemanticResponseTemplate {
 
     @Override
     public String constructDumbResponse(Conversation convo, KBController kb) {
+        Random rand = new Random();
         String topic = super.constructDumbResponse(convo, kb);
-        return "Do you like " + topic + "?";
+
+        if(rand.nextBoolean()) {
+
+            return "Do you like " + topic + "?";
+        } else {
+            if(topic.equals("me")) {
+                if(rand.nextBoolean()) {
+                    return "Do you enjoy talking to me?";
+                } else {
+                    return "Do you think I'm interesting to talk to?";
+                }
+            } else {
+                if(topic.charAt(topic.length() - 1) == 's') {
+                    return "Do you think " + topic + " are interesting?";
+                } else {
+                    return "Do you think " + topic + " is interesting?";
+                }
+            }
+        }
     }
 
 }

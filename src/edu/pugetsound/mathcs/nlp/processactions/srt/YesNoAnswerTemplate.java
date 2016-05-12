@@ -5,6 +5,7 @@ import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 import edu.pugetsound.mathcs.nlp.processactions.srt.YesTemplate;
 import edu.pugetsound.mathcs.nlp.processactions.srt.NoTemplate;
+import edu.pugetsound.mathcs.nlp.processactions.srt.MaybeTemplate;
 import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.kb.PrologStructure;
 
@@ -27,7 +28,7 @@ public class YesNoAnswerTemplate extends SemanticResponseTemplate {
                 return new NoTemplate().constructDumbResponse(convo, kb);
             }
         } else {
-            return "I don't know.";
+            return new MaybeTemplate().constructDumbResponse(convo, kb);
         }
     }
 

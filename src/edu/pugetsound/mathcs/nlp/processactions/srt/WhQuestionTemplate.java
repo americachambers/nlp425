@@ -1,5 +1,7 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
+import java.util.Random;
+
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
@@ -16,6 +18,26 @@ public class WhQuestionTemplate extends SemanticResponseTemplate {
 
     @Override
     public String constructDumbResponse(Conversation convo, KBController kb) {
-        return new QuestionTemplate().constructDumbResponse(convo, kb);
+        String topic = super.constructDumbResponse(convo, kb);
+        Random rand = new Random();
+        int format = rand.nextInt(4);
+
+        switch(format) {
+        case 0:
+            return "What do you think about " + topic + "?";
+        case 1:
+            return "What are your thoughts on " + topic + "?";
+        case 2:
+            return "Why do you feel the way you do about " + topic + "?";
+        case 3:
+            if(topic.charAt(topic.length() - 1) == 's') {
+                return "What are " + topic + "?";
+            } else {
+                return "What is " + topic + "?";
+            }
+        default:
+            return "Why is that?";
+        }
+
     }
 }
