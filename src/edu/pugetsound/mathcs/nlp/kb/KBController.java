@@ -110,32 +110,9 @@ public class KBController{
 	  return true;
   }
 
+  
 
-  private void writeToDB(String filename, List<PrologStructure> structs) {
-    File file = new File(filename);
-    FileOutputStream strm = null;
-    try {
-      strm = new FileOutputStream(filename);
-    }
-    catch (IOException e) {
-      System.out.println(e.getMessage());
-      e.printStackTrace();
-    }
 
-    for (PrologStructure ps : structs) {
-      try {
-        String s = ps.toString();
-        byte[] sbytes = s.getBytes();
-        stream.write(sbytes);
-        stream.flush();
-      }
-      catch (IOException e) {
-        System.out.println(e.getMessage());
-        e.printStackTrace();
-      }
-    }
-    stream.close();
-  }
 
 
 //  /**
