@@ -158,6 +158,7 @@ public class KBController{
 		{
 			if (list instanceof CompoundTerm)//found answers to the query
 			{
+				//System.out.println("found answers!");
 				CompoundTerm cList = (CompoundTerm) list;
 				if (cList.tag == TermConstants.listTag){
 					//TODO figure out proper dereferencing of list terms to add to answer list to return
@@ -211,8 +212,8 @@ public class KBController{
 	  
 	  
 	  //Eventually this should work if WH- questions are working but not yet...
-	  System.out.println("Querying database for "+pQuery);
-	  System.out.println("Expected: 3\tActual: "+kb.query(pQuery).size()+"\n");  
+//	  System.out.println("Querying database for "+pQuery);
+//	  System.out.println("Expected: 3\tActual: "+kb.query(pQuery).size()+"\n");  
   }
 
 }
