@@ -123,7 +123,7 @@ public class KBController{
    */
   public List<PrologStructure> query(PrologStructure struct){
 	  try{
-		  queryHelp(env.createInterpreter(),struct.getName(),struct.getArguments());
+		  return queryHelp(env.createInterpreter(),struct.getName(),struct.getArguments());
 		  
 	  }
 	  catch(PrologException e){
@@ -147,7 +147,7 @@ public class KBController{
 	    		mark=i;
 	    	}
 	    }
-	    if(mark==-1) return null;//there was no adequate variable (uppercase)
+	    if(mark==-1) return null;//there was no adequate variable (all were lower case terms)
 	    CompoundTerm goalTerm = new CompoundTerm(AtomTerm.get(pred+"List"+mark), terms);
 	   
 	   interpreter.runOnce(goalTerm);
@@ -210,10 +210,9 @@ public class KBController{
 	  System.out.println("Querying database for "+pFalse);
 	  System.out.println("Expected: true\tActual: "+kb.yesNo(preds)+"\n");
 	  
-	  
 	  //Eventually this should work if WH- questions are working but not yet...
-//	  System.out.println("Querying database for "+pQuery);
-//	  System.out.println("Expected: 3\tActual: "+kb.query(pQuery).size()+"\n");  
+	  System.out.println("Querying database for "+pQuery);
+	  System.out.println("Expected: 3\tActual: "+kb.query(pQuery).size()+"\n");  
   }
 
 }
