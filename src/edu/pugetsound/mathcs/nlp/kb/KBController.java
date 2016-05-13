@@ -134,32 +134,21 @@ public class KBController{
 
   //helper for wh-questions that deals with creation of Terms and passing to interpreter
   private static List<PrologStructure> queryHelp(Interpreter interpreter, String pred, String[] queryArgs) throws PrologException{
-	  
 	  //TODO figure out proper implementation of Prolog backtracking with this silly library...
 	  
-	  
-//	  VariableTerm listTerm = new VariableTerm("List");
-//		// Create the arguments to the compound term which is the question
-//		Term[] args = { new IntegerTerm(5), new IntegerTerm(5), listTerm, answerTerm };
-//		// Construct the question
-//		CompoundTerm goalTerm = new CompoundTerm(AtomTerm.get(pred+"List"), args);
-//	  
-//		int rc = interpreter.runOnce(goalTerm);
-//
-//	  
-	  
 	  Term[] terms = new Term[queryArgs.length];
-	  int mark = 0;//list index marker
+	  int mark = -1;//list index marker
 	    for(int i=0;i<queryArgs.length;i++){
 	    	if(!Character.isUpperCase(queryArgs[i].charAt(0))){
 	    		terms[i] = AtomTerm.get(queryArgs[i]);
   	    	}
-	    	else{
+	    	else{//upper case marks the variable term to recurse through
 	    		terms[i] = new VariableTerm("List");
 	    		mark=i;
 	    	}
 	    }
-	    CompoundTerm goalTerm = new CompoundTerm(AtomTerm.get(pred+"List"), terms);
+	    if(mark==-1) return null;//there was no adequate variable (uppercase)
+	    CompoundTerm goalTerm = new CompoundTerm(AtomTerm.get(pred+"List"+mark), terms);
 	   
 	   interpreter.runOnce(goalTerm);
 
@@ -191,12 +180,12 @@ public class KBController{
 	  PrologStructure pFalse = new PrologStructure(2);
 	  pFalse.setName("isA");
 	  pFalse.addArgument("josh",0);
-	  pFalse.addArgument("dog",1);
+	  pFalse.addArgument("tiger",1);
 	  
 	  PrologStructure pTrue = new PrologStructure(2);
-	  pTrue.setName("isA");
-	  pTrue.addArgument("fluffy",0);
-	  pTrue.addArgument("cat",1);
+	  pTrue.setName("hunts");
+	  pTrue.addArgument("cat",0);
+	  pTrue.addArgument("mouse",1);
 	  
 	  PrologStructure pQuery = new PrologStructure(2);
 	  pQuery.setName("isA");
@@ -222,8 +211,8 @@ public class KBController{
 	  
 	  
 	  //Eventually this should work if WH- questions are working but not yet...
-//	  System.out.println("Querying database for "+pQuery);
-//	  System.out.println("Expected: 3\tActual: "+kb.query(pQuery).size()+"\n");  
+	  System.out.println("Querying database for "+pQuery);
+	  System.out.println("Expected: 3\tActual: "+kb.query(pQuery).size()+"\n");  
   }
 
 }
