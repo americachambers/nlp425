@@ -16,7 +16,7 @@ import java.util.*;
  */
 public class QLearner {
 
-    private static boolean DEMO = true;
+    private static boolean DEMO = false;
     private HashMap<State, Integer> states;
     private HashMap<Integer, State> ids;
     private ArrayList<Action> actions;
@@ -139,7 +139,7 @@ public class QLearner {
 
         List<Utterance> utterances = conversation.getConversation();
         DialogueActTag olderDAtag;
-        
+
         if (utterances.size() == 0) {
             return new Action(ResponseTag.CONVENTIONAL_OPENING, -1);
         } else if (utterances.size() == 2) {
@@ -183,7 +183,7 @@ public class QLearner {
         {
             lastReward = rateActionChoice(stateIndex, choice);
         }
-        
+
         maxAPrime = bestResponseValue(stateIndex);
         lastAction = choice;
         lastState = stateIndex;
