@@ -47,3 +47,5 @@ order(cat, carnivora).
 class(cat, mammalia).
 phylum(cat, chordata).
 kingdom(cat, animalia).
+
+isA(josh, dog).

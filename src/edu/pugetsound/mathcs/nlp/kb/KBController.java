@@ -2,10 +2,13 @@ package edu.pugetsound.mathcs.nlp.kb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 
+import edu.pugetsound.mathcs.nlp.util.PathFormat;
 import gnu.prolog.term.AtomTerm;
 import gnu.prolog.term.CompoundTerm;
 import gnu.prolog.term.IntegerTerm;
@@ -26,7 +29,7 @@ import gnu.prolog.vm.buildins.database.Predicate_assertz;
 
 public class KBController{
   private static Environment env;
-  //private Interpreter interpreter;
+  private Interpreter interpreter;
   private String prologFile;
   
   /**
@@ -36,14 +39,17 @@ public class KBController{
 	  prologFile = filename;
 	env = new Environment();
     env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
-   // Interpreter interpreter = env.createInterpreter();
-   // env.runInitialization(interpreter); //necessary?
+   interpreter = env.createInterpreter();
+   env.runInitialization(interpreter); //necessary?
   }
 
 
   //takes in new filename to use as main Prolog file
   public void updateEnvironment(String filename){
+	  env = new Environment();
 	  env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
+	  interpreter = env.createInterpreter();
+	  env.runInitialization(interpreter); //necessary?
   }
   
 /**
@@ -57,7 +63,7 @@ public class KBController{
 
 	  for(PrologStructure struct : structs){
 		  try{
-			  int rc = runQuery(env.createInterpreter(), struct.getName(),struct.getArguments());
+			  int rc = runQuery(interpreter, struct.getName(),struct.getArguments());
 
 			  if (rc == PrologCode.SUCCESS || rc == PrologCode.SUCCESS_LAST){
 				  continue;
@@ -88,35 +94,31 @@ public class KBController{
     return rc;
   }
 
-  //method handling knowledge assertion using specific interpreter
-  private static int assertKnowledge(Interpreter interpreter, String pred, String[] assertArgs) throws PrologException{
-    //TODO this method doesn't actually work... fix it
-
-    Term[] terms = new Term[assertArgs.length+1];
-    terms[0] = AtomTerm.get(pred);
-    for(int i=0;i<assertArgs.length;i++){
-      terms[i] = AtomTerm.get(assertArgs[i]);
-    }
-    Predicate_assert asserter = new Predicate_assertz();
-    int rc = asserter.execute(interpreter,true,terms);
-    return rc;//returns whether successful
-  }
 
   public boolean assertNew(List<PrologStructure> structs){
-    //TODO eventually add code to pick which interpreter to use (for now only cat file)
-	 // Interpreter interpret = interpreter;
-	  	for(PrologStructure struct : structs){
-	  		try{
-	  			int rc = assertKnowledge(env.createInterpreter(), struct.getName(),struct.getArguments());
-	    		if (rc == PrologCode.SUCCESS || rc == PrologCode.SUCCESS_LAST){
-	    			continue;
-	    		}
-	    		else return false;
-	  		}
-	  		catch(PrologException e){
-	  			//TODO properly catch this
-	  		}
-	  	}
+	  //TODO eventually pick different file when our database grows
+	  String filename = PathFormat.absolutePathFromRoot("src/edu/pugetsound/mathcs/nlp/kb/"+prologFile);
+	  File file = new File(filename);
+		try {
+			if (!file.exists()) {
+				System.out.println("The file "+filename+" you wish to write to does not exist.");
+				return false;
+			}
+
+			FileWriter fw = new FileWriter(file, true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write("\n");
+			for (PrologStructure struct : structs) {
+				String strRep = struct.toString();
+				bw.write(strRep + "\n");
+			}
+			bw.close();
+		} catch(IOException e) {
+			System.out.println("Failed to write to file.\n");
+			e.printStackTrace();
+		}
+	  updateEnvironment(prologFile);
+	  
 	  return true;
   }
 
@@ -183,18 +185,22 @@ public class KBController{
 	  PrologStructure p = new PrologStructure(2);
 	  List<PrologStructure> preds = new ArrayList<PrologStructure>();
 	  p.setName("isA");
-	  p.addArgument("fluffy",0);
+	  p.addArgument("josh",0);
 	  p.addArgument("dog",1);
 	  preds.add(p);
 	  
-	  kb.query(p);
+	  //kb.query(p);
 	  
 	//  kb.writeToDB(filename, preds);
 	  
 //	  System.out.println(kb.yesNo(preds));
+	  
 //
-//	  System.out.println("Answer: "+ kb.assertNew(preds));
-//	  System.out.println("Answer: " + kb.yesNo(preds));
+	  System.out.println("Expected: false, true, true");
+	  System.out.println("Answer: "+kb.yesNo(preds));
+	  System.out.println("Answer: "+ kb.assertNew(preds));
+	  System.out.println("Answer: " + kb.yesNo(preds));
+
 	  
   }
 
