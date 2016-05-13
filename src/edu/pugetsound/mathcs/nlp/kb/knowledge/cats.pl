@@ -1,8 +1,12 @@
+
+entityList([X|List]) :- entity(X), entityList(List).
+
 entity(diomedes33).
 entity(fluffy).
 entity(nugget).
 entity(gadget).
 
+isAList(Y,[X|List]) :- isA(X,Y), isA(Y,List).
 isA(fluffy,cat).
 isA(nugget,cat).
 isA(gadget,cat).

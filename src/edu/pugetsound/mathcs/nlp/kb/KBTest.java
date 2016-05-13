@@ -3,6 +3,7 @@ package edu.pugetsound.mathcs.nlp.kb;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
+import gnu.prolog.vm.PrologException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class KBTest{
 		assertFalse(kb.yesNo(preds));
 	}
 
-	@Test(expected=prologException.class)
+	@Test(expected=PrologException.class)
 	public void prologException(){
 		KBController kb = new KBController("faultyProlog.pl");
 		PrologStructure p = new PrologStructure(2);
