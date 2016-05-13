@@ -15,76 +15,58 @@ import edu.pugetsound.mathcs.nlp.util.PathFormat;
 
 /**
  * This class exports the switchboard data into a format which can be imported
- * into the MALLET format.
+ * into the MALLET format as well as token frequencies to a CSV file in the
+ * data/datag directory.
  * 
  * @author Creavesjohnson
- *
+ * @version 05/13/2016
  */
 class MalletExporter {
 
+	// File paths for input and output files
 	private static final String OUTPUT_FILE = PathFormat
 			.absolutePathFromRoot("models/datag/switchboard-mallet-import.txt");
 	private static final String SWITCHBOARD_DIR = PathFormat
 			.absolutePathFromRoot("resources/swb1_dialogact_annot/scrubbed");
 	private static final String TOKEN_COUNT_CSV = PathFormat
 			.absolutePathFromRoot("data/datag/token-counts.csv");
+
+	// Remove tokens with absolute counts below this threshold
 	private static final int TAIL_THRESHOLD = 15;
+
+	// Remove tokens which appear in more than this proportion of acts
 	private static final double HEAD_THRESHOLD = 0.08;
 
-	public static void main(String[] args) {
+	/**
+	 * A key-value two-tuple used primarily to sort keys by their associated
+	 * integer values
+	 * 
+	 * @author Creavesjohnson
+	 * @version 05/13/2016
+	 * @param <K>
+	 *            The class of the key in the tuple
+	 */
+	private static class CountTuple<K> implements Comparable<CountTuple<K>> {
+		private K key;
+		private int count;
 
-		SwitchboardParser parser = null;
-
-		// Parse the switchboard data
-		try {
-			parser = new SwitchboardParser(new File(SWITCHBOARD_DIR));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			System.exit(1);
+		/**
+		 * Constructs a tuple
+		 * 
+		 * @param key
+		 *            The tuple key
+		 * @param count
+		 *            The count for the key
+		 */
+		public CountTuple(K key, int count) {
+			this.key = key;
+			this.count = count;
 		}
 
-		// Set of strings to remove from the training data
-		Set<String> removals = new HashSet<String>();
-
-		// Count absolute words and remove those below count threshold
-		List<CountTuple<String>> absoluteWordCounts = countWordsAbsolute(parser);
-		int totalWords = 0;
-		for (CountTuple<String> count : absoluteWordCounts) {
-			if (count.count < TAIL_THRESHOLD) {
-				removals.add(count.key);
-				totalWords += count.count;
-			} else {
-				break;
-			}
+		@Override
+		public int compareTo(CountTuple<K> other) {
+			return this.count - other.count;
 		}
-
-		// Map from token strings to the number of acts they appear in
-		Map<String, Integer> tokenToActCount = new HashMap<String, Integer>();
-
-		// Sorted list of token-count tuples
-		List<CountTuple<String>> tokenActCounts = new ArrayList<CountTuple<String>>();
-
-		fillTokenActCounts(parser, tokenActCounts, tokenToActCount);
-		
-		int totalActs = parser.getActs().size();
-
-		// Remove tokens which appear in too many dialogue acts
-		for (CountTuple<String> count : tokenActCounts) {
-			double proportion = (double) (count.count) / (double) (totalActs);
-
-			if (proportion >= HEAD_THRESHOLD) {
-				removals.add(count.key);
-			}
-		}
-
-		System.out.println("Removing " + removals.size() + " of " + totalWords + " total words.");
-
-		// Write the mallet import file
-		exportMallet(parser, removals);
-
-		// Export a CSV for looking at token statistics
-		exportCSV(absoluteWordCounts, tokenToActCount, totalActs);
-
 	}
 
 	/**
@@ -171,7 +153,7 @@ class MalletExporter {
 
 					output.printf("%s %s %s\n", i + "", act.getTag().name(), wordString);
 					i++;
-					
+
 				}
 			}
 		}
@@ -238,27 +220,69 @@ class MalletExporter {
 	}
 
 	/**
-	 * A key-value two-tuple used primarily to sort keys by their associated
-	 * integer values
+	 * Execution entry point. Parses the Switchboard data, removing any tokens
+	 * which appear too frequently or infrequently, then exports the parsed
+	 * DialogueActs in a format which can be imported into the MALLET format.
+	 * Additionally it writes tokens and their corresponding counts to a CSV
+	 * file for analysis.
 	 * 
-	 * @author Creavesjohnson
-	 *
-	 * @param <K>
-	 *            The class of the key in the tuple
+	 * @param args
+	 *            Unused
 	 */
-	private static class CountTuple<K> implements Comparable<CountTuple<K>> {
-		private K key;
-		private int count;
+	public static void main(String[] args) {
 
-		public CountTuple(K key, int count) {
-			this.key = key;
-			this.count = count;
+		SwitchboardParser parser = null;
+
+		// Parse the switchboard data
+		try {
+			parser = new SwitchboardParser(new File(SWITCHBOARD_DIR));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
 
-		@Override
-		public int compareTo(CountTuple<K> other) {
-			return this.count - other.count;
+		// Set of strings to remove from the training data
+		Set<String> removals = new HashSet<String>();
+
+		// Count absolute words and remove those below count threshold
+		List<CountTuple<String>> absoluteWordCounts = countWordsAbsolute(parser);
+		int totalWords = 0;
+		for (CountTuple<String> count : absoluteWordCounts) {
+			if (count.count < TAIL_THRESHOLD) {
+				removals.add(count.key);
+				totalWords += count.count;
+			} else {
+				break;
+			}
 		}
+
+		// Map from token strings to the number of acts they appear in
+		Map<String, Integer> tokenToActCount = new HashMap<String, Integer>();
+
+		// Sorted list of token-count tuples
+		List<CountTuple<String>> tokenActCounts = new ArrayList<CountTuple<String>>();
+
+		fillTokenActCounts(parser, tokenActCounts, tokenToActCount);
+
+		int totalActs = parser.getActs().size();
+
+		// Remove tokens which appear in too many dialogue acts
+		for (CountTuple<String> count : tokenActCounts) {
+			double proportion = (double) (count.count) / (double) (totalActs);
+
+			if (proportion >= HEAD_THRESHOLD) {
+				removals.add(count.key);
+			}
+		}
+
+		System.out.println("Removing " + removals.size() + " of " + totalWords + " total words.");
+
+		// Write the mallet import file
+		exportMallet(parser, removals);
+
+		// Export a CSV for looking at token statistics
+		exportCSV(absoluteWordCounts, tokenToActCount, totalActs);
+
 	}
 
 }

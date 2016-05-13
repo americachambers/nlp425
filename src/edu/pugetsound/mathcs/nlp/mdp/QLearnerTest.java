@@ -6,8 +6,6 @@ package edu.pugetsound.mathcs.nlp.mdp;
 
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
-import org.junit.Before;
-import org.junit.Test;
 
 public class QLearnerTest {
     protected static QLearner mdp;
@@ -44,13 +42,11 @@ public class QLearnerTest {
     Utterance utterance3 = new Utterance("How are you?");
     Utterance utterance4 = new Utterance("I'm doing just dandy");
 
-    @Before
     public void setUp(){
         hyperVariables = new HyperVariables(GAMMA, EXPLORE);
         mdp = new QLearner(hyperVariables,false);
     }
 
-    @Test
     public void test(){
 
         conversation1.addUtterance(utterance1);

@@ -5,7 +5,7 @@ package edu.pugetsound.mathcs.nlp.datag;
  * labels.
  * 
  * @author Creavesjohnson
- *
+ * @version 05/13/2016
  */
 public enum DialogueActTag {
 	/**
@@ -80,7 +80,6 @@ public enum DialogueActTag {
 	 */
 	HOLD("^h"), MIMIC_OTHER("^m"),
 
-	// TODO Add quotation feature into input vector
 	/**
 	 * quotation
 	 */
@@ -291,6 +290,13 @@ public enum DialogueActTag {
 	// The label which appears in the data set
 	private String label;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param label
+	 *            The label which is associated with this act in the Switchboard
+	 *            data
+	 */
 	DialogueActTag(String label) {
 		this.label = label;
 	}
@@ -314,6 +320,10 @@ public enum DialogueActTag {
 	}
 
 	@Override
+	/**
+	 * Creates a String representation containing both the name of the
+	 * enum element and its associated Switchboard shorthand label
+	 */
 	public String toString() {
 		return String.format("(%s,  %s)", this.name(), this.label);
 	}

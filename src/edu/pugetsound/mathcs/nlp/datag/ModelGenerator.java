@@ -21,9 +21,11 @@ import edu.pugetsound.mathcs.nlp.util.PathFormat;
  * DAClassifier at runtime.
  * 
  * @author Creavesjohnson
+ * @version 05/13/2016
  */
 class ModelGenerator {
 
+	// The .mallet file on which to train the classifiers
 	private static final String INPUT_PATH = PathFormat
 			.absolutePathFromRoot("models/datag/switchboard.mallet");
 
@@ -31,10 +33,6 @@ class ModelGenerator {
 	private static final String NAIVE_BAYES_PATH = DAClassifier.NAIVE_BAYES_PATH;
 	private static final String MAX_ENT_PATH = DAClassifier.MAX_ENT_PATH;
 	private static final String DECISION_TREE_PATH = DAClassifier.DECISION_TREE_PATH;
-
-	public static void main(String[] args) {
-		generateModels();
-	}
 
 	/**
 	 * Generates / trains the models used in DAClassifier and saves them to
@@ -44,6 +42,7 @@ class ModelGenerator {
 		File switchboardFile = new File(INPUT_PATH);
 		InstanceList trainList = InstanceList.load(switchboardFile);
 
+		// Used to calculate training times
 		long startTime;
 		long endTime;
 
@@ -89,28 +88,56 @@ class ModelGenerator {
 		}
 	}
 
-	// Trains and saves a naive Bayes classifier
+	/**
+	 * Trains and saves a naive Bayes classifier
+	 * 
+	 * @param path
+	 *            Path at which to save the classifier
+	 * @param trainList
+	 *            The list of instances on which to train
+	 */
 	private static void saveNaiveBayes(String path, InstanceList trainList) {
 		ClassifierTrainer<NaiveBayes> trainer = new NaiveBayesTrainer();
 		cc.mallet.classify.Classifier classifier = trainer.train(trainList);
 		writeClassifier(path, classifier);
 	}
 
-	// Trains and saves a maximum entropy classifier
+	/**
+	 * Trains and saves a maximum entropy classifier
+	 * 
+	 * @param path
+	 *            Path at which to save the classifier
+	 * @param trainList
+	 *            The list of instances on which to train
+	 */
 	private static void saveMaxEnt(String path, InstanceList trainList) {
 		ClassifierTrainer<MaxEnt> trainer = new MaxEntTrainer();
 		cc.mallet.classify.Classifier classifier = trainer.train(trainList);
 		writeClassifier(path, classifier);
 	}
 
-	// Trains and saves a decision tree classifier
+	/**
+	 * Trains and saves a decision tree classifier
+	 * 
+	 * @param path
+	 *            Path at which to save the classifier
+	 * @param trainList
+	 *            The list of instances on which to train
+	 */
 	private static void saveDecisionTree(String path, InstanceList trainList) {
 		ClassifierTrainer<DecisionTree> trainer = new DecisionTreeTrainer();
 		cc.mallet.classify.Classifier classifier = trainer.train(trainList);
 		writeClassifier(path, classifier);
 	}
 
-	// Serializes a classifier and writes it to disk
+	/**
+	 * Serializes a classifier and writes it to disk
+	 * 
+	 * @param path
+	 *            The path at which to save the classifier
+	 * @param classifier
+	 *            The classifier to save
+	 */
 	private static void writeClassifier(String path, cc.mallet.classify.Classifier classifier) {
 		try {
 			FileOutputStream fileStream = new FileOutputStream(path);
@@ -124,6 +151,17 @@ class ModelGenerator {
 		} catch (Exception e) {
 			System.err.println("[DATAG] Could not save " + path + " to disk.\n" + e.toString());
 		}
+	}
+
+	/**
+	 * Generates and saves NaiveBayes, DecisionTree, and MaxEnt classifiers into
+	 * the models/datag directory.
+	 * 
+	 * @param args
+	 *            Unused
+	 */
+	public static void main(String[] args) {
+		generateModels();
 	}
 
 }

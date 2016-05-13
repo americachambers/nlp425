@@ -1,323 +1,279 @@
+entityList([X|List]) :- entity(X), entityList(List).
+
 entity(diomedes33).
 
-isA(football, sport).
+isAList(X,[Y|List]) :- isA(X,Y), isAList(Y,List).
+isAList([X|List],Y) :- isA(X,Y), isAList(List, Y).
 
-play(team, sport).
+isA(football, sport).
 
 isA(afc, conference).
 isA(nfc, conference).
 
-isIn(afcNorth, afc).
 isA(afcNorth, division).
-
 isA(ravens, team).
-location(ravens, baltimore).
-isIn(ravens, afcNorth)
-
 isA(bengals, team).
-location(bengals, cincinnati).
-isIn(bengals, afcNorth).
-
 isA(steelers, team).
-location(steelers, pittsburgh).
-isIn(steelers, afcNorth)
-
 isA(browns, team).
-location(browns, cleveland).
+
+isA(division, afcEast).
+isA(jets, team).
+isA(bills, team).
+isA(patriots, team).
+isA(dolphins, team).
+
+isA(division, afcSouth).
+isA(titans, team).
+isA(jaguars, team).
+isA(texans, team).
+isA(colts, team).
+
+isA(afcWest, division).
+isA(broncos, team).
+isA(chiefs, team).
+isA(chargers, team).
+isA(raiders, team).
+
+isA(nfcNorth, division).
+isA(packers, team).
+isA(lions, team).
+isA(vikings, team).
+isA(bears, team).
+
+isA(nfcEast, division).
+isA(cowboys, team).
+isA(redskins, team).
+isA(eagles, team).
+
+isA(nfcSouth, division).
+isA(falcons, team).
+isA(panthers, team).
+isA(buccaneers, team).
+isA(saints, team).
+
+isA(nfcWest, division).
+isA(cardinals, team).
+isA(niners, team).
+isA(seahawks, team).
+isA(rams, team).
+
+isInList(X,[Y|List]) :- isIn(X,Y), isInList(Y,List).
+isInList([X|List],Y) :- isIn(X,Y), isInList(List, Y).
+
+isIn(afcNorth, afc).
+isIn(ravens, afcNorth).
+isIn(bengals, afcNorth).
+isIn(steelers, afcNorth).
 isIn(browns, afcNorth).
 
 isIn(afcEast, afc).
-isA(division, afcEast).
-
-isA(jets, team).
-location(jets, newYork).
 isIn(jets, afcEast).
-
-isA(bills, team).
-location(bills, buffalo).
 isIn(bills, afcEast).
-
-isA(patriots, team).
-location(patriots, newEngland).
 isIn(patriots, afcEast).
-
-isA(dolphins, team).
-location(dolphins, miami).
 isIn(dolphins, afcEast).
 
 isIn(afcSouth, afc).
-isA(division, afcSouth).
-
-isA(titans, team).
-location(titans, tennessee).
 isIn(titans, afcSouth).
-
-isA(jaguars, team).
-location(jaguars, jacksonville).
 isIn(jaguars, afcSouth).
-
-isA(texans, team).
-location(texans, houston).
 isIn(texans, afcSouth).
-
-isA(colts, team).
-location(colts, indianapolis).
 isIn(colts, afcSouth).
 
 isIn(afcWest, afc).
-isA(afcWest, division).
-
-isA(broncos, team).
-location(broncos, denver).
 isIn(broncos, afcWest).
-
-isA(chiefs, team).
-location(chiefs, kansasCity).
 isIn(chiefs, afcWest).
-
-isA(chargers, team).
-location(chargers, sanDiego).
 isIn(chargers, afcWest).
-
-isA(raiders, team).
-location(raiders, oakland).
 isIn(raiders, afcWest).
 
 isIn(nfcNorth, nfc).
-isA(nfcNorth, division).
-
-isA(packers, team).
-location(packers, greenBay).
 isIn(packers, nfcNorth).
-
-isA(lions, team).
-location(lions, detroit).
 isIn(lions, nfcNorth).
-
-isA(vikings, team).
-location(vikings, minnesota).
 isIn(vikings, nfcNorth).
-
-isA(bears, team).
-location(bears, chicago).
 isIn(bears, nfcNorth).
 
 isIn(nfcEast, nfc).
-isA(nfcEast, division).
-
-isA(cowboys, team).
-location(cowboys, dallas).
 isIn(cowboys, nfcEast).
-
-isA(redskins, team).
-location(redskins, washington).
 isIn(redskins, nfcEast).
-
-isA(eagles, team).
-location(eagles, philidelphia).
 isIn(eagles, nfcEast).
-
-isA(giants, team).
-location(giants, newYork).
 isIn(giants, nfcEast).
 
 isIn(nfcSouth, nfc).
-isA(nfcSouth, division).
-
-isA(falcons, team).
-location(falcons, atlanta).
 isIn(falcons, nfcSouth).
-
-isA(panthers, team).
-location(panthers, carolina).
 isIn(panthers, nfcSouth).
-
-isA(buccaneers, team).
-location(buccaneers, tampaBay).
 isIn(buccaneers, nfcSouth).
-
-isA(saints, team).
-location(saints, newOrleans).
 isIn(saints, nfcSouth).
 
 isIn(nfcWest, nfc).
-isA(nfcWest, division).
-
-isA(cardinals, team).
-location(cardinals, arizona).
 isIn(cardinals, nfcWest).
-
-isA(niners, team).
-location(niners, sanFrancisco).
 isIn(niners, nfcWest).
-
-isA(seahawks, team).
-location(seahawks, seattle).
 isIn(seahawks, nfcWest).
-
-isA(rams, team).
-location(rams, losAngeles).
 isIn(rams, nfcWest).
+
+locationList(X,[Y|List]) :- location(X,Y), location(Y,List).
+locationList([X|List],Y) :- location(X,Y), location(List, Y).
+
+location(ravens, baltimore).
+location(bengals, cincinnati).
+location(steelers, pittsburgh).
+location(browns, cleveland).
+
+location(jets, newYork).
+location(bills, buffalo).
+location(patriots, newEngland).
+location(dolphins, miami).
+
+location(titans, tennessee).
+location(jaguars, jacksonville).
+location(texans, houston).
+location(colts, indianapolis).
+
+location(broncos, denver).
+location(chiefs, kansasCity).
+location(chargers, sanDiego).
+location(raiders, oakland).
+
+location(packers, greenBay).
+location(lions, detroit).
+location(vikings, minnesota).
+location(bears, chicago).
+
+location(cowboys, dallas).
+location(redskins, washington).
+location(eagles, philidelphia).
+location(giants, newYork).
+
+location(falcons, atlanta).
+location(panthers, carolina).
+location(buccaneers, tampaBay).
+location(saints, newOrleans).
+
+location(cardinals, arizona).
+location(niners, sanFrancisco).
+location(seahawks, seattle).
+location(rams, losAngeles).
+
+likesList(X,[Y|List]) :- likes(X,Y), likesList(Y,List).
+likesList([X|List],Y) :- likes(X,Y), likesList(List,Y).
 
 likes(diomedes33, football).
 likes(diomedes33, niners).
+
+dislikesList(X,[Y|List]) :- dislikes(X,Y), dislikesList(Y,List).
+dislikesList([X|List],Y) :- dislikes(X,Y), dislikesList(List,Y).
 
 dislikes(diomedes33, seahawks).
 dislikes(diomedes33, cowboys).
 dislikes(diomedes33, raiders).
 
+playsList(X,[Y|List]) :- plays(X,Y), playsList(Y,List).
+playsList([X|List],Y) :- plays(X,Y), playsList(List, Y).
+
+plays(team, sport).
+
 plays(tomBrady, football).
-playsFor(tomBrady, patriots).
-
 plays(peytonManning, football).
-playsFor(peytonManning, broncos).
-
 plays(russellWilson, football).
-playsFor(russellWilson, seahawks).
-
 plays(aaronRodgers, football).
-playsFor(aaronRodgers, packers).
-
 plays(dezBryant, football).
-playsFor(dezBryant, cowboys).
-
 plays(odellBeckhamJr, football).
-playsFor(odellBeckhamJr, giants).
-
 plays(camNewton, football).
-playsFor(camNewton, panthers).
-
 plays(robGronkowski, football).
-playsFor(robGronkowski, patriots).
-
 plays(jjWatt, football).
-playsFor(jjWatt, texans).
-
 plays(jasonWitten, football).
-playsFor(jasonWitten, cowboys).
-
 plays(lukeKuechly, football).
-playsFor(lukeKuechly, panthers).
-
 plays(tonyRomo, football).
-playsFor(tonyRomo, cowboys).
-
 plays(colinKaepernick, football).
-playsFor(colinKaepernick, niners).
-
 plays(richardSherman, football).
-playsFor(richardSherman, seahawks).
-
 plays(marshawnLynch, football).
-playsFor(marshawnLynch, seahawks).
-
 plays(marcusMariota, football).
-playsFor(marcusMariota, titans).
-
 plays(antonioBrown, football).
-playsFor(antonioBrown, steelers).
-
 plays(clayMatthews, football).
-playsFor(clayMatthews, packers).
-
 plays(andrewLuck, football).
-playsFor(andrewLuck, colts).
-
 plays(drewBrees, football).
-playsFor(drewBrees, saints).
-
 plays(demarcoMurray, football).
-playsFor(demarcoMurray, eagles).
-
 plays(jimmyGraham, football).
-playsFor(jimmyGraham, seahawks).
-
 plays(julianEdelman, football).
-playsFor(julianEdelman, patriots).
-
 plays(vonMiller, football).
-playsFor(vonMiller, broncos).
-
 plays(teddyBridgewater, football).
-playsFor(teddyBridgewater, vikings).
-
 plays(larryFitzgerald, football).
-playsFor(larryFitzgerald, cardinals).
-
 plays(jordyNelson, football).
-playsFor(jordyNelson, packers).
-
 plays(calvinJohnson, football).
-playsFor(calvinJohnson, lions).
-
 plays(derekCarr, football).
-playsFor(derekCarr, raiders).
-
 plays(jameisWinston, football).
-playsFor(jameisWinston, buccaneers).
-
 plays(amariCooper, football).
-playsFor(amariCooper, raiders).
-
 plays(benRoethlisberger, football).
-playsFor(benRoethlisberger, steelers).
-
 plays(leveonBell, football).
-playsFor(leveonBell, steelers).
-
 plays(ryanTannehill, football).
-playsFor(ryanTannehill, dolphins).
-
 plays(eliManning, football).
-playsFor(eliManning, giants).
-
 plays(aJGreen, football).
-playsFor(aJGreen, bengals).
-
 plays(demaryiusThomas, football).
-playsFor(demaryiusThomas, broncos).
-
 plays(mattForte, football).
-playsFor(mattForte, bears).
-
 plays(eddieLacy, football).
-playsFor(eddieLacy, packers).
-
 plays(kamChancellor, football).
-playsFor(kamChancellor, seahawks).
-
 plays(joeHaden, football).
-playsFor(joeHaden, browns).
-
 plays(khalilMack, football).
-playsFor(khalilMack, raiders).
-
 plays(jarrydHayne, football).
-playsFor(jarrydHayne, niners).
-
 plays(jamaalCharles, football).
-playsFor(jamaalCharles, chiefs).
-
 plays(darrelleRevis, football).
-playsFor(darrelleRevis, jets).
-
 plays(philipRivers, football).
-playsFor(philipRivers, chargers).
-
 plays(sammyWatkins, football).
-playsFor(sammyWatkins, bills).
-
 plays(gregOlsen, football).
-playsFor(gregOlsen, panthers).
-
 plays(leSeanMcCoy, football).
-playsFor(leSeanMcCoy, bills).
-
 plays(earlThomas, football).
-playsFor(earlThomas, seahawks).
-
 plays(naVarroBowman, football).
-playsFor(naVarroBowman, niners).
-
 plays(carlosHyde, football).
+
+playsForList(X,[Y|List]) :- playsFor(X,Y), playsForList(Y,List).
+playsForList([X|List],Y) :- playsFor(X,Y), playsForList(List, Y).
+
+playsFor(tomBrady, patriots).
+playsFor(peytonManning, broncos).
+playsFor(russellWilson, seahawks).
+playsFor(aaronRodgers, packers).
+playsFor(dezBryant, cowboys).
+playsFor(odellBeckhamJr, giants).
+playsFor(camNewton, panthers).
+playsFor(robGronkowski, patriots).
+playsFor(jjWatt, texans).
+playsFor(jasonWitten, cowboys).
+playsFor(lukeKuechly, panthers).
+playsFor(tonyRomo, cowboys).
+playsFor(colinKaepernick, niners).
+playsFor(richardSherman, seahawks).
+playsFor(marshawnLynch, seahawks).
+playsFor(marcusMariota, titans).
+playsFor(antonioBrown, steelers).
+playsFor(clayMatthews, packers).
+playsFor(andrewLuck, colts).
+playsFor(drewBrees, saints).
+playsFor(demarcoMurray, eagles).
+playsFor(jimmyGraham, seahawks).
+playsFor(julianEdelman, patriots).
+playsFor(vonMiller, broncos).
+playsFor(teddyBridgewater, vikings).
+playsFor(larryFitzgerald, cardinals).
+playsFor(jordyNelson, packers).
+playsFor(calvinJohnson, lions).
+playsFor(derekCarr, raiders).
+playsFor(jameisWinston, buccaneers).
+playsFor(amariCooper, raiders).
+playsFor(benRoethlisberger, steelers).
+playsFor(leveonBell, steelers).
+playsFor(ryanTannehill, dolphins).
+playsFor(eliManning, giants).
+playsFor(aJGreen, bengals).
+playsFor(demaryiusThomas, broncos).
+playsFor(mattForte, bears).
+playsFor(eddieLacy, packers).
+playsFor(kamChancellor, seahawks).
+playsFor(joeHaden, browns).
+playsFor(khalilMack, raiders).
+playsFor(jarrydHayne, niners).
+playsFor(jamaalCharles, chiefs).
+playsFor(darrelleRevis, jets).
+playsFor(philipRivers, chargers).
+playsFor(sammyWatkins, bills).
+playsFor(gregOlsen, panthers).
+playsFor(leSeanMcCoy, bills).
+playsFor(earlThomas, seahawks).
+playsFor(naVarroBowman, niners).
 playsFor(carlosHyde, niners).
