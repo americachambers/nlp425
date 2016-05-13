@@ -18,6 +18,12 @@ import gnu.prolog.vm.TermConstants;
 import gnu.prolog.vm.PrologCode;
 import gnu.prolog.vm.PrologException;
 
+/**
+ * Manages a knowledge base that queries Prolog files as indicated
+ * @author Alexia Ingerson, Josh Nance, and Ray Torres
+ * @version 13 May 2016
+ *
+ */
 public class KBController{
   private static Environment env;//file Prolog environment
   private Interpreter interpreter;//utility to talk to current file
