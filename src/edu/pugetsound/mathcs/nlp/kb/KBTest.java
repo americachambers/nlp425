@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import gnu.prolog.vm.PrologException;
 
 import org.junit.Test;
 
@@ -36,7 +37,7 @@ public class KBTest{
 		assertFalse(kb.yesNo(preds));
 	}
 
-	@Test(expected=prologException.class)
+	@Test(expected=PrologException.class)
 	public void prologException(){
 		KBController kb = new KBController("faultyProlog.pl");
 		PrologStructure p = new PrologStructure(2);
