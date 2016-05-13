@@ -13,21 +13,23 @@ import java.util.Scanner;
 import java.util.Set;
 
 import edu.pugetsound.mathcs.nlp.util.Logger;
-import edu.pugetsound.mathcs.nlp.util.PathFormat;
 
 /**
  * This object, on construction, parses scrubbed switchboard data into
  * DialogueActs and makes them accessible by DialogueActTag
  * 
  * @author Creavesjohnson
- *
+ * @version 05/13/2016
  */
 class SwitchboardParser {
 
+	// Suffix of Switchboard data files
 	private static final String SB_SUFFIX = ".utt";
+
+	// Field delimiter used in the scrubbed data
 	private static final String ACT_SPLIT = "\t";
 
-	// Only grabs words and words and punctuation
+	// Only grabs words and words and punctuation for tokens
 	private static final String TOKEN_REGEX = "[\\w\\.\\?,!']+";
 	private static final String PUNCTUATED_REGEX = ".*[\\?\\.,!]$";
 
@@ -41,6 +43,8 @@ class SwitchboardParser {
 	private final Map<DialogueActTag, List<DialogueAct>> tagToActs;
 	private final Map<String, Integer> tokenToIndex;
 	private final Map<String, Integer> tokenToCount;
+
+	// Set of all tokens in the parsed data
 	private final Set<String> tokenSet;
 
 	/**
@@ -136,8 +140,15 @@ class SwitchboardParser {
 		return new TokenIndexMap(this.tokenToIndex, this.tokenToCount);
 	}
 
-	// Parses a single .utt file and stuffs the recognizable dialogue acts into
-	// tagToActs
+	/**
+	 * Parses a single .utt file and stuffs the recognizable dialogue acts into
+	 * tagToActs
+	 * 
+	 * @param file
+	 *            The .utt file to parse
+	 * @throws FileNotFoundException
+	 *             if the file does not exist
+	 */
 	private void parseFile(File file) throws FileNotFoundException {
 
 		Scanner input = new Scanner(file);
@@ -145,7 +156,7 @@ class SwitchboardParser {
 
 		Map<Character, DialogueAct> lastSpoken = new HashMap<Character, DialogueAct>();
 		Character prevSpeaker = null;
-		
+
 		DialogueActTag prevTag = DialogueActTag.NULL;
 
 		while (input.hasNextLine()) {
@@ -210,11 +221,11 @@ class SwitchboardParser {
 
 						}
 					} catch (IllegalArgumentException e) {
-//						if (Logger.debug()) {
-//							System.err
-//									.println("[DATAG] Could not parse switchboard line\n\tDue to: "
-//											+ e.toString() + "\n\tFor line: \"" + line + "\"");
-//						}
+						if (Logger.debug()) {
+							System.err
+									.println("[DATAG] Could not parse switchboard line\n\tDue to: "
+											+ e.toString() + "\n\tFor line: \"" + line + "\"");
+						}
 					}
 
 				}
@@ -225,7 +236,7 @@ class SwitchboardParser {
 
 		input.close();
 	}
-	
+
 	// Recursively traverses a directory structure and parses .utt files
 	private void parseDir(File dir) throws FileNotFoundException {
 		File[] files = dir.listFiles();
@@ -238,7 +249,13 @@ class SwitchboardParser {
 
 	}
 
-	// Split string into tokens based on whitespace and make sure everything's lowercase
+	/**
+	 * Split string into tokens based on whitespace and make sure everything's
+	 * lowercase
+	 * 
+	 * @param utterance The utterance to tokenize
+	 * @return A list of lowercase string tokens
+	 */
 	private List<String> tokenizeUtterance(String utterance) {
 		List<String> tokens = new LinkedList<String>();
 
@@ -249,8 +266,8 @@ class SwitchboardParser {
 			if (token.matches(TOKEN_REGEX)) {
 				tokens.add(token.toLowerCase());
 				this.tokenSet.add(token.toLowerCase());
-				
-				if(!tokenToCount.containsKey(token)) {
+
+				if (!tokenToCount.containsKey(token)) {
 					tokenToCount.put(token, 1);
 				} else {
 					tokenToCount.replace(token, tokenToCount.get(token) + 1);
@@ -261,7 +278,10 @@ class SwitchboardParser {
 		return tokens;
 	}
 
-	// Puts a DialogueAct into tagToActs
+	/**
+	 * Puts a DialogueAct into tagToActs
+	 * @param act The DialogueAct to put into tagToActs
+	 */
 	private void putAct(DialogueAct act) {
 		List<DialogueAct> actList = tagToActs.get(act.getTag());
 

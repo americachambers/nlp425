@@ -7,7 +7,7 @@ import java.util.List;
  * and a list of tokens
  * 
  * @author Creavesjohnson
- *
+ * @version 05/13/2016
  */
 class DialogueAct {
 
@@ -21,7 +21,7 @@ class DialogueAct {
 	 * @param tag
 	 *            The DialogueActTag associated with the utterance
 	 * @param previousTag
-	 * 			  The DialogueActTag from the previous utterance
+	 *            The DialogueActTag from the previous utterance
 	 * @param words
 	 *            A list of tokens from the utterance
 	 */
@@ -49,9 +49,10 @@ class DialogueAct {
 	public DialogueActTag getTag() {
 		return this.tag;
 	}
-	
+
 	/**
 	 * Accessor for previousTag
+	 * 
 	 * @return The DialogueActTag of the previous utterance
 	 */
 	public DialogueActTag getPreviousTag() {

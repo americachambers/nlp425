@@ -4,9 +4,18 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+/**
+ * Test for the DialogueActTag enum
+ * 
+ * @author Creavesjohnson
+ * @version 05/13/2016
+ */
 public class DialogueActTagTest {
 
 	@Test
+	/**
+	 * Tests the fromLabel() method of DialogueActTag
+	 */
 	public void test() {
 		assertEquals("Returned incorrect enum item.", DialogueActTag.fromLabel("qw"),
 				DialogueActTag.QUESTION_WH);

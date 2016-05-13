@@ -12,10 +12,11 @@ import edu.pugetsound.mathcs.nlp.util.PathFormat;
  * DialogueActTags
  * 
  * @author Creavesjohnson
- *
+ * @version 05/13/2016
  */
 public class DAClassifier {
 
+	// Paths to trained classifiers
 	static final String NAIVE_BAYES_PATH = PathFormat
 			.absolutePathFromRoot("models/datag/naive-bayes.classifier");
 	static final String MAX_ENT_PATH = PathFormat
@@ -23,8 +24,8 @@ public class DAClassifier {
 	static final String DECISION_TREE_PATH = PathFormat
 			.absolutePathFromRoot("models/datag/decision-tree.classifier");
 
-	private final Classifier DUMB_CLASSIFIER;
-	private final Mode MODE;
+	private final Classifier dumbClassifier;
+	private final Mode mode;
 
 	private Classifier secondaryClassifier;
 
@@ -55,42 +56,42 @@ public class DAClassifier {
 	 */
 	public DAClassifier(Mode mode) {
 
-		this.MODE = mode;
+		this.mode = mode;
 
-		if (this.MODE.isDumb) {
-			DUMB_CLASSIFIER = new DumbClassifier();
+		if (this.mode.isDumb) {
+			dumbClassifier = new DumbClassifier();
 		} else {
-			DUMB_CLASSIFIER = null;
+			dumbClassifier = null;
 		}
 
-		final String PATH;
+		final String path;
 
 		// Load classifier path based on mode
-		switch (this.MODE) {
+		switch (this.mode) {
 			case NAIVE_BAYES:
 			case DUMB_NAIVE_BAYES:
-				PATH = NAIVE_BAYES_PATH;
+				path = NAIVE_BAYES_PATH;
 				break;
 
 			case MAX_ENT:
 			case DUMB_MAX_ENT:
-				PATH = MAX_ENT_PATH;
+				path = MAX_ENT_PATH;
 				break;
 
 			case DECISION_TREE:
 			case DUMB_DECISION_TREE:
-				PATH = DECISION_TREE_PATH;
+				path = DECISION_TREE_PATH;
 				break;
 
 			// Default to the naive Bayes classifier
 			default:
-				PATH = NAIVE_BAYES_PATH;
+				path = NAIVE_BAYES_PATH;
 		}
 
 		try {
-			secondaryClassifier = new MalletClassifier(PATH);
+			secondaryClassifier = new MalletClassifier(path);
 		} catch (Exception e) {
-			System.err.printf("Could not load Mallet classifier: %s\n", PATH);
+			System.err.printf("Could not load Mallet classifier: %s\n", path);
 			System.err.println(e.toString());
 		}
 
@@ -106,9 +107,9 @@ public class DAClassifier {
 	 * @return The predicted DialogueActTag for the utterance
 	 */
 	public DialogueActTag classify(Utterance utterance, Conversation conversation) {
-		if (DUMB_CLASSIFIER != null) {
+		if (dumbClassifier != null) {
 
-			DialogueActTag tag = DUMB_CLASSIFIER.classify(utterance, conversation);
+			DialogueActTag tag = dumbClassifier.classify(utterance, conversation);
 
 			if (tag != null) {
 				return tag;
