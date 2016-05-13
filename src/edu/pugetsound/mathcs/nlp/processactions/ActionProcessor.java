@@ -1,9 +1,14 @@
 package edu.pugetsound.mathcs.nlp.processactions;
 
+import java.util.HashMap;
+
 import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
 import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.util.Logger;
+import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
+import edu.pugetsound.mathcs.nlp.processactions.srt.*;
 
 import java.io.IOException;
 
@@ -15,19 +20,27 @@ import java.io.IOException;
  * @version 04/26/16
  */
 public class ActionProcessor {
-	
-	//private static KBController kb = new KBController("knowledge/cats.pl");
- 
-    /**
-     * Wrapper function that converts an utterance to a conversation
-     * For backwards compatability only; use the one that takes a conversation preferably!
-     * @return A string representation of the response. In early versions, this might be an AMR
-     */
-//    public static String generateResponse(Utterance utterance, ResponseTag responseDATag) {
-//        Conversation convo = new Conversation();
-//        convo.addUtterance(utterance);
-//        return generateResponse(convo, responseDATag);
-//    }
+
+    private static final boolean DUMB_RESPONSES = true;
+
+    private static final HashMap<ResponseTag, SemanticResponseTemplate> RESPONSE_TAG_TO_SRT =
+        new HashMap<ResponseTag, SemanticResponseTemplate>() {{
+            // Instantiate the HashMap's values
+
+            put(ResponseTag.STATEMENT, new StatementTemplate());
+            put(ResponseTag.BACKCHANNEL, new BackchannelTemplate());
+            put(ResponseTag.REPEAT_PHRASE, new RepeatPhraseTemplate());
+            put(ResponseTag.SIGNAL_NON_UNDERSTANDING, new NonUnderstandingTemplate());
+            put(ResponseTag.SYMPATHETIC_COMMENT, new SympathyTemplate());
+            put(ResponseTag.APOLOGY, new ApologyTemplate());
+            put(ResponseTag.CONVENTIONAL_CLOSING, new ConventionalClosingTemplate());
+            put(ResponseTag.CONVENTIONAL_OPENING, new ConventionalOpeningTemplate());
+            put(ResponseTag.THANKS, new ThanksTemplate());
+            put(ResponseTag.WELCOME, new WelcomeTemplate());
+            put(ResponseTag.YES_NO_ANSWER, new YesNoAnswerTemplate());
+            put(ResponseTag.QUESTION_YES_NO, new YesNoQuestionTemplate());
+            put(ResponseTag.QUESTION_WH, new WhQuestionTemplate());
+        }};
 
     /**
      * Takes in a conversation and a DA tag for what type of statement to respond from the MDP
@@ -36,47 +49,43 @@ public class ActionProcessor {
      * @param responseTag The type of response we should respond with. Ex: YesNoAnswer
      * @return A string representation of the response. In early versions, this might be an AMR
      */
-    public static String generateResponse(Conversation convo, ResponseTag responseTag, KBController kb) {
-		Utterance utterance = convo.getLastUtterance();
+    public static String generateResponse(Conversation convo, ResponseTag responseTag,
+                                          KBController kb) {
+        SemanticResponseTemplate responseGenerator = RESPONSE_TAG_TO_SRT.get(responseTag);
+        //SemanticResponseTemplate responseGenerator = new YesNoAnswerTemplate();
+        if(responseGenerator != null) {
+            try {
+                String response = null;
+                if(DUMB_RESPONSES) {
+                    response = responseGenerator.constructDumbResponse(convo, kb);
+                } else {
+                    response = responseGenerator.constructSmartResponse(convo, kb);
+                }
 
-    	switch(responseTag){
-    		case CONVENTIONAL_OPENING : 
-    			return "Hello";
-    			
-    		case CONVENTIONAL_CLOSING : 
-    			return "Goodbye";
-    			
-    		case APOLOGY :
-    			return "I'm sorry";
-    			
-    		case THANKS :
-    			return "Thank you";
-    			
-    		case WELCOME :
-    			return "You're welcome";
-    		
-    		case BACKCHANNEL :
-    			return "uh huh";
-    			
-    		case REPEAT_PHRASE :
-    			if(utterance != null){
-    				return utterance.utterance;
-    			}
-    			break;
-    		case YES_NO_ANSWER :
-    			if(utterance != null && utterance.firstOrderRep != null && kb != null){
-    				System.out.println(utterance.firstOrderRep);
-    				if(kb.yesNo(utterance.firstOrderRep)){
-    					return "Yes";
-    				}
-    				else{
-    					return "No";
-    				}
-    			}
-    		default:
-    			return "Statement";
-    	}
-    	return "Statement";
+                if(response == null) {
+                    if(Logger.debug()) {
+                        System.out.println("Fatal error in ActionProcessor: null response!");
+                    }
+                    return null;
+                } else {
+                    System.out.println("Response: " + response);
+                    return response;
+                }
+            } catch (Exception e) {
+                if(Logger.debug()) {
+                    System.out.println(e);
+                    e.printStackTrace();
+                }
+            }
+
+            return "Sorry, I didn't understand that.";
+        } else {
+            if(Logger.debug()) {
+                System.out.println("Error: no response template found for: " + responseTag);
+            }
+
+            return null;
+        }
     }
 
     /**
@@ -90,7 +99,7 @@ public class ActionProcessor {
             convo.addUtterance(ta.analyze(a,convo));
         }
         for (Utterance utt: convo.getConversation()){
-           // System.out.println(generateResponse(utt, ResponseTag.GREETING));
+            // System.out.println(generateResponse(utt, ResponseTag.GREETING));
         }
     }
 

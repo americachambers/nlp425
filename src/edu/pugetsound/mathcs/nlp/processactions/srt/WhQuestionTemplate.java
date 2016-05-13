@@ -1,8 +1,11 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
-import edu.pugetsound.mathcs.nlp.kb.KBController;
+import java.util.Random;
+
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
-import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.kb.KBController;
+import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
+import edu.pugetsound.mathcs.nlp.processactions.srt.QuestionTemplate;
 
 /**
  * @author Thomas Gagne & Jon Sims
@@ -11,33 +14,29 @@ import edu.pugetsound.mathcs.nlp.lang.Utterance;
  * This class will first attempt to ask something about what the user said, but if it fails to do
  * so it will try to ask a general question about whatever.
  */
-
-public class WhQuestionTemplate implements SemanticResponseTemplate {
+public class WhQuestionTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Conversation convo) {
-        Utterance utterance = convo.getLastUtterance();
-        return new QuestionTemplate().constructResponseFromTemplate(convo);
-    }
+    public String constructDumbResponse(Conversation convo, KBController kb) {
+        String topic = super.constructDumbResponse(convo, kb);
+        Random rand = new Random();
+        int format = rand.nextInt(4);
 
-    /**
-     * @author Thomas Gagne & Jon Sims
-     * @version 04/26/16
-     * A template for answering yes-no questions posed by the user.
-     * This class will call the knowledge base to determine the answer, then return the
-     * appropriate answer.
-     */
-    public static class YesNoAnswerTemplate implements SemanticResponseTemplate {
-
-        @Override
-        public String constructResponseFromTemplate(Conversation convo) {
-            KBController kb = new KBController();
-            Utterance utterance = convo.getLastUtterance();
-            if(kb.yesNo(utterance.firstOrderRep)) {
-                return new NoTemplate().constructResponseFromTemplate(convo);
+        switch(format) {
+        case 0:
+            return "What do you think about " + topic + "?";
+        case 1:
+            return "What are your thoughts on " + topic + "?";
+        case 2:
+            return "Why do you feel the way you do about " + topic + "?";
+        case 3:
+            if(topic.charAt(topic.length() - 1) == 's') {
+                return "What are " + topic + "?";
             } else {
-                return new YesTemplate().constructResponseFromTemplate(convo);
+                return "What is " + topic + "?";
             }
+        default:
+            return "Why is that?";
         }
 
     }

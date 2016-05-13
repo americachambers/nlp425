@@ -4,8 +4,13 @@ package edu.pugetsound.mathcs.nlp.processactions.srt;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 
+import edu.pugetsound.mathcs.nlp.util.Logger;
+
+import edu.pugetsound.mathcs.nlp.kb.KBController;
+
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.lang.AMR;
+import edu.pugetsound.mathcs.nlp.processactions.AMRParser;
 import edu.pugetsound.mathcs.nlp.util.PathFormat;
 
 
@@ -20,60 +25,63 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.Random;
+import java.util.Arrays;
 
 /**
- * The interface for all response templates.
+ * The abstract class every response template should extend
  * All templates need to be able to take in an utterance and return a String response.
  * @author Thomas Gagne & Jon Sims
  * @version 04/26/16
  */
-public interface SemanticResponseTemplate {
+public abstract class SemanticResponseTemplate {
 
-    public static HashMap<String, HashMap<AMR, String[]>> responses = new HashMap<String, HashMap<AMR, String[]>>() {{
-        JSONParser parser = new JSONParser();
-        try {
-            String filePath = PathFormat.absolutePathFromRoot("src/edu/pugetsound/mathcs/nlp/processactions/srt/responses.json");
-            JSONObject responsesJson = ((JSONObject)
-                    parser.parse(
-                        new FileReader(filePath)));
-            Set<String> responsesTemplates = responsesJson.keySet();
-            for (String responseTemplate: responsesTemplates) {
-                HashMap<AMR, String[]> responsesMapping = new HashMap<AMR, String[]>();
-                JSONObject responseTemplateJson = ((JSONObject) responsesJson.get(responseTemplate));
-                for (Object o: responseTemplateJson.keySet() ) {
-                    String keyStr = (String) o;
-                    AMR key = AMR.parseAMRString(keyStr);
-                    JSONArray valueJson = (JSONArray) responseTemplateJson.get(o);
-                    String[] value = new String[valueJson.size()];
-                    for (int i=0; i<value.length; i++)
-                        value[i] = valueJson.get(i).toString();
-                    responsesMapping.put(key, value);
-                }
-                put(responseTemplate, responsesMapping);
-            }
-        }
-        catch (ParseException pe) {
-            System.out.println("Parse error with responses.json file");
-            System.out.println("position: " + pe.getPosition());
-            System.out.println(pe);
-        }
-        catch (IOException ie) {
-            System.out.println("Read error with responses.json file");
-            System.out.println(ie);
-        }
+    // A mapping from template names to a each template's list of dumb responses
+    // This mapping is read once by SemanticResponseTemplate and is shared by every
+    // extending template
+    private static HashMap<String, String[]> allDumbResponses = ResponseLoader.loadDumbResponses();
 
-        System.out.println(((HashMap<AMR, String[]>)values().toArray()[0]).keySet().toArray()[0]);
-    }};
+    // A list of all possible dumb responses for this template
+    private String[] dumbOutputs =
+        SemanticResponseTemplate.allDumbResponses.get(this.getClass().getSimpleName());
 
     /**
      * @author Thomas Gagne & Jon Sims
      * Returns a response to a user's utterance in string form.
-     * Since interfaces in Java can't have static methods, this method must be called on an object.
-     * For inline expressions, new MyTemplate().constructResponseFromTemplate(utt); works well
+     * The dumb response generator chooses from a list of preconstructed responses.
      *
-     * @param utterance The utteranec corresponding to the user's input.
-     * @return A string response. In early versions, this might be an AMR response.
+     * @param convo The conversation thus far.
+     * @return A string response.
      */
-    public String constructResponseFromTemplate(Conversation convo);
+    public String constructDumbResponse(Conversation convo, KBController kb) {
+        Random rand = new Random();
+        //Utterance utterance = convo.getLastUtterance();
+        //AMR amr = (AMR) dumbOutputs.keySet().toArray()[rand.nextInt(dumbOutputs.size())];
+        //return AMRParser.convertAMRToText(amr, dumbOutputs.get(amr));
+        if(dumbOutputs.length > 0) {
+            return dumbOutputs[rand.nextInt(dumbOutputs.length)];
+        } else {
+            if(Logger.debug()) {
+                System.out.println("Error: tried to construct a dumb response with an empty " +
+                                   "response list! Did you not override constructDumbResponse()?");
+            }
+            return null;
+        }
+    }
+
+    /**
+     * @author Thomas Gagne & Jon Sims
+     * Returns a response to a user's utterance in string form.
+     * The smart response generator will attempt to use information from the what the user said
+     * in order to create a unique response.
+     * Unless this method is overridden, it will return a response from the dumb generator.
+     * Most response templates are simple and therefore won't override this method.
+     *
+     * @param convo The conversation thus far.
+     * @return A string response.
+     */
+    public String constructSmartResponse(Conversation convo, KBController kb) {
+        return constructDumbResponse(convo, kb);
+    }
 
 }

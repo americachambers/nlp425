@@ -10,7 +10,7 @@ import edu.pugetsound.mathcs.nlp.util.PathFormat;
 /**
  * This is an object which is responsible for classifying utterances with
  * DialogueActTags
- * 
+ *
  * @author Creavesjohnson
  * @version 05/13/2016
  */
@@ -34,7 +34,7 @@ public class DAClassifier {
 	 * DUMB_ modes hierarchically consult the the DumbClassifier before falling
 	 * back to the specified classifier.
 	 * Classifiers not prefixed by DUMB_ bypass the DumbClassifier.
-	 * 
+	 *
 	 * @author Creavesjohnson
 	 *
 	 */
@@ -99,7 +99,7 @@ public class DAClassifier {
 
 	/**
 	 * Predicts the type of dialogue act of an utterance
-	 * 
+	 *
 	 * @param utterance
 	 *            An utterance
 	 * @param conversation

@@ -1,15 +1,8 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
-import java.util.Random;
-import java.util.HashMap;
-import java.util.List;
-
-
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
-
-import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
-import edu.pugetsound.mathcs.nlp.lang.AMR;
+import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 
 /**
@@ -19,23 +12,18 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
  * to signal incredularity or interest.
  * For example, the user says "We ate the whole cat", and so we might respond with "The whole cat."
  */
-public class RepeatPhraseTemplate implements SemanticResponseTemplate {
-
-    // The repeat phrase template takes the subject focus of what the user just said, and says just
-    //that
-    // For example, user says: "We were there for three months".
-    // You'd output "Three months."
-    // We need to make sure to only output named entities though, so we don't say "There."
-
-    private HashMap<AMR, String[]> outputs =
-        SemanticResponseTemplate.responses.get(this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1));
+public class RepeatPhraseTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Conversation convo) {
-        Random rand = new Random();
+    public String constructDumbResponse(Conversation convo, KBController kb) {
         Utterance utterance = convo.getLastUtterance();
-        AMR amr = (AMR) outputs.keySet().toArray()[rand.nextInt(outputs.size())];
-        return amr.convertAMRToText(outputs.get(amr));
-    }
 
+        if(utterance != null && utterance.utterance != null) {
+            return utterance.utterance;
+        } else {
+            // Not perfect since it doesn't really match this template,
+            // but I can't think of an alternative
+            return new NonUnderstandingTemplate().constructDumbResponse(convo, kb);
+        }
+    }
 }

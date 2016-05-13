@@ -1,15 +1,10 @@
 package edu.pugetsound.mathcs.nlp.processactions.srt;
 
 import java.util.Random;
-import java.util.HashMap;
-import java.util.List;
 
 
-import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
-
-import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
-import edu.pugetsound.mathcs.nlp.lang.AMR;
+import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.processactions.srt.SemanticResponseTemplate;
 import edu.pugetsound.mathcs.nlp.processactions.srt.StatementOpinionTemplate;
 import edu.pugetsound.mathcs.nlp.processactions.srt.StatementNonOpinionTemplate;
@@ -21,16 +16,15 @@ import edu.pugetsound.mathcs.nlp.processactions.srt.StatementNonOpinionTemplate;
  * This will directly call for either a nonopinionated statement or an opinionated one, so this
  * class should only be used when you don't know which to pick.
  */
-public class StatementTemplate implements SemanticResponseTemplate {
+public class StatementTemplate extends SemanticResponseTemplate {
 
     @Override
-    public String constructResponseFromTemplate(Conversation convo) {
+    public String constructDumbResponse(Conversation convo, KBController kb) {
         Random rand = new Random();
-        Utterance utterance = convo.getLastUtterance();
         if(rand.nextBoolean()) {
-            return new StatementOpinionTemplate().constructResponseFromTemplate(convo);
+            return new StatementOpinionTemplate().constructDumbResponse(convo, kb);
         } else {
-            return new StatementNonOpinionTemplate().constructResponseFromTemplate(convo);
+            return new StatementNonOpinionTemplate().constructDumbResponse(convo, kb);
         }
     }
 
