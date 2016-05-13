@@ -1,9 +1,9 @@
-entityList([X|List]) :- entity(X), entityList(List).
+entityList0([X|List]) :- entity(X), entityList0(List).
 
 entity(diomedes33).
 
-isAList(X,[Y|List]) :- isA(X,Y), isAList(Y,List).
-isAList([X|List],Y) :- isA(X,Y), isAList(List, Y).
+isAList1(X,[Y|List]) :- isA(X,Y), isAList1(Y,List).
+isAList0([X|List],Y) :- isA(X,Y), isAList0(List, Y).
 
 isA(football, sport).
 
@@ -57,8 +57,8 @@ isA(niners, team).
 isA(seahawks, team).
 isA(rams, team).
 
-isInList(X,[Y|List]) :- isIn(X,Y), isInList(Y,List).
-isInList([X|List],Y) :- isIn(X,Y), isInList(List, Y).
+isInList1(X,[Y|List]) :- isIn(X,Y), isInList1(Y,List).
+isInList0([X|List],Y) :- isIn(X,Y), isInList0(List, Y).
 
 isIn(afcNorth, afc).
 isIn(ravens, afcNorth).
@@ -108,8 +108,8 @@ isIn(niners, nfcWest).
 isIn(seahawks, nfcWest).
 isIn(rams, nfcWest).
 
-locationList(X,[Y|List]) :- location(X,Y), location(Y,List).
-locationList([X|List],Y) :- location(X,Y), location(List, Y).
+locationList1(X,[Y|List]) :- location(X,Y), location1(Y,List).
+locationList0([X|List],Y) :- location(X,Y), location0(List, Y).
 
 location(ravens, baltimore).
 location(bengals, cincinnati).
@@ -151,21 +151,21 @@ location(niners, sanFrancisco).
 location(seahawks, seattle).
 location(rams, losAngeles).
 
-likesList(X,[Y|List]) :- likes(X,Y), likesList(Y,List).
-likesList([X|List],Y) :- likes(X,Y), likesList(List,Y).
+likesList1(X,[Y|List]) :- likes(X,Y), likesList1(Y,List).
+likesList0([X|List],Y) :- likes(X,Y), likesList0(List,Y).
 
 likes(diomedes33, football).
 likes(diomedes33, niners).
 
-dislikesList(X,[Y|List]) :- dislikes(X,Y), dislikesList(Y,List).
-dislikesList([X|List],Y) :- dislikes(X,Y), dislikesList(List,Y).
+dislikesList1(X,[Y|List]) :- dislikes(X,Y), dislikesList1(Y,List).
+dislikesList0([X|List],Y) :- dislikes(X,Y), dislikesList0(List,Y).
 
 dislikes(diomedes33, seahawks).
 dislikes(diomedes33, cowboys).
 dislikes(diomedes33, raiders).
 
-playsList(X,[Y|List]) :- plays(X,Y), playsList(Y,List).
-playsList([X|List],Y) :- plays(X,Y), playsList(List, Y).
+playsList1(X,[Y|List]) :- plays(X,Y), playsList1(Y,List).
+playsList0([X|List],Y) :- plays(X,Y), playsList0(List, Y).
 
 plays(team, sport).
 
@@ -222,8 +222,8 @@ plays(earlThomas, football).
 plays(naVarroBowman, football).
 plays(carlosHyde, football).
 
-playsForList(X,[Y|List]) :- playsFor(X,Y), playsForList(Y,List).
-playsForList([X|List],Y) :- playsFor(X,Y), playsForList(List, Y).
+playsForList1(X,[Y|List]) :- playsFor(X,Y), playsForList1(Y,List).
+playsForList0([X|List],Y) :- playsFor(X,Y), playsForList0(List, Y).
 
 playsFor(tomBrady, patriots).
 playsFor(peytonManning, broncos).

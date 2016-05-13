@@ -42,7 +42,7 @@ hunts(cat, mouse).
 hunts(cat, bird).
 
 soundList1(X,[Y|List]) :- sound(X,Y), soundList1(Y,List).
-soundList0([X|List],Y) :- sound(X,Y),soundList0(List,Y).
+soundList0([X|List],Y) :- sound(X,Y), soundList0(List,Y).
 
 sound(cat, meow).
 
@@ -52,8 +52,8 @@ eatsList0([X|List],Y) :- eats(X,Y), eatsList0(List,Y).
 eats(cat, mouse).
 eats(cat, bird).
 
-drinksList01(X,[Y|List]) :- drinks(X,Y), drinksList1(Y,List).
-drinksList([X|List],Y) :- drinks(X,Y), drinksList0(List,Y).
+drinksList1(X,[Y|List]) :- drinks(X,Y), drinksList1(Y,List).
+drinksList0([X|List],Y) :- drinks(X,Y), drinksList0(List,Y).
 
 drinks(cat, milk).
 
