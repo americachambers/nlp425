@@ -49,7 +49,8 @@ public class ActionProcessor {
      * @param responseTag The type of response we should respond with. Ex: YesNoAnswer
      * @return A string representation of the response. In early versions, this might be an AMR
      */
-    public static String generateResponse(Conversation convo, ResponseTag responseTag, KBController kb) {
+    public static String generateResponse(Conversation convo, ResponseTag responseTag,
+                                          KBController kb) {
         SemanticResponseTemplate responseGenerator = RESPONSE_TAG_TO_SRT.get(responseTag);
         //SemanticResponseTemplate responseGenerator = new YesNoAnswerTemplate();
         if(responseGenerator != null) {

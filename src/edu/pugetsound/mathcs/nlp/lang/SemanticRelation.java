@@ -93,19 +93,6 @@ public enum SemanticRelation {
 
     private String label;
 
-    /**
-     * A mapping from SemanticRelation labels to the corresponding object
-     * Ex: "arg-0" -> SemanticRelation.arg_0
-     */
-    /*
-    public static final HashMap<String, SemanticRelation> NAME_TO_RELATION =
-    new HashMap<String, SemanticRelation>() {{
-            for(SemanticRelation sr : SemanticRelation.values()) {
-                put(sr.getLabel().substring(1), sr);
-            }
-        }};
-    */
-
     SemanticRelation(String label) {
         this.label = label;
     }

@@ -31,6 +31,15 @@ import edu.pugetsound.mathcs.nlp.util.Logger;
  */
 public class AMRParser {
 
+    // Used for parsing in parseAMRString()
+    private static final char SPACE = ' ';
+    private static final char COLON = ':';
+    private static final char SLASH = '/';
+    private static final char LEFT_PAREN = '(';
+    private static final char RIGHT_PAREN = ')';
+    private static final char DOUBLE_QUOTE = '"';
+    private static final char NULL_CHAR = '\0';
+
     /**
      * The time since the MSR Splat API was last queried
      * For rate-limiting requests to every two seconds
@@ -87,7 +96,8 @@ public class AMRParser {
             }
         } catch(Exception e) {
             if(Logger.debug()) {
-                System.out.println("ERROR: Microsoft msrsplat tool could not be reached for AMR conversion.");
+                System.out.println("ERROR: Microsoft msrsplat tool could not be reached for " +
+                                   "AMR conversion.");
             }
             return null;
         }
@@ -141,11 +151,12 @@ public class AMRParser {
             .toLowerCase();
 
         // Current state; denotes the last significant symbol encountered.
-        // ":" indicates we should start processing the relation name
-        // "/" indicates we should start processing the concept value
-        // "(" indicates we are starting the AMR are should be processing the node's name and value
+        // COLON indicates we should start processing the relation name
+        // SLASH indicates we should start processing the concept value
+        // LEFT_PAREN indicates we are starting the AMR are should be processing
+        // the node's name and value
         // If any of these symbols are inside quotation marks, they are ignored
-        char state = '(';
+        char state = LEFT_PAREN;
 
         // Current unreduced character sequence
         String cur_charseq = "";
@@ -176,9 +187,9 @@ public class AMRParser {
             // Continually ignore chars if we're skipping the current AMR
             // Used for when we recurse and don't want to parse the AMR we recursed
             if(skip_amr > 0) {
-                if(c == '(') {
+                if(c == LEFT_PAREN) {
                     skip_amr++;
-                } else if(c == ')') {
+                } else if(c == RIGHT_PAREN) {
                     skip_amr--;
                 }
 
@@ -186,16 +197,16 @@ public class AMRParser {
                 continue;
             }
 
-            if(c == ')') {
+            if(c == RIGHT_PAREN) {
                 break;
 
-            } else if(c == '"') {
+            } else if(c == DOUBLE_QUOTE) {
 
                 // Make an AMR for the quote if we're closing the quote
                 if(in_quote) {
                     AMR quote = new AMR(String.valueOf(cur_charseq.charAt(0)), cur_charseq,
                                         AMR.AMRType.string);
-                    if(state == ':') {
+                    if(state == COLON) {
                         SemanticRelation sr = SemanticRelation.getByLabel(last_word);
                         if(sr == null) {
                             if(Logger.debug()) {
@@ -211,13 +222,13 @@ public class AMRParser {
                         cur_charseq = "";
                         last_word = "";
 
-                    } else if(state == '/') {
+                    } else if(state == SLASH) {
                         // The string must be considering cur_amr and cur_amr must not have
                         // nodeValue[1] filled in yet.
                         cur_amr.nodeValue[1] = cur_charseq;
                         cur_amr.nodeType = AMR.AMRType.string;
                         cur_charseq = "";
-                        state = '\0';
+                        state = NULL_CHAR;
                     } else {
                         if(Logger.debug()) {
                             System.out.println("Error: String without a relation!");
@@ -230,7 +241,7 @@ public class AMRParser {
                 // Flip whether or not we're inside a quotation
                 in_quote = !in_quote;
 
-            } else if(c == '(') {
+            } else if(c == LEFT_PAREN) {
 
                 // Not a significant character if inside quotation
                 if(in_quote) {
@@ -239,7 +250,7 @@ public class AMRParser {
                 }
 
                 // Get the attribute name and recurse to create the new AMR
-                if(state == ':') {
+                if(state == COLON) {
                     AMR recursed = parseAMRStringRecurse(text.substring(i), encounteredAMRs);
                     // Skip over the part of text corresponding to recursed
                     skip_amr = 1;
@@ -264,10 +275,10 @@ public class AMRParser {
 
                     cur_charseq = "";
                     last_word = "";
-                    state = '\0';
+                    state = NULL_CHAR;
                 }
 
-            } else if(c == '/') {
+            } else if(c == SLASH) {
 
                 // Not a significant character if inside quotation
                 if(in_quote) {
@@ -275,14 +286,14 @@ public class AMRParser {
                     continue;
                 }
 
-                if(state == '(') {
+                if(state == LEFT_PAREN) {
                     // Add the node's variable name
                     cur_amr.nodeValue[0] = last_word;
                 }
 
-                state = '/';
+                state = SLASH;
 
-            } else if(c == ':') {
+            } else if(c == COLON) {
 
                 // Not a significant character if inside a quotation
                 if(in_quote) {
@@ -290,9 +301,9 @@ public class AMRParser {
                     continue;
                 }
 
-                state = ':';
+                state = COLON;
 
-            } else if(c == ' ') {
+            } else if(c == SPACE) {
 
                 // Not a significant character if inside a quotation
                 if(in_quote) {
@@ -309,7 +320,7 @@ public class AMRParser {
                     // The 30 doesn't have a node surrounding it, normally
                     // The second half of the && is a really quick 'n dirty way of checking that
                     // we're parsing the argument to a relation and not the relation name itself
-                    if(state == ':' && text.charAt(i - cur_charseq.length() - 1) != ':') {
+                    if(state == COLON && text.charAt(i - cur_charseq.length() - 1) != ':') {
                         SemanticRelation sr = SemanticRelation.getByLabel(last_word);
                         if(sr == null) {
                             if(Logger.debug()) {
@@ -349,7 +360,7 @@ public class AMRParser {
                         cur_charseq = "";
 
                         // If we're at the node value after a '/'
-                        if(state == '/') {
+                        if(state == SLASH) {
                             cur_amr.nodeValue[1] = last_word;
                         }
                     }
@@ -371,9 +382,9 @@ public class AMRParser {
      */
     public static void main(String args[]) {
         for (String s: args) {
-            System.out.println(AMRParser.convertTextToAMR(s));
-            //AMR result = parseAMRString(s);
-            //System.out.println(result.toString());
+            //System.out.println(AMRParser.convertTextToAMR(s));
+            AMR result = convertTextToAMR(s)[0];
+            System.out.println(result.toString());
 
         }
     }

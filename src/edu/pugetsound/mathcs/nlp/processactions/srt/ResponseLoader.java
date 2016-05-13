@@ -26,6 +26,12 @@ import java.util.Arrays;
  */
 public class ResponseLoader {
 
+    private static final String DUMB_RESPONSES_JSON_FILE =
+        "src/edu/pugetsound/mathcs/nlp/processactions/srt/dumbResponses.json";
+
+    private static final String RESPONSES_JSON_FILE =
+        "src/edu/pugetsound/mathcs/nlp/processactions/srt/responses.json";
+
     /**
      * Read in all the responses from dumbResponses.json and load them into a hashmap.
      * The hashmap maps Template names to an array of responses.
@@ -37,11 +43,11 @@ public class ResponseLoader {
         JSONParser parser = new JSONParser();
 
         try {
-            String filePath = PathFormat.absolutePathFromRoot("src/edu/pugetsound/mathcs/nlp/" +
-                                                              "processactions/srt/dumbResponses.json");
+            String filePath = PathFormat.absolutePathFromRoot(DUMB_RESPONSES_JSON_FILE);
             JSONObject responsesJSON = (JSONObject) parser.parse(new FileReader(filePath));
 
-            // For each Template in dumbResponses.json, do put(template, template's responses array)
+            // For each Template in dumbResponses.json, do:
+            // put(template, template's responses array)
             for(Object responseTemplate : responsesJSON.keySet()) {
                 // Get responses array
                 Object[] objRes = ((JSONArray)responsesJSON.get(responseTemplate)).toArray();
@@ -69,10 +75,11 @@ public class ResponseLoader {
     }
 
     /**
-     * Returns a hashmap which maps a Template name to a hashmap which maps AMRs to their string response
-     * form, represented as a string array of tokens in the response.
+     * Returns a hashmap which maps a Template name to a hashmap which maps AMRs to their
+     * string response form, represented as a string array of tokens in the response.
      * The entries are loaded from responses.json
-     * responses.json is intended to be used for storing structures used for constructing smart responses
+     * responses.json is intended to be used for storing structures used for constructing
+     * smart responses.
      * @author Thomas Gagne & Jon Sims
      * @version 05/09/16
      */
@@ -82,13 +89,13 @@ public class ResponseLoader {
 
         JSONParser parser = new JSONParser();
         try {
-            String filePath = PathFormat.absolutePathFromRoot("src/edu/pugetsound/mathcs/nlp/" +
-                                                              "processactions/srt/responses.json");
+            String filePath = PathFormat.absolutePathFromRoot(RESPONSES_JSON_FILE);
             JSONObject responsesJson = ((JSONObject) parser.parse(new FileReader(filePath)));
             Set<String> responsesTemplates = responsesJson.keySet();
             for (String responseTemplate: responsesTemplates) {
                 HashMap<AMR, String[]> responsesMapping = new HashMap<AMR, String[]>();
-                JSONObject responseTemplateJson = ((JSONObject) responsesJson.get(responseTemplate));
+                JSONObject responseTemplateJson = ((JSONObject)
+                                                   responsesJson.get(responseTemplate));
                 for (Object o: responseTemplateJson.keySet() ) {
                     String keyStr = (String) o;
                     AMR key = AMRParser.parseAMRString(keyStr);
