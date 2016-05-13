@@ -21,7 +21,7 @@ public class TextAnalyzerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		analyzer = new TextAnalyzer();
+		analyzer = new TextAnalyzer(null);
 		conversation = new Conversation();
 	}
 

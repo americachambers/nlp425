@@ -21,6 +21,7 @@ import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.processactions.MappingGenerator;
 import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
+import edu.pugetsound.mathcs.nlp.util.Logger;
 
 
 //Requires Jython 2.5: http://www.jython.org/
@@ -80,7 +81,7 @@ public class ResponseGenerator {
         Conversation tempConvo;
         ArrayList<Utterance> convoList = new ArrayList<Utterance>();
         PyString[] tokens;
-        TextAnalyzer ta = new TextAnalyzer();
+        TextAnalyzer ta = new TextAnalyzer(null);
         HashMap<DialogueActTag, String> daTagToTemplate = MappingGenerator.hardcodedMap;
         PythonInterpreter python = new PythonInterpreter();
         python.execfile("../scripts/responseTemplater.py");
@@ -90,7 +91,9 @@ public class ResponseGenerator {
                 verifyLists(python);
 
                 if (p > 15 && (p % 15) == 0){
-                    System.out.println("Writing current progress to file since we've analyzed "+p+" paragraphs.");
+                    if(Logger.debug()) {
+                        System.out.println("Writing current progress to file since we've analyzed "+p+" paragraphs.");
+                    }
                     python.exec("main(fn)");
                 }
 
@@ -107,7 +110,9 @@ public class ResponseGenerator {
                         + "\ntokens: "+ currentUtt.tokens
                         + "\ntokens size: "+currentUtt.tokens.size());
                 if ( ! daTagToTemplate.containsKey(currentUtt.daTag))
-                    System.out.println("Unfortunately, the current daTag '"+currentUtt.daTag+"' isn't in our datagToTemplate mapping");
+                    if(Logger.debug()) {
+                        System.out.println("Unfortunately, the current daTag '"+currentUtt.daTag+"' isn't in our datagToTemplate mapping");
+                    }
                 else {
                     python.set("dat", new PyString(daTagToTemplate.get(currentUtt.daTag)));
                     python.exec("DATags.append(dat)");
@@ -124,16 +129,22 @@ public class ResponseGenerator {
                     if (convoList.size() > 10)
                         convoList.remove(0);
 
-                    System.out.println("Done asking the TextAnalyzer to analyze each utterance with an AMR/DATag/tokens.");
+                    if(Logger.debug()) {
+                        System.out.println("Done asking the TextAnalyzer to analyze each utterance with an AMR/DATag/tokens.");
+                    }
                 }
             } catch(Exception e) {
-                System.out.println("Issue with paragraph "+p+"; reverting any added amrs/utterances/datags to last paragraph.");
-                System.out.println(e);
+                if(Logger.debug()) {
+                    System.out.println("Issue with paragraph "+p+"; reverting any added amrs/utterances/datags to last paragraph.");
+                    System.out.println(e);
+                }
             }
         }
         python.exec("tokensLen = len(tokens)");
         int tokensLen = ((PyInteger) python.get("tokensLen")).asInt();
-        System.out.println("Now writing "+tokensLen+"/"+utterances.length+" results to output file at "+outfileName);
+        if(Logger.debug()) {
+            System.out.println("Now writing "+tokensLen+"/"+utterances.length+" results to output file at "+outfileName);
+        }
         python.exec("main(fn)");
 
         return tokensLen;

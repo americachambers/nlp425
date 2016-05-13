@@ -5,9 +5,15 @@ import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 
 public interface Classifier {
-	
+
 	/**
-	* Classifies an Utterance.
-	**/
-	public DialogueActTag classify(Utterance u, Conversation c);
+	 * Classifies an Utterance in the context of a Conversation
+	 * 
+	 * @param utterance
+	 *            An utterance
+	 * @param conversation
+	 *            The conversation in which the utterance appears
+	 * @return The predicted DialogueActTag for the utterance
+	 */
+	public DialogueActTag classify(Utterance utterance, Conversation conversation);
 }

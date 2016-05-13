@@ -1,30 +1,41 @@
 package edu.pugetsound.mathcs.nlp.controller;
 
+import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
+import edu.pugetsound.mathcs.nlp.kb.KBController;
+import edu.pugetsound.mathcs.nlp.lang.Conversation;
+import edu.pugetsound.mathcs.nlp.lang.Utterance;
+import edu.pugetsound.mathcs.nlp.mdp.Action;
+import edu.pugetsound.mathcs.nlp.mdp.HyperVariables;
+import edu.pugetsound.mathcs.nlp.mdp.QLearner;
+import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
+import edu.pugetsound.mathcs.nlp.processactions.ResponseTag;
+
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
-import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
-import edu.pugetsound.mathcs.nlp.lang.Conversation;
-import edu.pugetsound.mathcs.nlp.lang.Utterance;
-import edu.pugetsound.mathcs.nlp.mdp.HyperVariables;
-import edu.pugetsound.mathcs.nlp.mdp.QLearner;
-import edu.pugetsound.mathcs.nlp.processactions.ActionProcessor;
-import edu.pugetsound.mathcs.nlp.mdp.Action;
-
 /**
  * This class contains the main input/output loop. 
- * @author alchambers
+ * @author alchambers, kstern
  */
 public class Controller {
 	protected static final String INITIAL_GREETING = "Hello.";  
+	
+	/**
+	 * TODO: In the future, have a team detect the focus of the conversation. There should be
+	 * a module between the process actions team and the kb team that logs statistics about 
+	 * how many hits/misses we've gotten from a particular knowledge base, controls which kbs
+	 * to query, and shifts the central kb based on focus
+	 */
+	protected static final String KNOWLEDGE_BASE_PATH = "knowledge/cats.pl";
 	
 	protected static Conversation conversation;		
 	protected static Scanner input;
 	protected static TextAnalyzer analyzer;
 	protected static QLearner mdp;
 	protected static HyperVariables hyperVariables;
-		
+	protected static KBController kb;
+	
 	/**
 	 * The discounted value for the Markov Decision Process
 	 */
@@ -43,15 +54,16 @@ public class Controller {
 	protected static PrintStream out;
 		
 	/**
-	 * Setups the necessary tools for the conversational agent
+	 * Sets up the necessary tools for the conversational agent
 	 */
 	protected static void setup(InputStream in, PrintStream outStream){
 		out = outStream;
+		kb = new KBController(KNOWLEDGE_BASE_PATH);
 		conversation = new Conversation();	
-		analyzer = new TextAnalyzer();
+		analyzer = new TextAnalyzer(kb);
 		input = new Scanner(in);
 		hyperVariables = new HyperVariables(GAMMA, EXPLORE);
-		mdp = new QLearner(hyperVariables);
+		mdp = new QLearner(hyperVariables,true);		
 	}
 
 	/**
@@ -69,16 +81,18 @@ public class Controller {
 	 */
 	protected static void initiateGreeting(){
 		out.println();
-		Utterance utt = analyzer.analyze(INITIAL_GREETING, conversation);
-		conversation.addUtterance(utt);
-		respondToUser(utt);
+		Action action = mdp.train(conversation);
+		String response = ActionProcessor.generateResponse(conversation, action.getDATag(), kb);
+		Utterance agentUtt = analyzer.analyze(response, conversation);
+		conversation.addUtterance(agentUtt);
+		respondToUser(agentUtt);
 	}
 
 	
 	/**
 	 * Runs a single interaction with the human
 	 */
-	private static void run(){
+	private static boolean run(){
 		// Read the human's typed input
 		out.print("> ");
 		String line = input.nextLine();
@@ -91,21 +105,36 @@ public class Controller {
 		Action action = mdp.train(conversation);
 
 		// Process the action and produce a response for the user
-		String response = ActionProcessor.generateResponse(conversation, action.getDATag());
+		String response = ActionProcessor.generateResponse(conversation, action.getDATag(), kb);
 		Utterance agentUtt = analyzer.analyze(response, conversation);
 		conversation.addUtterance(agentUtt);
 		respondToUser(agentUtt);
+		
+        ResponseTag eDAT = action.getDATag();
+		if(eDAT.equals(ResponseTag.CONVENTIONAL_CLOSING)){
+			return false;
+		}
+        return true;		
 	}
 
+	/**
+	 * Saves the state from the conversation 
+	 */
+	private static void saveState(){
+		mdp.saveToFile();
+	}
+	
 	/**
 	 * Main controller for the conversational agent. 
 	 * TODO: Add description of any command line arguments
 	 */
 	public static void main(String[] args){		
-		setup(System.in, System.out);				
+		setup(System.in, System.out);		
 		initiateGreeting();
-		while(true){
-			run();
+		boolean typing = true;
+		while(typing){
+			typing = run();
 		}
+		saveState();
 	}	
 }

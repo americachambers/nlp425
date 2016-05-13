@@ -10,9 +10,11 @@ import java.util.List;
 import org.junit.Test;
 
 public class KBTest{
+	private String file = "knowledge/cats.pl";
+	
 	@Test
 	public void isThere(){
-		KBController kb = new KBController();
+		KBController kb = new KBController(file);
 		PrologStructure p = new PrologStructure(2);
 		p.setName("isA");
 		p.addArgument("fluffy", 0);
@@ -24,7 +26,7 @@ public class KBTest{
 
 	@Test
 	public void notThere(){
-		KBController kb = new KBController();
+		KBController kb = new KBController(file);
 		PrologStructure p = new PrologStructure(2);
 		p.setName("isA");
 		p.addArgument("spot", 0);
@@ -34,14 +36,13 @@ public class KBTest{
 		assertFalse(kb.yesNo(preds));
 	}
 
-	@Test
+	@Test(expected=prologException.class)
 	public void prologException(){
 		KBController kb = new KBController("faultyProlog.pl");
 		PrologStructure p = new PrologStructure(2);
 		List<PrologStructure> preds = new ArrayList<PrologStructure>();
 		preds.add(p);
 		assertTrue(kb.yesNo(preds));
-		fail("An exception should have been thrown");
 	}
 
 }

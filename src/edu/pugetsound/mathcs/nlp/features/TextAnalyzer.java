@@ -12,10 +12,9 @@ import java.util.regex.Pattern;
 
 import edu.pugetsound.mathcs.nlp.lang.*;
 import edu.pugetsound.mathcs.nlp.util.PathFormat;
-import edu.pugetsound.mathcs.nlp.controller.Controller;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
-
+import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
@@ -78,7 +77,7 @@ public class TextAnalyzer {
 	/**
 	 * Creates a new TextAnalyzer
 	 */
-	public TextAnalyzer(){
+	public TextAnalyzer(KBController kb){
 		Properties props = new Properties();		
 		props.setProperty("annotators", ANNOTATORS);
 		pipeline = new StanfordCoreNLP(props);			
@@ -89,9 +88,9 @@ public class TextAnalyzer {
 		reader.populateGreeting();
 		reader.populateStandardForms();		
 
-		semAnalyzer = new SemanticAnalyzer();
+		semAnalyzer = new SemanticAnalyzer(kb);
 		anaphoraAnalyzer = new AnaphoraAnalyzer();
-		dialogueClassifier = new DAClassifier(DAClassifier.Mode.DUMB_DECISION_TREE);
+		dialogueClassifier = new DAClassifier(DAClassifier.Mode.DUMB_NAIVE_BAYES);
 	}
 
 	/**
@@ -112,6 +111,11 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException();
 		}
 
+		/*
+		 * The order in which the analysis is done is extremely important! Certain analyzers
+		 * require/use the output of other analyzers 
+		 */
+		
 		// Strip ending punctuation
 		String stripped = input.replaceAll("\\p{Punct}*$", "");
 
@@ -142,14 +146,17 @@ public class TextAnalyzer {
 			h.daTag = greetClose.get(stripped);
 			return h;
 		}		
-
+		
 		// Certain dialogue acts do not need deep semantic and anaphora analysis		
 		h.daTag = dialogueClassifier.classify(h, conversation);
-
-		AMR[] temp = AMR.convertTextToAMR(input);
-		if (temp != null && temp.length > 0){
-			h.amr = temp[0];
+		if(canShortCircuit(h)){
+			return h;
 		}
+		
+//		AMR[] temp = AMR.convertTextToAMR(input);
+//		if (temp != null && temp.length > 0){
+//			h.amr = temp[0];
+//		}
 
 		// Compute parse tree features
 		storeParseTrees(h, sentence);
@@ -179,7 +186,10 @@ public class TextAnalyzer {
 				h.daTag == DialogueActTag.SIGNAL_NON_UNDERSTANDING ||
 				h.daTag == DialogueActTag.AGREEMENTS ||
 				h.daTag == DialogueActTag.COMMENT ||
-				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION;								
+				h.daTag == DialogueActTag.COLLABORATIVE_COMPLETION ||
+				h.daTag == DialogueActTag.THANKS ||
+				h.daTag == DialogueActTag.WELCOME ||
+				h.daTag == DialogueActTag.APOLOGY;		
 	}
 
 	/**
@@ -377,7 +387,7 @@ public class TextAnalyzer {
 	 */
 	public static void main(String[] args){
 		Scanner scan = new Scanner(System.in);
-		TextAnalyzer analyzer = new TextAnalyzer();
+		TextAnalyzer analyzer = new TextAnalyzer(null);
 		Conversation convo = new Conversation();
 		while(true){			
 			System.out.print("Enter a line of text: ");

@@ -22,6 +22,7 @@ import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.datag.DAClassifier;
 import edu.pugetsound.mathcs.nlp.datag.DialogueActTag;
 import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
+import edu.pugetsound.mathcs.nlp.util.Logger;
 
 //Requires Simple Json: https://code.google.com/archive/p/json-simple/
 //https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/json-simple/json-simple-1.1.1.jar
@@ -164,14 +165,20 @@ public class MappingGenerator {
             return mapping;
 
         } catch(FileNotFoundException ex) {
-            System.out.println("Error: Unable to open file");
-            ex.printStackTrace();
+            if(Logger.debug()) {
+                System.out.println("Error: Unable to open file");
+                ex.printStackTrace();
+            }
         } catch (ParseException e) {
-            System.out.println("Error: ParseException");
-            e.printStackTrace();
+            if(Logger.debug()) {
+                System.out.println("Error: ParseException");
+                e.printStackTrace();
+            }
         }  catch (IOException e) {
-            System.out.println("Error: IOException");
-            e.printStackTrace();
+            if(Logger.debug()) {
+                System.out.println("Error: IOException");
+                e.printStackTrace();
+            }
         }
         return null;
     }
@@ -300,8 +307,10 @@ public class MappingGenerator {
             try {
                 daMap.put(daOrds[Integer.parseInt(daLabel)], likelyhoodMap.get(daLabel));
             } catch (IllegalArgumentException e) {
-                System.out.println("Error with datag label: "+daLabel);
-                System.out.println(e);
+                if(Logger.debug()) {
+                    System.out.println("Error with datag label: "+daLabel);
+                    System.out.println(e);
+                }
             }
         return daMap;
     }
@@ -369,8 +378,10 @@ public class MappingGenerator {
         try (FileWriter file = new FileWriter(fName)) {
             file.write((new JSONObject(map)).toJSONString());
         } catch (IOException e) {
-            System.out.println("Error: IOException");
-            e.printStackTrace();
+            if(Logger.debug()) {
+                System.out.println("Error: IOException");
+                e.printStackTrace();
+            }
         }
     }
 
