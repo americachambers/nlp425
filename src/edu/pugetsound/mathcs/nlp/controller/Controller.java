@@ -1,6 +1,7 @@
 package edu.pugetsound.mathcs.nlp.controller;
 
 import edu.pugetsound.mathcs.nlp.features.TextAnalyzer;
+import edu.pugetsound.mathcs.nlp.kb.KBController;
 import edu.pugetsound.mathcs.nlp.lang.Conversation;
 import edu.pugetsound.mathcs.nlp.lang.Utterance;
 import edu.pugetsound.mathcs.nlp.mdp.Action;
@@ -26,14 +27,15 @@ public class Controller {
 	 * how many hits/misses we've gotten from a particular knowledge base, controls which kbs
 	 * to query, and shifts the central kb based on focus
 	 */
-	protected static final String KNOWLEDGE_BASE_PATH = "/src/edu/pugetsound/mathcs/nlp/kb/knowledge/cats.pl";
+	protected static final String KNOWLEDGE_BASE_PATH = "knowledge/cats.pl";
 	
 	protected static Conversation conversation;		
 	protected static Scanner input;
 	protected static TextAnalyzer analyzer;
 	protected static QLearner mdp;
 	protected static HyperVariables hyperVariables;
-		
+	protected static KBController kb;
+	
 	/**
 	 * The discounted value for the Markov Decision Process
 	 */
@@ -56,8 +58,9 @@ public class Controller {
 	 */
 	protected static void setup(InputStream in, PrintStream outStream){
 		out = outStream;
+		kb = new KBController(KNOWLEDGE_BASE_PATH);
 		conversation = new Conversation();	
-		analyzer = new TextAnalyzer();
+		analyzer = new TextAnalyzer(kb);
 		input = new Scanner(in);
 		hyperVariables = new HyperVariables(GAMMA, EXPLORE);
 		mdp = new QLearner(hyperVariables,true);
@@ -79,7 +82,7 @@ public class Controller {
 	protected static void initiateGreeting(){
 		out.println();
 		Action action = mdp.train(conversation);
-		String response = ActionProcessor.generateResponse(conversation, action.getDATag());
+		String response = ActionProcessor.generateResponse(conversation, action.getDATag(), kb);
 		Utterance agentUtt = analyzer.analyze(response, conversation);
 		conversation.addUtterance(agentUtt);
 		respondToUser(agentUtt);
@@ -102,7 +105,7 @@ public class Controller {
 		Action action = mdp.train(conversation);
 
 		// Process the action and produce a response for the user
-		String response = ActionProcessor.generateResponse(conversation, action.getDATag());
+		String response = ActionProcessor.generateResponse(conversation, action.getDATag(), kb);
 		Utterance agentUtt = analyzer.analyze(response, conversation);
 		conversation.addUtterance(agentUtt);
 		respondToUser(agentUtt);

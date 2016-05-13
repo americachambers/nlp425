@@ -81,7 +81,7 @@ public class ResponseGenerator {
         Conversation tempConvo;
         ArrayList<Utterance> convoList = new ArrayList<Utterance>();
         PyString[] tokens;
-        TextAnalyzer ta = new TextAnalyzer();
+        TextAnalyzer ta = new TextAnalyzer(null);
         HashMap<DialogueActTag, String> daTagToTemplate = MappingGenerator.hardcodedMap;
         PythonInterpreter python = new PythonInterpreter();
         python.execfile("../scripts/responseTemplater.py");

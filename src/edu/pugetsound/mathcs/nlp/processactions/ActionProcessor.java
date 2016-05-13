@@ -16,18 +16,18 @@ import java.io.IOException;
  */
 public class ActionProcessor {
 	
-	private static KBController kb = new KBController("knowledge/cats.pl");
+	//private static KBController kb = new KBController("knowledge/cats.pl");
  
     /**
      * Wrapper function that converts an utterance to a conversation
      * For backwards compatability only; use the one that takes a conversation preferably!
      * @return A string representation of the response. In early versions, this might be an AMR
      */
-    public static String generateResponse(Utterance utterance, ResponseTag responseDATag) {
-        Conversation convo = new Conversation();
-        convo.addUtterance(utterance);
-        return generateResponse(convo, responseDATag);
-    }
+//    public static String generateResponse(Utterance utterance, ResponseTag responseDATag) {
+//        Conversation convo = new Conversation();
+//        convo.addUtterance(utterance);
+//        return generateResponse(convo, responseDATag);
+//    }
 
     /**
      * Takes in a conversation and a DA tag for what type of statement to respond from the MDP
@@ -36,7 +36,7 @@ public class ActionProcessor {
      * @param responseTag The type of response we should respond with. Ex: YesNoAnswer
      * @return A string representation of the response. In early versions, this might be an AMR
      */
-    public static String generateResponse(Conversation convo, ResponseTag responseTag) {
+    public static String generateResponse(Conversation convo, ResponseTag responseTag, KBController kb) {
 		Utterance utterance = convo.getLastUtterance();
 
     	switch(responseTag){
@@ -64,7 +64,7 @@ public class ActionProcessor {
     			}
     			break;
     		case YES_NO_ANSWER :
-    			if(utterance != null && utterance.firstOrderRep != null){
+    			if(utterance != null && utterance.firstOrderRep != null && kb != null){
     				System.out.println(utterance.firstOrderRep);
     				if(kb.yesNo(utterance.firstOrderRep)){
     					return "Yes";
@@ -84,7 +84,7 @@ public class ActionProcessor {
      * @param args A list of Strings should be given, each being 1 line of user input in the convo
      */
     public static void main(String[] args) throws IOException {
-        TextAnalyzer ta = new TextAnalyzer();
+        TextAnalyzer ta = new TextAnalyzer(null);
         Conversation convo = new Conversation();
         for (String a: args) {
             convo.addUtterance(ta.analyze(a,convo));

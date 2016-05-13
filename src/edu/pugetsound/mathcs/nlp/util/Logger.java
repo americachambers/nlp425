@@ -8,7 +8,7 @@ package edu.pugetsound.mathcs.nlp.util;
  */
 public class Logger {
 	
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	
 	/**
 	 * Get the debug state for printing
