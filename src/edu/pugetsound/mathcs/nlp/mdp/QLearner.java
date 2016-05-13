@@ -15,6 +15,8 @@ import java.util.*;
  * @version 05/12/16
  */
 public class QLearner {
+
+    private static boolean DEMO = true;
     private HashMap<State, Integer> states;
     private HashMap<Integer, State> ids;
     private ArrayList<Action> actions;
@@ -31,15 +33,18 @@ public class QLearner {
     protected Random r;
 
     private static final String INPUT_PATH = PathFormat.absolutePathFromRoot("models/qlearner/qlearner");
+    private static final String DEMO_INPUT_PATH = PathFormat.absolutePathFromRoot("models/qlearner/demoqlearner");
 
     /**
      * Constructs the original QLearner: defines the states and actions that are
      * possible, and initializes the QTable based on those states and actions.
-     * Will construct the QTable, either by reading the file, or counting the number of possible states and actions.
+     * Will construct the QTable, either by reading the file, or counting the
+     * number of possible states and actions.
      *
-     * @param hyperVariables - the {@link HyperVariables} class is the class which configures
-     * the variables for the QLearner.
-     * @param readFromFile - the parameter which dictates whether or not the QLearner will read from file.
+     * @param hyperVariables - the {@link HyperVariables} class is the class
+     * which configures the variables for the QLearner.
+     * @param readFromFile - the parameter which dictates whether or not the
+     * QLearner will read from file.
      *
      */
     public QLearner(HyperVariables hyperVariables, boolean readFromFile) {
@@ -50,27 +55,56 @@ public class QLearner {
         r = new Random();
         int id = 0;
 
-        //adds all possible actions to the actions arraylist
-        for (ResponseTag dialogueActTag : ResponseTag.values()) {
-            this.actions.add(new Action(dialogueActTag, id));
-            id++;
+        if (DEMO) {
+            for (ResponseTag dialogueActTag : QDemo.limitedResponseTags) {
+                this.actions.add(new Action(dialogueActTag, id));
+                id++;
+            }
+
+        } else {
+            //adds all possible actions to the actions arraylist
+            for (ResponseTag dialogueActTag : ResponseTag.values()) {
+                this.actions.add(new Action(dialogueActTag, id));
+                id++;
+            }
+
         }
 
         //starting with the null state, adds all states to the state Arraylist
         id = 1;
-        this.states.put(new State(DialogueActTag.NULL, DialogueActTag.NULL), 0);
-        this.ids.put(0, new State(DialogueActTag.NULL, DialogueActTag.NULL));
-        for (DialogueActTag dialogueActTag : DialogueActTag.values()) {
-            for (DialogueActTag dialogueActTag2 : DialogueActTag.values()) {
-                if (dialogueActTag2 == DialogueActTag.NULL) {
-                    //if our 2nd DA Tag is null, then don't do anything
-                } else {
-                    this.states.put(new State(dialogueActTag, dialogueActTag2), id);
-                    this.ids.put(id, new State(dialogueActTag, dialogueActTag2));
-                    id++;
+
+        if (DEMO) {
+            this.states.put(new State(DialogueActTag.NULL, DialogueActTag.NULL), 0);
+            this.ids.put(0, new State(DialogueActTag.NULL, DialogueActTag.NULL));
+            for (DialogueActTag dialogueActTag : QDemo.limitedDATags) {
+                for (DialogueActTag dialogueActTag2 : QDemo.limitedDATags) {
+                    if (dialogueActTag2 == DialogueActTag.NULL) {
+                        //if our 2nd DA Tag is null, then don't do anything
+                    } else {
+                        this.states.put(new State(dialogueActTag, dialogueActTag2), id);
+                        this.ids.put(id, new State(dialogueActTag, dialogueActTag2));
+                        id++;
+                    }
                 }
             }
+
+        } else {
+            this.states.put(new State(DialogueActTag.NULL, DialogueActTag.NULL), 0);
+            this.ids.put(0, new State(DialogueActTag.NULL, DialogueActTag.NULL));
+            for (DialogueActTag dialogueActTag : DialogueActTag.values()) {
+                for (DialogueActTag dialogueActTag2 : DialogueActTag.values()) {
+                    if (dialogueActTag2 == DialogueActTag.NULL) {
+                        //if our 2nd DA Tag is null, then don't do anything
+                    } else {
+                        this.states.put(new State(dialogueActTag, dialogueActTag2), id);
+                        this.ids.put(id, new State(dialogueActTag, dialogueActTag2));
+                        id++;
+                    }
+                }
+            }
+
         }
+
         //check if state and actions have been created
         //this shouldn't ever be triggered as of right now
         if (states.size() < 1 || actions.size() < 1) {
@@ -81,7 +115,7 @@ public class QLearner {
 
         if (readFromFile) {
             readFromFile();
-        }else {
+        } else {
             GAMMA = hyperVariables.getGamma();
             EXPLORE = hyperVariables.getExplore();
             ANNEAL = hyperVariables.getExplore();
@@ -91,7 +125,8 @@ public class QLearner {
     /**
      *
      * @param conversation - the conversation object from the lang package
-     * @return Action, which contains the proper DAtag, to the processing actions team.
+     * @return Action, which contains the proper DAtag, to the processing
+     * actions team.
      */
     public Action train(Conversation conversation) {
         double alpha = (double) ANNEAL / (double) EXPLORE; //this is the alpha value, it goes down as ANNEAL goes down
@@ -104,7 +139,7 @@ public class QLearner {
 
         List<Utterance> utterances = conversation.getConversation();
         DialogueActTag olderDAtag;
-        //CHANGE THIS, ITS BROKEN
+        
         if (utterances.size() == 0) {
             return new Action(ResponseTag.CONVENTIONAL_OPENING, -1);
         } else if (utterances.size() == 2) {
@@ -130,7 +165,6 @@ public class QLearner {
         }
 
         int choice;
-        choice = r.nextInt(actions.size());
 
         //A random variable used to choose if we are exploring or exploiting.
         int e = r.nextInt(EXPLORE);//pick a random value between [0,1000)
@@ -142,7 +176,14 @@ public class QLearner {
             choice = exploit(stateIndex);
         }
 
-        lastReward = rateActionChoice(stateIndex, choice);
+        if(DEMO){
+            lastReward = QDemo.getResponseValue(ids.get(stateIndex), actions.get(choice));
+        }
+        else
+        {
+            lastReward = rateActionChoice(stateIndex, choice);
+        }
+        
         maxAPrime = bestResponseValue(stateIndex);
         lastAction = choice;
         lastState = stateIndex;
@@ -154,9 +195,10 @@ public class QLearner {
     }
 
     /**
-     * iterates the QTable and prints the best decision that we have determined for each state.
+     * iterates the QTable and prints the best decision that we have determined
+     * for each state.
      */
-    private void printPolicy() {
+    protected void printPolicy() {
         for (int i = 0; i < q_table.length; i++) {
             int act = 0;
             for (int j = 0; j < q_table[i].length; j++) {
@@ -164,35 +206,35 @@ public class QLearner {
                     act = j;
                 }
             }
-            System.out.println("For STATE " + i + ", " + actions.get(act).DATag);
+            System.out.println("For STATE " + i + ", "+ids.get(i)+", we will respond with " + actions.get(act).DATag);
         }
         System.out.println();
-        System.out.println("Q TABLE:");
-
-        for (int i = 0; i < q_table.length; i++) {
-            for (int j = 0; j < q_table[i].length; j++) {
-                System.out.print(round(q_table[i][j]) + "\t\t");
-            }
-            System.out.println();
-        }
+//        System.out.println("Q TABLE:");
+//
+//        for (int i = 0; i < q_table.length; i++) {
+//            for (int j = 0; j < q_table[i].length; j++) {
+//                System.out.print(round(q_table[i][j]) + "\t\t");
+//            }
+//            System.out.println();
+//        }
 
     }
 
     /**
      *
-     * @param stateIndex - the index of the state in the Qtable, that we are currently in.
+     * @param stateIndex - the index of the state in the Qtable, that we are
+     * currently in.
      * @return choice - Returns the correct, by exploration.
      */
-    private int explore(int stateIndex){
+    private int explore(int stateIndex) {
         int choice = r.nextInt(actions.size());//chooses random action
-        lastReward = rateActionChoice(stateIndex, choice);
-        maxAPrime = bestResponseValue(stateIndex);
         return choice;
     }
 
     /**
      *
-     * @param stateIndex - the index of the state in the Qtable, that we are currently in.
+     * @param stateIndex - the index of the state in the Qtable, that we are
+     * currently in.
      * @return choice - Returns the correct choice, by exploitation
      */
     private int exploit(int stateIndex) {
@@ -211,7 +253,8 @@ public class QLearner {
      *
      * @param state - The index of current state of we are in
      * @param choice - The index of the choice we have made
-     * @return - The number that the user rates the choice, ranging from 1-5. The QLearner in reinforced here.
+     * @return - The number that the user rates the choice, ranging from 1-5.
+     * The QLearner in reinforced here.
      */
     private int rateActionChoice(int state, int choice) {
         Scanner in = new Scanner(System.in);
@@ -247,7 +290,8 @@ public class QLearner {
     /**
      *
      * @param nextState - the state that follows the current state
-     * @return The highest possible reward, for taking the best action, from the future state.
+     * @return The highest possible reward, for taking the best action, from the
+     * future state.
      */
     private double bestResponseValue(int nextState) {
         double maxAPrime = q_table[nextState][0];
@@ -276,37 +320,38 @@ public class QLearner {
 
     /**
      * A method which saves the current QLearner to file, so that it
+     *
      * @return - true if operation was successful, false otherwise
      */
-    public boolean saveToFile(){
+    public boolean saveToFile() {
         File file = new File(INPUT_PATH);
         FileWriter writer = null;
 
         try {
             writer = new FileWriter(file);
             writer.append(String.valueOf(GAMMA)
-                    +","+ String.valueOf(ANNEAL)
-                    +","+ String.valueOf(EXPLORE));
+                    + "," + String.valueOf(ANNEAL)
+                    + "," + String.valueOf(EXPLORE));
 
-            for(int i = 0; i<q_table.length; i++){
+            for (int i = 0; i < q_table.length; i++) {
                 writer.append("\n");
-                for(int j = 0; j< q_table[i].length; j++){
-                    if(j == q_table[i].length-1){
+                for (int j = 0; j < q_table[i].length; j++) {
+                    if (j == q_table[i].length - 1) {
                         writer.append(String.valueOf(q_table[i][j]));
-                    }else{
+                    } else {
                         writer.append(String.valueOf(q_table[i][j]) + ",");
                     }
                 }
             }
-        }catch(IOException e) {
+        } catch (IOException e) {
             System.err.println("Couldn't write to file");
             e.printStackTrace();
             return false;
         }
-        try{
+        try {
             writer.flush();
             writer.close();
-        }catch(IOException e){
+        } catch (IOException e) {
             System.out.println("error in QLearner - saveToFile()");
             e.printStackTrace();
         }
@@ -315,13 +360,21 @@ public class QLearner {
 
     /**
      * A method which reads the current QLearner from file, so that it
+     *
      * @return - true if operation was successful, false otherwise
      */
-    private boolean readFromFile(){
+    private boolean readFromFile() {
         final String DELIMITER = ",";
 
-        try{
-            BufferedReader fileReader = new BufferedReader(new FileReader(INPUT_PATH));
+        try {
+            BufferedReader fileReader;
+            if (DEMO) {
+                fileReader = new BufferedReader(new FileReader(DEMO_INPUT_PATH));
+
+            } else {
+                fileReader = new BufferedReader(new FileReader(INPUT_PATH));
+
+            }
             //Read first line, which contains instance variables: GAMMA, ANNEAL, and EXPLORE
             String line = fileReader.readLine();
             String[] tokens = line.split(DELIMITER);
@@ -329,14 +382,14 @@ public class QLearner {
             ANNEAL = Integer.parseInt(tokens[1]);
             EXPLORE = Integer.parseInt(tokens[2]);
 
-            for(int i = 0; i<q_table.length; i++){
+            for (int i = 0; i < q_table.length; i++) {
                 line = fileReader.readLine();
                 tokens = line.split(DELIMITER);
-                for(int j=0; j< q_table[i].length; j++){
+                for (int j = 0; j < q_table[i].length; j++) {
                     q_table[i][j] = Double.parseDouble(tokens[j]);
                 }
             }
-        }catch(IOException e){
+        } catch (IOException e) {
             System.err.println("Couldn't read from file");
             e.printStackTrace();
             return false;
