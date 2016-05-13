@@ -1,56 +1,51 @@
 package edu.pugetsound.mathcs.nlp.kb;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 
 import edu.pugetsound.mathcs.nlp.util.PathFormat;
 import gnu.prolog.term.AtomTerm;
 import gnu.prolog.term.CompoundTerm;
-import gnu.prolog.term.IntegerTerm;
 import gnu.prolog.term.Term;
 import gnu.prolog.term.VariableTerm;
 import gnu.prolog.vm.Environment;
-import gnu.prolog.vm.ExecuteOnlyCode;
 import gnu.prolog.vm.Interpreter;
-import gnu.prolog.vm.Interpreter.Goal;
 import gnu.prolog.vm.TermConstants;
-import gnu.prolog.demo.mentalarithmetic.*;
 import gnu.prolog.io.TermWriter;
 import gnu.prolog.vm.PrologCode;
 import gnu.prolog.vm.PrologException;
-import gnu.prolog.vm.buildins.database.Predicate_assert;
-import gnu.prolog.vm.buildins.database.Predicate_asserta;
-import gnu.prolog.vm.buildins.database.Predicate_assertz;
 
 public class KBController{
-  private static Environment env;
-  private Interpreter interpreter;
-  private String prologFile;
+  private static Environment env;//file Prolog environment
+  private Interpreter interpreter;//utility to talk to current file
+  private String prologFile;//file being queried - eventually add a way to handle multiple files
   
   /**
    * Constructs controller to knowledge base
+   * @param filename The Prolog file name to be initially used for query and assertion
    */
   public KBController(String filename){
-	  prologFile = filename;
-	env = new Environment();
-    env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
-   interpreter = env.createInterpreter();
-   env.runInitialization(interpreter); //necessary?
+	 updateEnvironment(filename);
   }
 
 
-  //takes in new filename to use as main Prolog file
+/**
+ * Updates the current environment to now query and process 
+ * @param filename The new Prolog file to be initially used for query and assertion
+ */
   public void updateEnvironment(String filename){
+	  prologFile = filename;
 	  env = new Environment();
 	  env.ensureLoaded(AtomTerm.get(KBController.class.getResource(filename).getFile()));
 	  interpreter = env.createInterpreter();
-	  env.runInitialization(interpreter); //necessary?
+	  env.runInitialization(interpreter); //don't know if this is actually necessary?
   }
+  
   
 /**
 * User called yes/no query method
@@ -59,7 +54,6 @@ public class KBController{
 */
   public boolean yesNo(List<PrologStructure> structs){
     //TODO eventually add code to pick which interpreter to use (for now only query cat file)
-	 // env = interpreter.getEnvironment();
 
 	  for(PrologStructure struct : structs){
 		  try{
@@ -86,17 +80,18 @@ public class KBController{
     CompoundTerm goalTerm = new CompoundTerm(AtomTerm.get(pred), terms);
     Term[] allTerms = new Term[1];
     allTerms[0] = goalTerm;
-    Predicate_assert asserter = new Predicate_asserta();
-    //int rc = asserter.execute(interpreter, true, allTerms);
     
     int rc = interpreter.runOnce(goalTerm);
-    
     return rc;
   }
 
 
+  /**
+   * Asserts new predicates to the database by writing to the end of the opened Prolog file.
+   * @return Whether the file write was successful
+   */
   public boolean assertNew(List<PrologStructure> structs){
-	  //TODO eventually pick different file when our database grows
+	  //TODO eventually pick different files when our database grows
 	  String filename = PathFormat.absolutePathFromRoot("src/edu/pugetsound/mathcs/nlp/kb/"+prologFile);
 	  File file = new File(filename);
 		try {
@@ -138,8 +133,12 @@ public class KBController{
 	  return null;
   }
 
-  //helper for wh-questions
+  //helper for wh-questions that deals with creation of Terms and passing to interpreter
   private static List<PrologStructure> queryHelp(Interpreter interpreter, String pred, String[] queryArgs) throws PrologException{
+	  
+	  //TODO figure out proper implementation of Prolog backtracking with this silly library...
+	  
+	  
 //	  VariableTerm listTerm = new VariableTerm("List");
 //		// Create the arguments to the compound term which is the question
 //		Term[] args = { new IntegerTerm(5), new IntegerTerm(5), listTerm, answerTerm };
@@ -150,58 +149,82 @@ public class KBController{
 //
 //	  
 	  
-	  Term[] terms = new Term[queryArgs.length+1];
+	  Term[] terms = new Term[queryArgs.length];
+	  int mark = 0;//list index marker
 	    for(int i=0;i<queryArgs.length;i++){
-	      terms[i] = AtomTerm.get(queryArgs[i]);
+	    	if(!Character.isUpperCase(queryArgs[i].charAt(0))){
+	    		terms[i] = AtomTerm.get(queryArgs[i]);
+  	    	}
+	    	else{
+	    		terms[i] = new VariableTerm("List");
+	    		mark=i;
+	    	}
 	    }
-	    terms[queryArgs.length-1] = new VariableTerm("List");
 	    CompoundTerm goalTerm = new CompoundTerm(AtomTerm.get(pred+"List"), terms);
 	   
-	    int rc = interpreter.runOnce(goalTerm);
+	   interpreter.runOnce(goalTerm);
 
-	    Term list = terms[terms.length-1].dereference();
-	    
-	    System.out.println("ran");
+	    Term list = terms[mark].dereference();
+	    List<PrologStructure> answer = new ArrayList<PrologStructure>();
 	    if (list != null)
 		{
-	    	System.out.println("not null");
-			if (list instanceof CompoundTerm)
+			if (list instanceof CompoundTerm)//found answers to the query
 			{
 				CompoundTerm cList = (CompoundTerm) list;
-				if (cList.tag == TermConstants.listTag)// it is a list
-				{// Turn it into a string to use.
-					System.out.println(TermWriter.toString(list));
+				if (cList.tag == TermConstants.listTag){
+					//TODO figure out proper dereferencing of list terms to add to answer list to return
+					//System.out.println(TermWriter.toString(list));
 				}
 			}
 		}
-	  return null;
+	  return answer;
   }
 
-  //tester code for debugging knowledge assertion (when it works, should return true, true)
+  /**
+   * Tester code to demonstrate yesNo(), assertNew(), and (eventually) query() methods
+   * @param args None
+   */
   public static void main(String[] args){
 	  String filename = "knowledge/cats.pl";
 	  KBController kb = new KBController(filename);
-	  
-	  PrologStructure p = new PrologStructure(2);
 	  List<PrologStructure> preds = new ArrayList<PrologStructure>();
-	  p.setName("isA");
-	  p.addArgument("josh",0);
-	  p.addArgument("dog",1);
-	  preds.add(p);
 	  
-	  //kb.query(p);
+	  PrologStructure pFalse = new PrologStructure(2);
+	  pFalse.setName("isA");
+	  pFalse.addArgument("josh",0);
+	  pFalse.addArgument("dog",1);
 	  
-	//  kb.writeToDB(filename, preds);
+	  PrologStructure pTrue = new PrologStructure(2);
+	  pTrue.setName("isA");
+	  pTrue.addArgument("fluffy",0);
+	  pTrue.addArgument("cat",1);
 	  
-//	  System.out.println(kb.yesNo(preds));
+	  PrologStructure pQuery = new PrologStructure(2);
+	  pQuery.setName("isA");
+	  pQuery.addArgument("fluffy",0);
+	  pQuery.addArgument("X",1);
 	  
-//
-	  System.out.println("Expected: false, true, true");
-	  System.out.println("Answer: "+kb.yesNo(preds));
-	  System.out.println("Answer: "+ kb.assertNew(preds));
-	  System.out.println("Answer: " + kb.yesNo(preds));
-
+	  preds.add(pTrue);
 	  
+	  System.out.println("Querying database for "+pTrue);
+	  System.out.println("Expected: true\tActual: "+kb.yesNo(preds)+"\n");
+	  
+	  preds.remove(0);
+	  preds.add(pFalse);
+	  
+	  System.out.println("Querying database for "+pFalse);
+	  System.out.println("Expected: false\tActual: "+kb.yesNo(preds)+"\n");
+	  
+	  System.out.println("Writing "+pFalse+" to database");
+	  System.out.println("Expected: true\tActual: "+kb.assertNew(preds)+"\n");
+	  
+	  System.out.println("Querying database for "+pFalse);
+	  System.out.println("Expected: true\tActual: "+kb.yesNo(preds)+"\n");
+	  
+	  
+	  //Eventually this should work if WH- questions are working but not yet...
+	  System.out.println("Querying database for "+pQuery);
+	  System.out.println("Expected: 3\tActual: "+kb.query(pQuery).size()+"\n");  
   }
 
 }

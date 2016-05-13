@@ -1,12 +1,11 @@
 
 entityList([X|List]) :- entity(X), entityList(List).
-
 entity(diomedes33).
 entity(fluffy).
 entity(nugget).
 entity(gadget).
 
-isAList(Y,[X|List]) :- isA(X,Y), isA(Y,List).
+isAList(X,[Y|List]) :- isA(X,Y), isAList(Y,List).
 isA(fluffy,cat).
 isA(nugget,cat).
 isA(gadget,cat).
@@ -48,4 +47,18 @@ class(cat, mammalia).
 phylum(cat, chordata).
 kingdom(cat, animalia).
 
-isA(josh, dog).
+isA(josh,dog).
+
+isA(josh,dog).
+
+isA(josh,dog).
+
+isA(josh,dog).
+
+isA(josh,dog).
+
+isA(josh,dog).
+
+isA(josh,dog).
+
+isA(josh,dog).

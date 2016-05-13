@@ -10,7 +10,6 @@ public class PrologStructure {
 	 * The name of the term or predicate
 	 */
 	private String name;
-
 	/**
 	 * If a predicate, this holds the arguments
 	 */
