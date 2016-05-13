@@ -91,5 +91,3 @@ kingdomList1(X,[Y|List]) :- kingdom(X,Y), kingdomList1(Y,List).
 kingdomList0([X|List],Y) :- kingdom(X,Y), kingdomList0(List,Y).
 
 kingdom(cat, animalia).
-
-isA(josh,tiger).
