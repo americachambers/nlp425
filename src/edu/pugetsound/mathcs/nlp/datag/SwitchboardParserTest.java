@@ -34,9 +34,6 @@ public class SwitchboardParserTest {
 	public void test() throws FileNotFoundException {
 		SwitchboardParser parser = new SwitchboardParser(switchboardFile);
 
-		for (DialogueAct act : parser.getActs())
-			System.out.println(act.getTag());
-
 		assertEquals("Improper number of tags parsed.", parser.getActs().size(), 7);
 
 		assertEquals("Improper act subset size.",
