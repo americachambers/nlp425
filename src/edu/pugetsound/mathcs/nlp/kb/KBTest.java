@@ -7,6 +7,7 @@ import gnu.prolog.vm.PrologException;
 
 import java.util.ArrayList;
 import java.util.List;
+import gnu.prolog.vm.PrologException;
 
 import org.junit.Test;
 
