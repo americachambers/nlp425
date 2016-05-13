@@ -63,7 +63,7 @@ public class Controller {
 		analyzer = new TextAnalyzer(kb);
 		input = new Scanner(in);
 		hyperVariables = new HyperVariables(GAMMA, EXPLORE);
-		mdp = new QLearner(hyperVariables,true);		
+		mdp = new QLearner(hyperVariables,true);
 	}
 
 	/**
