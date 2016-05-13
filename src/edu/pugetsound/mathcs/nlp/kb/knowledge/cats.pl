@@ -48,17 +48,3 @@ phylum(cat, chordata).
 kingdom(cat, animalia).
 
 isA(josh,dog).
-
-isA(josh,dog).
-
-isA(josh,dog).
-
-isA(josh,dog).
-
-isA(josh,dog).
-
-isA(josh,dog).
-
-isA(josh,dog).
-
-isA(josh,dog).

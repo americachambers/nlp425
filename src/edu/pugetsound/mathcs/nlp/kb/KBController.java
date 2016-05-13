@@ -1,7 +1,6 @@
 package edu.pugetsound.mathcs.nlp.kb;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,7 +15,6 @@ import gnu.prolog.term.VariableTerm;
 import gnu.prolog.vm.Environment;
 import gnu.prolog.vm.Interpreter;
 import gnu.prolog.vm.TermConstants;
-import gnu.prolog.io.TermWriter;
 import gnu.prolog.vm.PrologCode;
 import gnu.prolog.vm.PrologException;
 
@@ -30,6 +28,7 @@ public class KBController{
    * @param filename The Prolog file name to be initially used for query and assertion
    */
   public KBController(String filename){
+	  //TODO save original file and use copy as working file to revert back to original working Prolog file
 	 updateEnvironment(filename);
   }
 
@@ -223,8 +222,8 @@ public class KBController{
 	  
 	  
 	  //Eventually this should work if WH- questions are working but not yet...
-	  System.out.println("Querying database for "+pQuery);
-	  System.out.println("Expected: 3\tActual: "+kb.query(pQuery).size()+"\n");  
+//	  System.out.println("Querying database for "+pQuery);
+//	  System.out.println("Expected: 3\tActual: "+kb.query(pQuery).size()+"\n");  
   }
 
 }
