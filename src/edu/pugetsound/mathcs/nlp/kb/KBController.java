@@ -120,29 +120,6 @@ public class KBController{
 	  return true;
   }
 
-  
-
-
-<<<<<<< HEAD
-=======
-    for (PrologStructure ps : structs) {
-      try {
-        String s = ps.toString();
-        byte[] sbytes = s.getBytes();
-        strm.write(sbytes);
-        strm.flush();
-
-    
-      }
-      catch (IOException e) {
-        System.out.println(e.getMessage());
-        e.printStackTrace();
-      }
-    }
-  }
->>>>>>> 0afebdd0458629084025032db4da7bcd549f25f8
-
-
   /**
    * Processes wh-questions to Prolog Database (this does not work yet)
    * @param struct prolog predicate being queried
